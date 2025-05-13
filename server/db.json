@@ -196,6 +196,70 @@
       "isFirstLogin": false,
       "hasPlan": true,
       "plan": "admin"
+    },
+    {
+      "id": "b_1747171147970",
+      "name": "Juan Gallardo",
+      "email": "juan@gmail.com",
+      "password": "12345",
+      "role": "barista",
+      "cafeteriaName": "",
+      "experience": "",
+      "profilePicture": "",
+      "paymentMethod": "visa",
+      "isFirstLogin": false,
+      "hasPlan": true,
+      "plan": "barista"
+    },
+    {
+      "id": "b_1747172420769",
+      "name": "Jhon Vicentino",
+      "email": "jhon@gmail.com",
+      "role": "barista",
+      "cafeteriaName": "",
+      "experience": "",
+      "paymentMethod": "visa",
+      "profilePicture": "",
+      "hasPlan": true,
+      "plan": "barista"
+    },
+    {
+      "id": "o_1747174620491",
+      "name": "Enrique Iglesias",
+      "email": "en@gmail.com",
+      "password": "12345",
+      "role": "dueno_cafeteria",
+      "cafeteriaName": "Iglesia",
+      "experience": "4 años",
+      "profilePicture": "",
+      "paymentMethod": "",
+      "isFirstLogin": true,
+      "plan": "admin",
+      "hasPlan": true
+    },
+    {
+      "id": "o_1747175160698",
+      "name": "Ricardo Sosa",
+      "email": "sosa@gmail.com",
+      "role": "dueno_cafeteria",
+      "cafeteriaName": "Sosa",
+      "experience": "",
+      "paymentMethod": "visa",
+      "profilePicture": "",
+      "hasPlan": true,
+      "plan": "complete"
+    },
+    {
+      "id": "b_1747175951535",
+      "name": "Luis Millones",
+      "email": "lucho@gmail.com",
+      "role": "barista",
+      "cafeteriaName": "",
+      "experience": "",
+      "paymentMethod": "visa",
+      "profilePicture": "",
+      "hasPlan": true,
+      "plan": "barista"
     }
   ]
 }

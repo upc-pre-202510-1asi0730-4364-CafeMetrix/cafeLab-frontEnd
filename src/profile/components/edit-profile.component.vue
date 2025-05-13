@@ -1,109 +1,115 @@
 <template>
   <div class="profile-container">
-    <div class="edit-profile-card">
-      <h1>Completa tu perfil</h1>
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs">
+      <button class="home-btn" @click="goToHome">{{ $t('profile.home') }}</button>
+      <span class="breadcrumb-separator">></span>
+      <span class="breadcrumb-item active">{{ $t('profile.profile') }}</span>
+    </div>
 
-      <div class="profile-picture-section">
-        <div class="profile-picture" :style="{ backgroundImage: `url(${previewImage || defaultProfilePic})` }">
-          <div class="upload-overlay" @click="triggerFileInput">
-            <span>{{ previewImage ? 'Cambiar foto' : 'Subir foto' }}</span>
+    <div class="profile-content">
+      <!-- Sección de foto de perfil -->
+      <div class="profile-image-section">
+        <div class="profile-image-container">
+          <div class="profile-image" :style="{ backgroundImage: `url(${previewImage || defaultProfilePic})` }">
           </div>
+          <button class="custom-button upload-photo-btn" @click="triggerFileInput">
+            {{ $t('profile.upload_photo') }}
+            <i class="pi pi-upload"></i>
+          </button>
+          <input
+              type="file"
+              ref="fileInput"
+              accept="image/*"
+              style="display: none"
+              @change="handleFileUpload"
+          />
         </div>
-        <input
-            type="file"
-            ref="fileInput"
-            accept="image/*"
-            style="display: none"
-            @change="handleFileUpload"
-        />
-        <button class="upload-btn" @click="triggerFileInput">
-          <span>Subir Foto de Perfil</span>
-          <i class="upload-icon">↑</i>
-        </button>
       </div>
 
-      <div class="profile-form">
+      <!-- Sección de formulario -->
+      <div class="profile-form-section">
+        <!-- Fila 1: Nombre y Apellidos -->
         <div class="form-row">
           <div class="form-group">
-            <label for="nombres">Nombres</label>
+            <label for="nombre">{{ $t('profile.firstname') }}</label>
             <div class="input-with-edit">
-              <input
-                  type="text"
-                  id="nombres"
+              <pv-input-text
+                  id="nombre"
                   v-model="profile.name"
                   :disabled="!editingName"
+                  class="w-full"
               />
               <button class="edit-btn" @click="toggleEdit('name')">
-                <i class="edit-icon">✎</i>
+                <i class="pi pi-pencil"></i>
               </button>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="apellidos">Apellidos</label>
+            <label for="apellidos">{{ $t('profile.lastname') }}</label>
             <div class="input-with-edit">
-              <input
-                  type="text"
+              <pv-input-text
                   id="apellidos"
                   v-model="profile.lastname"
                   :disabled="!editingLastname"
+                  class="w-full"
               />
               <button class="edit-btn" @click="toggleEdit('lastname')">
-                <i class="edit-icon">✎</i>
+                <i class="pi pi-pencil"></i>
               </button>
             </div>
           </div>
         </div>
 
-        <div class="form-row" v-if="isOwner">
-          <div class="form-group">
-            <label for="cafeteriaName">Nombre de Cafetería</label>
+        <!-- Fila 2: Email y/o Cafetería -->
+        <div class="form-row centered-row">
+          <div class="form-group" v-if="isOwner">
+            <label for="cafeteriaName">{{ $t('profile.cafe_name') }}</label>
             <div class="input-with-edit">
-              <input
-                  type="text"
+              <pv-input-text
                   id="cafeteriaName"
                   v-model="profile.cafeteriaName"
                   :disabled="!editingCafeteria"
+                  class="w-full"
               />
               <button class="edit-btn" @click="toggleEdit('cafeteria')">
-                <i class="edit-icon">✎</i>
+                <i class="pi pi-pencil"></i>
               </button>
             </div>
           </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="email">Email</label>
+          <div class="form-group centered-input">
+            <label for="email">{{ $t('profile.email') }}</label>
             <div class="input-with-edit">
-              <input
-                  type="email"
+              <pv-input-text
                   id="email"
                   v-model="profile.email"
                   :disabled="!editingEmail"
+                  class="w-full"
               />
               <button class="edit-btn" @click="toggleEdit('email')">
-                <i class="edit-icon">✎</i>
+                <i class="pi pi-pencil"></i>
               </button>
             </div>
           </div>
         </div>
 
-        <div class="payment-section">
-          <h2>Método de pago</h2>
+        <!-- Método de pago -->
+        <div class="payment-section" :class="{ 'has-error': validationErrors.paymentMethod }">
+          <label class="required-field">{{ $t('profile.payment_method') }}</label>
           <div class="payment-options">
             <div class="payment-option">
               <input
                   type="radio"
                   id="visa"
+                  name="paymentMethod"
                   value="visa"
                   v-model="profile.paymentMethod"
-                  name="paymentMethod"
+                  required
               />
-              <label for="visa" class="payment-label">
-                <div class="card-icon visa-icon">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" />
-                </div>
+              <label for="visa" class="payment-card" :class="{ 'selected': profile.paymentMethod === 'visa' }">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" />
               </label>
             </div>
 
@@ -111,26 +117,38 @@
               <input
                   type="radio"
                   id="mastercard"
+                  name="paymentMethod"
                   value="mastercard"
                   v-model="profile.paymentMethod"
-                  name="paymentMethod"
+                  required
               />
-              <label for="mastercard" class="payment-label">
-                <div class="card-icon mastercard-icon">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" />
-                </div>
+              <label for="mastercard" class="payment-card" :class="{ 'selected': profile.paymentMethod === 'mastercard' }">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" />
               </label>
             </div>
           </div>
+          <!-- Mensaje de error cuando no se selecciona método de pago -->
+          <div v-if="validationErrors.paymentMethod" class="payment-error">
+            {{ validationErrors.paymentMethod }}
+          </div>
         </div>
 
+        <!-- Botones de acción -->
         <div class="form-actions">
-          <button class="save-btn" @click="saveProfile">Guardar</button>
-        </div>
+          <button
+              class="custom-button save-btn"
+              @click="saveProfile"
+          >
+            {{ $t('profile.save') }}
+          </button>
 
-        <!-- Botón para ir a selección de plan -->
-        <div v-if="showPlanButton" class="select-plan-action">
-          <button class="plan-btn" @click="goToSelectPlan">Ir a seleccionar plan</button>
+          <button
+              v-if="showPlanButton && profile.paymentMethod"
+              class="custom-button select-plan-btn"
+              @click="goToSelectPlan"
+          >
+            {{ $t('profile.select_plan') }}
+          </button>
         </div>
 
         <div v-if="message" :class="['message', messageType]">
@@ -141,8 +159,9 @@
   </div>
 </template>
 
+
 <script>
-import ProfileService from '../services/profile.service';
+import ProfileService from '../services/profile.service.js';
 
 export default {
   name: 'EditProfile',
@@ -167,7 +186,11 @@ export default {
       message: '',
       messageType: 'success',
       showPlanButton: false,
-      defaultProfilePic: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIEZvbnQgQXdlc29tZSBGcmVlIDUuMTUuNCBieSBAZm9udGF3ZXNvbWUgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbSBMaWNlbnNlIC0gaHR0cHM6Ly9mb250YXdlc29tZS5jb20vbGljZW5zZS9mcmVlIENvcHlyaWdodCAyMDIzIEZvbnRpY29ucywgSW5jLiAtLT48cGF0aCBkPSJNMjI0IDI1NkE3MiA3MiAwIDEgMCAyMjQgMTEyYTcyIDcyIDAgMSAwIDAgMTQ0em0wLTE3NmE0MCA0MCAwIDEgMSAwIDgwIDQwIDQwIDAgMSAxIDAtODBaTTEuNCAxMTIuNUMyNS45IDI2IDExMS43LTI2LjkgOTkuMiA3LjhDMTYwIDY5LjIgNzUgOTYgOTkuMiAxMjEuMmMxMi41IDEyLjUgMTIuNSAzMi44IDAgNDUuM0w2My44IDIwMi44YzMuMyAyNC42IDE0LjcgNDAgMjYuOSA0OXMyOC4xIDExLjYgNDYuOSAxNi43Yy0yNC45IDgtNDUuMiAxOS43LTU4IDMxLjVDNjQgMzE0IDU0LjQgMzMwLjggNTAuOCAzNDUuQzQ1LjkgMzY0LjQgNDggMzgyLjYgNTMuMiAzOTcuNWMxMS41IDMyLjcgMzYuMSA2Mi4yIDczLjIgNjEuNUM4My4zIDQ1OC4zIDg2LjggNDU5IDkwLjMgNDU5LjhsMzAuMiA2LjNjOS40IDIgMTkuMSA0LjEgMjguOCA0LjFzMTkuNS0yLjEgMjguOS00LjFsMzAuMi02LjNjMTguNy0zLjkgMjMuNS00LjYgMjYuMyA0LjNjMzcuMSAuNyA2MS44LTI4LjkgNzMuMy02MS41YzUuMi0xNC45IDcuMy0zMy4xIDIuNS01Mi40Yy0zLjYtMTQuMy0xMy4yLTMxLjItMjkuOC00NS4yYy0xMi44LTEwLjctMzAuNS0yMS42LTUyLjctMjkuNWMxNy44LTUuMiAzNC4zLTkuNCA0Ni40LTE2LjdjMTEuNi03IDIzLjgtMjMuMiAyNy04OC4ybC0zOS41LTM4LjljLTEyLjYtMTIuNi0xMi42LTMyLjkgMC00NS40YzI0LjItMjUuMi0xMC43LTUyLjEgNjEuNS0xMjIuOGMtMTIuNS0zNC43IDczLjMgMTggOTcuOCAxMDQuN2wzLjMgMTEuNmMzLjUgMTIuNS0zLjQgMjYtMTUuNSAyOS43bC05LjggMi45YzExLjEgMzIuNCAyNS44IDg5LjEgMjUuMiAxMzkuMmMtLjQgMzQuNS0xNS45IDYyLjUtMzkuNyA4NS40CmMtMTUuMyAxNC44LTM1LjMgMjQuNy01Ny44IDI5LjhjLTUuOSAxLjMtMTIgMi03LjUgOS4yYzUgOCA1LjUgOC44IDMuOCAxMi41Yy0yLjUgNS4zLTE0LjUgOS44LTE4LjIgNC40Yy0zLjctNS40LTgtMTMuMi00LjMtMjEuNmMyLjMtNS4yLTE0LjItMTcuMy0xOS4yLTIzLjFjLTQuNy01LjQtMzIuMi00Mi42LTMyLjItOTguOS0zLjYuMi03LjguMi0xMS42LjItMy44IDAtOC4xIDAtMTEuNi0uMmMwIDU2LjMtMjcuNSA5My41LTMyLjIgOTguOWMtNSA1LjgtMjEuNSAxNy45LTE5LjEgMjMuMWMzLjcgOC40LS42IDE2LjItNC40IDIxLjZjLTMuNyA1LjQtMTUuNy45LTE4LjItNC40Yy0xLjctMy43LTEuMi00LjUgMy44LTEyLjVjNC41LTcuMi0xLjYtNy45LTcuNS05LjJjLTIyLjQtNS4xLTQyLjQtMTUtNTcuOC0yOS44Yy0yMy44LTIzLTM5LjMtNTEtMzkuNy04NS40Yy0uNi01MC4yIDE0LjEtMTA2LjkgMjUuMi0xMzkuMmwtOS44LTIuOWMtMTIuMS0zLjctMTktMTcuMS0xNS41LTI5LjdsMy4zLTExLjZjMy41LTEyLjIuNC0yNS42LTguMy0zNS41Yy0xMS4yLTEyLjcgMi4xLTIxLjEgMjQtNjlsOS4xLTE5LjdjMy44LTcuOCAxNC05LjIgMTkuNi00LjNsOS43IDguNWM3LjUtNi4yIDIxLjItMTkuNCAzMi40LTQxQzE1My40IDczLjUgMTU0IDUxLjIgMTYuMSAwIDEwLjggMjAuNiA3LjcgMzMuNiA0LjMgNTAuOEwwIDY1LjNjLTIuNyA5LjYtLjIgMjAuMyA2LjQgMTN6bTc0IDk3LjFjLS4xLTEuOCAyLjUgMTYuOSA0MC44IDE2czQwLjgtMTguNiA0MC45LTE2LjdsLTIuMy0yLjJjLTMuMi0zLjEgMy41IDcgMS45LTQuNGMtMS45LTE0LjYtMTkuOC0uMi00MC41LS4ycy0zOC42LTE0LTQwLjUuMmMtMS42IDExLjcgNS40IDEuNiAxLjkgNS44bC0yLjIgMS42eiIvPjwvc3ZnPg=='
+      defaultProfilePic: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIEZvbnQgQXdlc29tZSBGcmVlIDUuMTUuNCBieSBAZm9udGF3ZXNvbWUgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbSBMaWNlbnNlIC0gaHR0cHM6Ly9mb250YXdlc29tZS5jb20vbGljZW5zZS9mcmVlIENvcHlyaWdodCAyMDIzIEZvbnRpY29ucywgSW5jLiAtLT48cGF0aCBkPSJNMjI0IDI1NkE3MiA3MiAwIDEgMCAyMjQgMTEyYTcyIDcyIDAgMSAwIDAgMTQ0em0wLTE3NmE0MCA0MCAwIDEgMSAwIDgwIDQwIDQwIDAgMSAxIDAtODBaTTEuNCAxMTIuNUMyNS45IDI2IDExMS43LTI2LjkgOTkuMiA3LjhDMTYwIDY5LjIgNzUgOTYgOTkuMiAxMjEuMmMxMi41IDEyLjUgMTIuNSAzMi44IDAgNDUuM0w2My44IDIwMi44YzMuMyAyNC42IDE0LjcgNDAgMjYuOSA0OXMyOC4xIDExLjYgNDYuOSAxNi43Yy0yNC45IDgtNDUuMiAxOS43LTU4IDMxLjVDNjQgMzE0IDU0LjQgMzMwLjggNTAuOCAzNDUuQzQ1LjkgMzY0LjQgNDggMzgyLjYgNTMuMiAzOTcuNWMxMS41IDMyLjcgMzYuMSA2Mi4yIDczLjIgNjEuNUM4My4zIDQ1OC4zIDg2LjggNDU5IDkwLjMgNDU5LjhsMzAuMiA2LjNjOS40IDIgMTkuMSA0LjEgMjguOCA0LjFzMTkuNS0yLjEgMjguOS00LjFsMzAuMi02LjNjMTguNy0zLjkgMjMuNS00LjYgMjYuMyA0LjNjMzcuMSAuNyA2MS44LTI4LjkgNzMuMy02MS41YzUuMi0xNC45IDcuMy0zMy4xIDIuNS01Mi40Yy0zLjYtMTQuMy0xMy4yLTMxLjItMjkuOC00NS4yYy0xMi44LTEwLjctMzAuNS0yMS42LTUyLjctMjkuNWMxNy44LTUuMiAzNC4zLTkuNCA0Ni40LTE2LjdjMTEuNi03IDIzLjgtMjMuMiAyNy04OC4ybC0zOS41LTM4LjljLTEyLjYtMTIuNi0xMi42LTMyLjkgMC00NS40YzI0LjItMjUuMi0xMC43LTUyLjEgNjEuNS0xMjIuOGMtMTIuNS0zNC43IDczLjMgMTggOTcuOCAxMDQuN2wzLjMgMTEuNmMzLjUgMTIuNS0zLjQgMjYtMTUuNSAyOS43bC05LjggMi45YzExLjEgMzIuNCAyNS44IDg5LjEgMjUuMiAxMzkuMmMtLjQgMzQuNS0xNS45IDYyLjUtMzkuNyA4NS40CmMtMTUuMyAxNC44LTM1LjMgMjQuNy01Ny44IDI5LjhjLTUuOSAxLjMtMTIgMi03LjUgOS4yYzUgOCA1LjUgOC44IDMuOCAxMi41Yy0yLjUgNS4zLTE0LjUgOS44LTE4LjIgNC40Yy0zLjctNS40LTgtMTMuMi00LjMtMjEuNmMyLjMtNS4yLTE0LjItMTcuMy0xOS4yLTIzLjFjLTQuNy01LjQtMzIuMi00Mi42LTMyLjItOTguOS0zLjYuMi03LjguMi0xMS42LjItMy44IDAtOC4xIDAtMTEuNi0uMmMwIDU2LjMtMjcuNSA5My41LTMyLjIgOTguOWMtNSA1LjgtMjEuNSAxNy45LTE5LjEgMjMuMWMzLjcgOC40LS42IDE2LjItNC40IDIxLjZjLTMuNyA1LjQtMTUuNy45LTE4LjItNC40Yy0xLjctMy43LTEuMi00LjUgMy44LTEyLjVjNC41LTcuMi0xLjYtNy45LTcuNS05LjJjLTIyLjQtNS4xLTQyLjQtMTUtNTcuOC0yOS44Yy0yMy44LTIzLTM5LjMtNTEtMzkuNy04NS40Yy0uNi01MC4yIDE0LjEtMTA2LjkgMjUuMi0xMzkuMmwtOS44LTIuOWMtMTIuMS0zLjctMTktMTcuMS0xNS41LTI5LjdsMy4zLTExLjZjMy41LTEyLjIuNC0yNS42LTguMy0zNS41Yy0xMS4yLTEyLjcgMi4xLTIxLjEgMjQtNjlsOS4xLTE5LjdjMy44LTcuOCAxNC05LjIgMTkuNi00LjNsOS43IDguNWM3LjUtNi4yIDIxLjItMTkuNCAzMi40LTQxQzE1My40IDczLjUgMTU0IDUxLjIgMTYuMSAwIDEwLjggMjAuNiA3LjcgMzMuNiA0LjMgNTAuOEwwIDY1LjNjLTIuNyA5LjYtLjIgMjAuMyA2LjQgMTN6bTc0IDk3LjFjLS4xLTEuOCAyLjUgMTYuOSA0MC44IDE2czQwLjgtMTguNiA0MC45LTE2LjdsLTIuMy0yLjJjLTMuMi0zLjEgMy41IDcgMS45LTQuNGMtMS45LTE0LjYtMTkuOC0uMi00MC41LS4ycy0zOC42LTE0LTQwLjUuMmMtMS42IDExLjcgNS40IDEuNiAxLjkgNS44bC0yLjIgMS42eiIvPjwvc3ZnPg==',
+      // Añadir objeto para mensajes de validación
+      validationErrors: {
+        paymentMethod: ''
+      }
     }
   },
   computed: {
@@ -196,6 +219,11 @@ export default {
       this.previewImage = null;
       this.selectedFile = null;
       this.showPlanButton = false;
+
+      // Resetear validaciones
+      this.validationErrors = {
+        paymentMethod: ''
+      };
 
       // Obtener información del usuario desde localStorage
       console.log('====== CARGANDO PERFIL DE USUARIO ======');
@@ -226,6 +254,9 @@ export default {
           if (user.profilePicture) {
             this.previewImage = user.profilePicture;
           }
+
+          // Comprobar si debe mostrar el botón de plan
+          this.showPlanButton = user && !user.hasPlan;
 
           // Resetear estados de edición
           this.editingName = false;
@@ -285,7 +316,30 @@ export default {
       };
       reader.readAsDataURL(file);
     },
+    validateForm() {
+      let isValid = true;
+
+      // Resetear errores de validación
+      this.validationErrors = {
+        paymentMethod: ''
+      };
+
+      // Validar método de pago
+      if (!this.profile.paymentMethod) {
+        this.validationErrors.paymentMethod = 'Por favor selecciona un método de pago';
+        isValid = false;
+      }
+
+      return isValid;
+    },
     async saveProfile() {
+      // Validar el formulario antes de proceder
+      if (!this.validateForm()) {
+        this.message = 'Por favor completa todos los campos requeridos';
+        this.messageType = 'error';
+        return;
+      }
+
       try {
         // Combinar nombre y apellido
         const fullName = `${this.profile.name} ${this.profile.lastname}`.trim();
@@ -309,7 +363,7 @@ export default {
           role: this.profile.role,
           cafeteriaName: this.isOwner ? this.profile.cafeteriaName : '',
           experience: this.profile.experience || '',  // Asegurarse de incluir este campo
-          paymentMethod: this.profile.paymentMethod || '',
+          paymentMethod: this.profile.paymentMethod, // Este campo ahora es obligatorio
           profilePicture: this.previewImage || '',
           hasPlan: currentUser.hasPlan || false,     // Preservar hasPlan
           plan: currentUser.plan || ''                // Preservar plan
@@ -327,11 +381,16 @@ export default {
           this.message = 'Perfil actualizado correctamente';
           this.messageType = 'success';
 
-          // Mostrar botón para continuar a selección de plan
+          // Actualizar datos en localStorage
+          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+          // Mostrar botón para continuar a selección de plan solo después de guardar correctamente
           this.showPlanButton = !updatedUser.hasPlan;
 
         } catch (error) {
           console.error('Error al actualizar perfil con API:', error);
+          this.message = 'Error al actualizar el perfil. Inténtalo de nuevo.';
+          this.messageType = 'error';
           throw error;
         }
       } catch (error) {
@@ -339,6 +398,9 @@ export default {
         this.message = 'Error al actualizar el perfil. Inténtalo de nuevo.';
         this.messageType = 'error';
       }
+    },
+    goToHome() {
+      this.$router.push('/');
     },
     goToSelectPlan() {
       this.$router.push('/select-plan');
@@ -355,127 +417,167 @@ export default {
 }
 </script>
 
+
 <style scoped>
+/* Contenedor principal */
 .profile-container {
+  width: 100%;
   min-height: 100vh;
   background-color: #f5f5f5;
-  padding: 2rem;
+  padding: 20px;
+  overflow-x: hidden; /* Eliminar barra lateral horizontal */
 }
 
-.edit-profile-card {
-  max-width: 800px;
-  margin: 0 auto;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+/* Breadcrumbs */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 10px 0;
+  color: #666;
 }
 
-h1 {
-  text-align: center;
+.home-btn {
+  background: none;
+  border: none;
   color: #4c4c3d;
-  margin-bottom: 2rem;
-  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.3s ease;
 }
 
-.profile-picture-section {
+.home-btn:hover {
+  color: #2a2a22;
+}
+
+.breadcrumb-separator {
+  margin: 0 10px;
+}
+
+.breadcrumb-item.active {
+  color: #333;
+  font-weight: 500;
+}
+
+/* Contenido principal */
+.profile-content {
+  display: flex;
+  flex-direction: row;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Sección de imagen de perfil */
+.profile-image-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 2rem;
+  justify-content: flex-start;
+  padding: 40px;
+  background-color: #f8f9fa;
+  min-width: 300px;
 }
 
-.profile-picture {
-  width: 150px;
-  height: 150px;
+.profile-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-image {
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
-  background-color: #e0e0e0;
+  background-color: #ddd;
   background-size: cover;
   background-position: center;
-  position: relative;
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
 }
 
-.upload-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  transition: opacity 0.3s;
-  cursor: pointer;
-}
-
-.profile-picture:hover .upload-overlay {
-  opacity: 1;
-}
-
-.upload-btn {
-  display: flex;
-  align-items: center;
+/* Botón personalizado con estilo consistente */
+.custom-button {
+  padding: 10px 16px;
   background-color: #4c4c3d;
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
+  border-radius: 200px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 5px;
 }
 
-.upload-btn:hover {
-  background-color: #3a3a2e;
+.custom-button:hover {
+  background-color: white;
+  color: #4D6443;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.upload-icon {
-  margin-left: 8px;
+.custom-button:active {
+  background-color: transparent;
+  color: #4D6443;
+  border: 1px solid #4D6443;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.profile-form {
-  max-width: 600px;
-  margin: 0 auto;
+.upload-photo-btn {
+  margin-top: 10px;
+}
+
+/* Sección de formulario */
+.profile-form-section {
+  flex: 1;
+  padding: 40px;
 }
 
 .form-row {
   display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.centered-row {
+  justify-content: center;
 }
 
 .form-group {
   flex: 1;
 }
 
+.centered-input {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
 label {
   display: block;
-  margin-bottom: 0.5rem;
+  font-size: 14px;
   color: #555;
+  margin-bottom: 8px;
   font-weight: 500;
+}
+
+/* Estilo para campo obligatorio */
+.required-field::after {
+  content: ' *';
+  color: #e53935;
+  margin-left: 2px;
 }
 
 .input-with-edit {
   display: flex;
   align-items: center;
-}
-
-input {
-  flex: 1;
-  padding: 0.75rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  width: 100%;
-}
-
-input:disabled {
-  background-color: #f9f9f9;
-  cursor: not-allowed;
+  gap: 10px;
 }
 
 .edit-btn {
@@ -483,112 +585,103 @@ input:disabled {
   border: none;
   color: #4c4c3d;
   cursor: pointer;
-  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
 }
 
-.edit-icon {
-  font-style: normal;
-}
-
+/* Sección de método de pago mejorada */
 .payment-section {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin: 30px auto;
+  max-width: 300px;
+  text-align: center;
 }
 
-.payment-section h2 {
-  color: #4c4c3d;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
+.payment-section.has-error .payment-options {
+  border: 1px solid rgba(229, 57, 53, 0.3);
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(229, 57, 53, 0.05);
 }
 
 .payment-options {
   display: flex;
-  gap: 1.5rem;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 15px;
+  padding: 10px;
+  transition: all 0.3s ease;
 }
 
 .payment-option {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
-.payment-label {
+/* Estilos para los radiobuttons */
+.payment-option input[type="radio"] {
+  margin-right: 5px;
   cursor: pointer;
+}
+
+.payment-card {
+  width: 90px;
+  height: 55px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  padding: 0.5rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  margin-left: 0.5rem;
-  transition: border-color 0.3s;
-}
-
-input[type="radio"]:checked + .payment-label {
-  border-color: #4c4c3d;
-  background-color: #f9f9f9;
-}
-
-.card-icon {
-  width: 60px;
-  height: 40px;
-  display: flex;
   justify-content: center;
-  align-items: center;
-  border-radius: 4px;
-  overflow: hidden;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.card-icon img {
+.payment-card:hover {
+  border-color: #4c4c3d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.payment-card.selected {
+  border-color: #4c4c3d;
+  background-color: rgba(76, 76, 61, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.payment-card img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }
 
+/* Mensaje de error para el método de pago */
+.payment-error {
+  color: #e53935;
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Botón de guardar y seleccionar plan */
 .form-actions {
+  margin-top: 30px;
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
+  gap: 10px;
 }
 
-.save-btn {
-  background-color: #4c4c3d;
-  color: white;
-  border: none;
-  padding: 0.75rem 3rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s;
+.save-btn, .select-plan-btn {
+  min-width: 120px;
 }
 
-.save-btn:hover {
-  background-color: #3a3a2e;
-}
-
-.select-plan-action {
-  margin-top: 1.5rem;
-  text-align: center;
-}
-
-.plan-btn {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 0.75rem 3rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s;
-}
-
-.plan-btn:hover {
-  background-color: #218838;
-}
-
+/* Mensajes */
 .message {
-  text-align: center;
-  margin-top: 1rem;
-  padding: 0.75rem;
+  margin-top: 20px;
+  padding: 10px;
   border-radius: 4px;
+  text-align: center;
 }
 
 .success {
@@ -601,15 +694,33 @@ input[type="radio"]:checked + .payment-label {
   color: #e53935;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
-  .form-row {
+  .profile-content {
     flex-direction: column;
-    gap: 1rem;
   }
 
-  .edit-profile-card {
-    padding: 1.5rem;
-    margin: 1rem;
+  .profile-image-section {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .payment-options {
+    justify-content: center;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .custom-button {
+    margin-bottom: 10px;
   }
 }
 </style>

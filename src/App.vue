@@ -1,12 +1,16 @@
 <template>
   <div id="app">
+    <simple-header/>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+import SimpleHeader from "./shared/components/SimpleHeader.vue";
+
 export default {
-  name: 'App'
+  name: 'App',
+  components: {SimpleHeader}
 }
 </script>
 
