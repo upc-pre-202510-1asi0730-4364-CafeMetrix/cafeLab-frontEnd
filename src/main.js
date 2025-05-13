@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 import PrimeVue from 'primevue/config'
+import router from "./router/index.js";
 import {Button, Card, Image, SelectButton, Toolbar} from 'primevue'
 
 import Material from '@primevue/themes/material'
@@ -22,5 +23,6 @@ app
     .component('pv-select-button', SelectButton)
     .component('pv-toolbar', Toolbar)
     .component('pv-image', Image)
+    .use(router)
     .use(i18n)
     .mount('#app')
