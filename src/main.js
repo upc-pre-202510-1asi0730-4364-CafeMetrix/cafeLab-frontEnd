@@ -6,7 +6,7 @@ import PrimeVue from 'primevue/config'
 import router from './router'
 import { Button, Card, Image, SelectButton, Toolbar, 
     DataTable, Column, Dialog, InputText, Dropdown, Toast, 
-    TabView, TabPanel, Calendar, Slider, ProgressSpinner } from 'primevue'
+    TabView, TabPanel, Calendar, Slider, ProgressSpinner, Password } from 'primevue'
 import Material from '@primevue/themes/material'
 import i18n from './i18n.js'
 import 'primeicons/primeicons.css'
@@ -40,5 +40,6 @@ app
     .component('pv-slider', Slider)
     .component('pv-progress-spinner', ProgressSpinner)
     .component('pv-input-text', InputText)
+    .component('pv-password', Password)
     .use(i18n)
     .mount('#app') //
