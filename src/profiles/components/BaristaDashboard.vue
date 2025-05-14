@@ -8,17 +8,17 @@
           <img src="https://img.icons8.com/ios-filled/100/coffee.png" alt="Sesiones de Cata" />
           <p>{{$t('dashboard.cuppingSessions')}}</p>
         </div>
-        <div class="feature disabled">
+        <div class="feature" @click="goToDefect" >
           <img src="https://img.icons8.com/ios/100/coffee-to-go.png" alt="Librería de Defectos" />
-          <p>{{$t('dashboard.defectLibrary')}}</p>
+          <p>{{$t('dashboard.defectList')}}</p>
         </div>
-        <div class="feature disabled">
+        <div class="feature" @click="goToTasting">
           <img src="https://img.icons8.com/ios/100/smell.png" alt="Correlación Tueste-Sabor" />
-          <p>{{$t('dashboard.roastCorrelation')}}<br /></p>
+          <p>{{$t('dashboard.tastingPattern')}}<br /></p>
         </div>
-        <div class="feature disabled">
+        <div class="feature" @click="goToCalibration">
           <img src="https://img.icons8.com/ios/100/coffee-beans.png" alt="Calibración de Molienda" />
-          <p>{{$t('dashboard.grindCalibration')}}</p>
+          <p>{{$t('dashboard.calibration')}}</p>
         </div>
         <div class="feature disabled">
           <img src="https://img.icons8.com/ios/100/recipe.png" alt="Recetas" />
@@ -39,7 +39,15 @@ const router = useRouter()
 const goToCupping = () => {
   router.push('/cata') // Ajusta si es necesario
 }
-
+const goToDefect = () => {
+  router.push('/defects') // Ajusta si es necesario
+}
+const goToTasting = () => {
+  router.push('/tasting-pattern') // Ajusta si es necesario
+}
+const goToCalibration = () => {
+  router.push('/calibration') // Ajusta si es necesario
+}
 onMounted(() => {
   document.body.classList.add('dashboard-bg')
 })

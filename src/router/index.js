@@ -21,19 +21,8 @@ const routes = [
     { path: '/tasting-pattern-overview', name: 'TastingPatternOverview', component: () => import('../sensory-evaluation/components/TastingPatternOverview.vue')},
     { path: '/tasting-pattern-overview', name: 'TastingPatternOverview', component: TastingPatternOverview, },
     { path: '/calibration', name: 'Calibration', component: Calibration,},
-
-
-
-    {
-        path: '/cata/:id',
-        name: 'CuppingSessionDetail',
-        component: CuppingSessionDetail
-    },
-    {
-        path: '/comparar-catas/:ids',
-        name: 'cupping-comparison',
-        component: () => import('../sensory-evaluation/components/CuppingComparison.vue')
-    },
+    { path: '/cata/:id',  name: 'CuppingSessionDetail',  component: CuppingSessionDetail },
+    { path: '/comparar-catas/:ids',  name: 'cupping-comparison',  component: () => import('../sensory-evaluation/components/CuppingComparison.vue') },
     { path: '/inventario', name: 'Inventario', component: InventoryView },
     { path: '/costos-lote', name: 'CostRegisterWizard', component: CostRegisterWizard }
 ]

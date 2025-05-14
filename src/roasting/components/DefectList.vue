@@ -104,6 +104,8 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router'; // Agregamos useRouter para la redirección
 import { getDefects, addDefect } from '../services/defectApi.js'; // La API falsa
 
+
+
 export default {
   components: {
     HeaderBar, // Registra HeaderBar (CuppingHeader.vue)
@@ -115,7 +117,6 @@ export default {
     const showAddDefectModal = ref(false);
     const selectedDefect = ref(null);
     const newDefect = ref({ cafe: '', defecto: '', peso: '', porcentaje: '' });
-
     const searchCoffee = ref('');
     const searchDefect = ref('');
     const coffeeOptions = ref(['Typica', 'Arabica', 'Robusta']);
