@@ -1,95 +1,97 @@
 <template>
-  <div class="defect-list">
-    <!-- Agregar el HeaderBar al inicio del archivo -->
-    <HeaderBar />
+  <div class="defect-list-page">
+    <div class="defect-list">
+      <!-- Agregar el HeaderBar al inicio del archivo -->
+      <CuppingHeader />
 
-    <!-- Breadcrumb -->
-    <div class="breadcrumb-container">
-      <div class="breadcrumb">
-        {{ $t('breadcrumb.home') }} > <strong>{{ $t('breadcrumb.libraryDefects') }}</strong>
+      <!-- Breadcrumb -->
+      <div class="breadcrumb-container">
+        <div class="breadcrumb">
+          <span @click="navigateToHome" class="breadcrumb-link">Inicio</span> > <strong>Librería de Defectos</strong>
+        </div>
       </div>
-    </div>
 
-    <!-- Filtros de búsqueda -->
-    <div class="filters">
-      <select v-model="searchCoffee" class="dropdown">
-        <option value="">Tipo de Café</option>
-        <option v-for="coffee in coffeeOptions" :key="coffee" :value="coffee">{{ coffee }}</option>
-      </select>
+      <!-- Filtros de búsqueda -->
+      <div class="filters">
+        <select v-model="searchCoffee" class="dropdown">
+          <option value="">Tipo de Café</option>
+          <option v-for="coffee in coffeeOptions" :key="coffee" :value="coffee">{{ coffee }}</option>
+        </select>
 
-      <select v-model="searchDefect" class="dropdown">
-        <option value="">Tipo de Defecto</option>
-        <option v-for="defect in defectOptions" :key="defect" :value="defect">{{ defect }}</option>
-      </select>
-    </div>
-
-    <!-- Tabla de defectos -->
-    <div class="defect-container">
-      <table class="defect-table">
-        <thead>
-        <tr>
-          <th>Peso (g)</th>
-          <th>Café</th>
-          <th>Defecto</th>
-          <th>Porcentaje (%)</th>
-          <th>Acción</th> <!-- Nueva columna para la acción con botón -->
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="defect in filteredDefects" :key="defect.id">
-          <td>{{ defect.peso }} g</td>
-          <td>{{ defect.cafe }}</td>
-          <td>{{ defect.defecto }}</td>
-          <td>{{ defect.porcentaje }}%</td>
-          <td>
-            <!-- Botón con ícono de lupa -->
-            <button class="view-btn" @click="viewDefect(defect)">
-              <i class="fa fa-search"></i>
-            </button>
-          </td> <!-- Botón circular -->
-        </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Botón para agregar un defecto -->
-    <button @click="showAddDefectModal = true" class="add-btn">Agregar defecto</button>
-
-    <!-- Modal para agregar defecto -->
-    <div v-if="showAddDefectModal" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeAddDefectModal">&times;</span>
-        <h2>Agregar Defecto</h2>
-        <form @submit.prevent="addNewDefect">
-          <div>
-            <label for="cafe" class="form-label">Café:</label>
-            <input type="text" id="cafe" v-model="newDefect.cafe" required />
-          </div>
-          <div>
-            <label for="defecto" class="form-label">Defecto:</label>
-            <input type="text" id="defecto" v-model="newDefect.defecto" required />
-          </div>
-          <div>
-            <label for="peso" class="form-label">Peso (g):</label>
-            <input type="number" id="peso" v-model="newDefect.peso" required />
-          </div>
-          <div>
-            <label for="porcentaje" class="form-label">Porcentaje (%):</label>
-            <input type="number" id="porcentaje" v-model="newDefect.porcentaje" required />
-          </div>
-          <button type="submit" class="add-submit-btn">Agregar</button>
-        </form>
+        <select v-model="searchDefect" class="dropdown">
+          <option value="">Tipo de Defecto</option>
+          <option v-for="defect in defectOptions" :key="defect" :value="defect">{{ defect }}</option>
+        </select>
       </div>
-    </div>
 
-    <!-- Ventana emergente para detalles del defecto -->
-    <div v-if="showModal" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h2>Ficha de defecto</h2>
-        <div class="modal-body">
-          <p><strong>Causas probables:</strong> {{ selectedDefect.causas || 'No disponible' }}</p>
-          <p><strong>Soluciones recomendadas:</strong> {{ selectedDefect.soluciones || 'No disponible' }}</p>
+      <!-- Tabla de defectos -->
+      <div class="defect-container">
+        <table class="defect-table">
+          <thead>
+          <tr>
+            <th>Peso (g)</th>
+            <th>Café</th>
+            <th>Defecto</th>
+            <th>Porcentaje (%)</th>
+            <th>Acción</th> <!-- Nueva columna para la acción con botón -->
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="defect in filteredDefects" :key="defect.id">
+            <td>{{ defect.peso }} g</td>
+            <td>{{ defect.cafe }}</td>
+            <td>{{ defect.defecto }}</td>
+            <td>{{ defect.porcentaje }}%</td>
+            <td>
+              <!-- Botón con ícono de lupa -->
+              <button class="view-btn" @click="viewDefect(defect)">
+                <i class="fa fa-search"></i>
+              </button>
+            </td> <!-- Botón circular -->
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Botón para agregar un defecto -->
+      <button @click="showAddDefectModal = true" class="add-btn">Agregar defecto</button>
+
+      <!-- Modal para agregar defecto -->
+      <div v-if="showAddDefectModal" class="modal">
+        <div class="modal-content">
+          <span class="close" @click="closeAddDefectModal">&times;</span>
+          <h2>Agregar Defecto</h2>
+          <form @submit.prevent="addNewDefect">
+            <div>
+              <label for="cafe" class="form-label">Café:</label>
+              <input type="text" id="cafe" v-model="newDefect.cafe" required />
+            </div>
+            <div>
+              <label for="defecto" class="form-label">Defecto:</label>
+              <input type="text" id="defecto" v-model="newDefect.defecto" required />
+            </div>
+            <div>
+              <label for="peso" class="form-label">Peso (g):</label>
+              <input type="number" id="peso" v-model="newDefect.peso" required />
+            </div>
+            <div>
+              <label for="porcentaje" class="form-label">Porcentaje (%):</label>
+              <input type="number" id="porcentaje" v-model="newDefect.porcentaje" required />
+            </div>
+            <button type="submit" class="add-submit-btn">Agregar</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Ventana emergente para detalles del defecto -->
+      <div v-if="showModal" class="modal">
+        <div class="modal-content">
+          <span class="close" @click="closeModal">&times;</span>
+          <h2>Ficha de defecto</h2>
+          <div class="modal-body">
+            <p><strong>Causas probables:</strong> {{ selectedDefect.causas || 'No disponible' }}</p>
+            <p><strong>Soluciones recomendadas:</strong> {{ selectedDefect.soluciones || 'No disponible' }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -98,7 +100,7 @@
 
 <script>
 // Importa el componente HeaderBar (ahora CuppingHeader.vue)
-import HeaderBar from '../../shared/components/CuppingHeader.component.vue';
+import CuppingHeader from '../../shared/components/CuppingHeader.component.vue';
 
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router'; // Agregamos useRouter para la redirección
@@ -108,7 +110,7 @@ import { getDefects, addDefect } from '../services/defectApi.js'; // La API fals
 
 export default {
   components: {
-    HeaderBar, // Registra HeaderBar (CuppingHeader.vue)
+    CuppingHeader, // Registra HeaderBar (CuppingHeader.vue)
   },
   setup() {
     const router = useRouter(); // Instanciamos el enrutador
@@ -155,6 +157,10 @@ export default {
       showModal.value = false;
     };
 
+    const navigateToHome = () => {
+      router.push('/dashboard');
+    };
+
     loadDefects();
 
     return {
@@ -171,13 +177,20 @@ export default {
       showModal,
       selectedDefect,
       viewDefect,
-      closeModal
+      closeModal,
+      navigateToHome
     };
   },
 };
 </script>
 
 <style scoped>
+/* Estilos de la página completa */
+.defect-list-page {
+  min-height: 100vh;
+  background-color: #F8F7F2;
+}
+
 /* Estilos de la tabla y modal */
 body {
   background-color: #F8F7F2; /* Fondo principal color solicitado */
@@ -187,18 +200,26 @@ body {
 }
 
 .defect-list {
-  padding: 20px;
+  padding: 100px 20px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .breadcrumb-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   margin-bottom: 20px;
 }
 
 .breadcrumb {
   font-size: 16px;
-  color: #414535; /* Color de texto solicitado */
+  color: #414535;
+}
+
+.breadcrumb-link {
+  cursor: pointer;
+  color: #3C4B3A;
+  text-decoration: underline;
 }
 
 /* Filtros */

@@ -44,12 +44,12 @@ const routes = [
     { path: '/recetas/detalle/:id', name: 'RecipeDetail', component: () => import('../preparation/components/RecipeDetail.component.vue') },
     { path: '/recetas/gestion', name: 'RecipeManagement', component: () => import('../preparation/components/PortfolioAndRecipesManagement.component.vue') },
     // Rutas para los demás módulos (pueden estar pendientes de implementación)
+    { path: '/correlacion', name: 'Correlacion', component: () => import('../roasting/components/FlavorCorrelation.vue') },
+    { path: '/defectos', name: 'Defectos', component: DefectList },
+    { path: '/calibracion', name: 'Calibracion', component: Calibration },
     { path: '/proveedores', name: 'Proveedores', component: { template: '<div>Módulo de Proveedores (en desarrollo)</div>' } },
     { path: '/lotes', name: 'Lotes', component: { template: '<div>Módulo de Lotes de Café (en desarrollo)</div>' } },
     { path: '/perfiles', name: 'Perfiles', component: { template: '<div>Módulo de Perfiles de Tuestes (en desarrollo)</div>' } },
-    { path: '/defectos', name: 'Defectos', component: { template: '<div>Módulo de Librería de Defectos (en desarrollo)</div>' } },
-    { path: '/correlacion', name: 'Correlacion', component: { template: '<div>Módulo de Correlación Tueste-Sabor (en desarrollo)</div>' } },
-    { path: '/calibracion', name: 'Calibracion', component: { template: '<div>Módulo de Calibración de Molienda (en desarrollo)</div>' } },
     {
       path: '/suppliers',
       name: 'Suppliers',

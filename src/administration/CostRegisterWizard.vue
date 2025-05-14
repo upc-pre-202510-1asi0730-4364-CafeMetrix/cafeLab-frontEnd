@@ -279,7 +279,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import HeaderBar from '../shared/components/HeaderBar.component.vue'
+import HeaderBar from '../shared/components/CuppingHeader.component.vue'
 import { saveCostRecord } from './fakeCostApi.js'
 
 const step = ref(1)
