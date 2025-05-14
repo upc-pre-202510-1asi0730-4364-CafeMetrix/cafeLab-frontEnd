@@ -103,7 +103,7 @@ const routes = [
     {
         path: '/complete-dashboard',
         name: 'CompleteDashboard',
-        component: CompletePlaceholder
+        component: CompletePlanPayment
     },
     {
         path: '/select-plan',
