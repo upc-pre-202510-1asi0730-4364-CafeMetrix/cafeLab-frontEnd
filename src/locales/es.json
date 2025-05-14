@@ -216,6 +216,168 @@
     "confirmRemove": "Confirmar eliminación",
     "thisCannotBeUndone": "Esta acción no se puede deshacer",
     "create": "Crear"
+  },
+  
+  "supply": {
+    "title": "Proveedores",
+    "home": "Inicio",
+    "registerButton": "Registrar Proveedor",
+    "search": "Buscar...",
+    "tableHeaders": {
+      "name": "Nombre",
+      "email": "Correo",
+      "phone": "Número Telf.",
+      "location": "Ubicación"
+    },
+    "actions": {
+      "view": "Ver detalles del proveedor",
+      "edit": "Editar información del proveedor"
+    },
+    "menu": {
+      "home": "Inicio",
+      "features": "Funcionalidades",
+      "contact": "Contactanos",
+      "profile": "Perfil"
+    },
+    "registerForm": {
+      "title": "Nuevo Proveedor",
+      "contactInfo": "Información de Contacto",
+      "productInfo": "Información de Producto",
+      "lotName": "Nombre de Lote",
+      "coffeeType": "Tipo de Café",
+      "contactNumber": "Número de Contacto",
+      "location": "Ubicación",
+      "coffeeTypes": "Tipos de Café",
+      "altitude": "Altitud",
+      "arabica": "Arábica",
+      "robusta": "Robusta",
+      "liberica": "Liberica",
+      "excelsa": "Excelsa",
+      "altitude1": "0-900 msnm",
+      "altitude2": "900-1200 msnm",
+      "altitude3": "1200-1500 msnm",
+      "altitude4": "1500-2100 msnm",
+      "register": "Registrar",
+      "back": "Volver"
+    },
+    "editForm": {
+      "title": "Editar Proveedor",
+      "update": "Registrar",
+      "editField": "Editar campo"
+    },
+    "details": {
+      "contactInfo": "Información de Contacto",
+      "productInfo": "Información de Producto",
+      "supplierName": "Nombre de Proveedor",
+      "email": "Email",
+      "contactNumber": "Número de Contacto",
+      "location": "Ubicación",
+      "coffeeTypes": "Tipos de Café",
+      "altitude": "Altitud",
+      "noDataAvailable": "No hay datos disponibles"
+    }
+  },
+  "coffee": {
+    "title": "Lotes de Café",
+    "home": "Inicio",
+    "registerButton": "Registrar Lote",
+    "search": "Buscar...",
+    "tableHeaders": {
+      "name": "Nombre",
+      "type": "Tipo",
+      "altitude": "Altitud",
+      "supplier": "Proveedor"
+    },
+    "actions": {
+      "view": "Ver detalles del lote",
+      "edit": "Editar información del lote"
+    },
+    "registerForm": {
+      "title": "Nuevo Lote de Café",
+      "information": "Información",
+      "name": "Nombre",
+      "type": "Tipo de Café",
+      "process": "Proceso",
+      "altitude": "Altitud",
+      "weight": "Peso",
+      "origin": "Origen",
+      "certifications": "Certificaciones",
+      "productionDate": "Fecha Producción",
+      "register": "Registrar",
+      "back": "Volver",
+      "addCertification": "Añadir certificación"
+    },
+    "editForm": {
+      "title": "Editar Lote de Café",
+      "update": "Registrar",
+      "editField": "Editar campo"
+    },
+    "details": {
+      "information": "Información del Lote",
+      "name": "Nombre",
+      "process": "Proceso",
+      "quantity": "Cantidad",
+      "origin": "Origen",
+      "productionDate": "Fecha Producción",
+      "type": "Tipo de Café",
+      "altitude": "Altitud",
+      "certifications": "Certificaciones",
+      "noDataAvailable": "No hay datos disponibles"
+    }
+  },
+  "roasting": {
+    "title": "Perfiles de tueste",
+    "home": "Inicio",
+    "registerButton": "Registrar Perfil",
+    "search": "Buscar...",
+    "compare": "Comparar",
+    "tableHeaders": {
+      "name": "Nombre",
+      "type": "Tipo",
+      "altitude": "Altitud",
+      "supplier": "Proveedor"
+    },
+    "actions": {
+      "favorite": "Marcar como favorito",
+      "unfavorite": "Quitar de favoritos",
+      "duplicate": "Duplicar perfil",
+      "edit": "Editar perfil",
+      "delete": "Eliminar perfil",
+      "view": "Ver detalles del perfil"
+    },
+    "registerForm": {
+      "title": "Nuevo Perfil de Tueste",
+      "information": "Información",
+      "name": "Nombre del Perfil",
+      "type": "Tipo de Tueste",
+      "altitude": "Altitud",
+      "supplier": "Proveedor",
+      "register": "Registrar",
+      "back": "Volver"
+    },
+    "editForm": {
+      "title": "Editar Perfil de Tueste",
+      "update": "Actualizar",
+      "editField": "Editar campo"
+    },
+    "details": {
+      "information": "Información del Perfil",
+      "name": "Nombre",
+      "type": "Tipo",
+      "altitude": "Altitud",
+      "supplier": "Proveedor",
+      "noDataAvailable": "No hay datos disponibles"
+    },
+    "filter": {
+      "title": "Filtro",
+      "type": "Tipo",
+      "altitude": "Altitud",
+      "supplier": "Proveedor",
+      "applyFilter": "Aplicar Filtro",
+      "clearFilter": "Limpiar",
+      "allTypes": "Todos los Tipos",
+      "allAltitudes": "Todas las Altitudes",
+      "allSuppliers": "Todos los Proveedores"
+    }
   }
 }
-

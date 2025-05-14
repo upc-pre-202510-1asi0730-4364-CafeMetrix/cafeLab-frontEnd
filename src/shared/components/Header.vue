@@ -1,13 +1,13 @@
 <template>
   <header class="cupping-header">
-    <div class="logo-btn" @click="navigateTo('/dashboard')">
-      <img src="/logo.png" alt="Café Lab" class="logo-img" />
+    <div class="logo-btn">
+      <img src="../../assets/logo.png" alt="Café Lab" class="logo-img" />
     </div>
     <nav class="nav-buttons">
-      <button @click="navigateTo('/dashboard')">Inicio</button>
-      <button @click="navigateTo('/recetas')">Recetas</button>
-      <button @click="navigateTo('/cata')">Catación</button>
-      <button @click="navigateTo('/perfil')">Perfil</button>
+      <button @click="navigateTo('/')">{{ t('supply.menu.home') }}</button>
+      <button @click="navigateTo('/features')">{{ t('supply.menu.features') }}</button>
+      <button @click="navigateTo('/contact')">{{ t('supply.menu.contact') }}</button>
+      <button @click="navigateTo('/profile')">{{ t('supply.menu.profile') }}</button>
       <button class="lang-btn" @click="toggleLanguage">{{ currentLangLabel }} ▸</button>
     </nav>
   </header>
@@ -18,7 +18,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
-const { locale } = useI18n()
+const { t, locale } = useI18n()
 const router = useRouter()
 
 const currentLangLabel = computed(() => (locale.value === 'es' ? 'ES' : 'EN'))
@@ -46,7 +46,7 @@ function navigateTo(path) {
   top: 0;
   left: 0;
   z-index: 100;
-  height: 72px;
+  height: 72px; /* Altura fija para el header */
 }
 
 .logo-btn {
@@ -60,7 +60,6 @@ function navigateTo(path) {
   box-shadow: 2px 2px 8px rgba(0,0,0,0.13);
   margin: 0;
   padding: 0;
-  cursor: pointer;
 }
 
 .logo-img {
@@ -89,4 +88,4 @@ function navigateTo(path) {
 .lang-btn {
   font-size: 13px;
 }
-</style>
+</style> 

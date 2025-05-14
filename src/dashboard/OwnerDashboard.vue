@@ -1,82 +1,45 @@
 <template>
   <div class="dashboard">
-    <CuppingHeader />
+    <Header />
     
     <div class="dashboard-container">
-      <h1 class="dashboard-title">{{ $t('dashboard.completePlan') }}</h1>
+      <h1 class="dashboard-title">{{ t('supply.menu.home') }} - Café Lab</h1>
       
       <div class="modules-grid">
-        <!-- Primera fila -->
-        <div class="module-card" @click="navigateTo('proveedores')">
+        <!-- Módulos activos -->
+        <div class="module-card" @click="navigateTo('suppliers')">
           <div class="icon-container">
             <img src="https://cdn-icons-png.flaticon.com/512/72/72109.png" alt="Proveedores">
           </div>
-          <h3>{{ $t('dashboard.modules.suppliers') }}</h3>
+          <h3>{{ t('supply.title') }}</h3>
         </div>
 
-        <div class="module-card" @click="navigateTo('lotes')">
+        <div class="module-card" @click="navigateTo('lots')">
           <div class="icon-container">
             <img src="https://cdn-icons-png.flaticon.com/512/809/809532.png" alt="Lotes de Café">
           </div>
-          <h3>{{ $t('dashboard.modules.coffeeLots') }}</h3>
+          <h3>{{ t('coffee.title') }}</h3>
         </div>
 
-        <div class="module-card" @click="navigateTo('perfiles')">
+        <div class="module-card" @click="navigateTo('roasting')">
           <div class="icon-container">
             <img src="https://static.thenounproject.com/png/3538949-200.png" alt="Perfiles de Tuestes">
           </div>
-          <h3>{{ $t('dashboard.modules.roastProfiles') }}</h3>
+          <h3>{{ t('roasting.title') }}</h3>
         </div>
 
-        <div class="module-card" @click="navigateTo('cata')">
-          <div class="icon-container">
-            <img src="https://marketplace.canva.com/XFyvs/MAE1wmXFyvs/1/tl/canva-coffee-cup-vector-icon-MAE1wmXFyvs.png" alt="Sesiones de Cata">
-          </div>
-          <h3>{{ $t('dashboard.modules.cuppingSessions') }}</h3>
-        </div>
-
-        <!-- Segunda fila -->
-        <div class="module-card" @click="navigateTo('defectos')">
-          <div class="icon-container">
-            <img src="https://static.thenounproject.com/png/2394393-200.png" alt="Librería defectos">
-          </div>
-          <h3>{{ $t('dashboard.modules.defectLibrary') }}</h3>
-        </div>
-
-        <div class="module-card" @click="navigateTo('correlacion')">
-          <div class="icon-container">
-            <img src="https://static.thenounproject.com/png/3512839-200.png" alt="Correlación Tueste-Sabor">
-          </div>
-          <h3>{{ $t('dashboard.modules.roastCorrelation') }}</h3>
-        </div>
-
-        <div class="module-card" @click="navigateTo('recetas')">
-          <div class="icon-container">
-            <img src="https://cdn2.iconfinder.com/data/icons/coffee-shop-154/60/coffee__recipe__menu__card__clipboard-512.png" alt="Recetas">
-          </div>
-          <h3>{{ $t('dashboard.modules.recipes') }}</h3>
-        </div>
-
-        <div class="module-card" @click="navigateTo('calibracion')">
-          <div class="icon-container">
-            <img src="https://cdn-icons-png.flaticon.com/512/4526/4526117.png" alt="Calibración de molienda">
-          </div>
-          <h3>{{ $t('dashboard.modules.grindCalibration') }}</h3>
-        </div>
-
-        <!-- Tercera fila -->
-        <div class="module-card" @click="navigateTo('inventario')">
+        <div class="module-card" @click="navigateTo('inventory')">
           <div class="icon-container">
             <img src="https://cdn-icons-png.freepik.com/512/2211/2211640.png" alt="Inventario">
           </div>
-          <h3>{{ $t('dashboard.modules.inventory') }}</h3>
+          <h3>{{ t('dashboard.modules.inventory') }}</h3>
         </div>
 
-        <div class="module-card" @click="navigateTo('costos')">
+        <div class="module-card" @click="navigateTo('costs')">
           <div class="icon-container">
             <img src="https://static.thenounproject.com/png/1814435-200.png" alt="Gestión de Costos">
           </div>
-          <h3>{{ $t('dashboard.modules.costs') }}</h3>
+          <h3>{{ t('dashboard.modules.costs') }}</h3>
         </div>
       </div>
     </div>
@@ -85,22 +48,19 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import CuppingHeader from '../../shared/components/CuppingHeader.component.vue';
+import { useI18n } from 'vue-i18n';
+import Header from '../shared/components/Header.vue';
 
 const router = useRouter();
+const { t } = useI18n();
 
 // Mapa de rutas para cada módulo
 const routeMap = {
-  proveedores: '/suppliers',
-  lotes: '/lots',
-  perfiles: '/roasting',
-  cata: '/cata',
-  defectos: '/defectos',
-  correlacion: '/correlacion',
-  recetas: '/recetas',
-  calibracion: '/calibracion',
-  inventario: '/inventario',
-  costos: '/costos'
+  suppliers: '/suppliers',
+  lots: '/lots',
+  roasting: '/roasting',
+  inventory: '/inventory',
+  costs: '/costs'
 };
 
 /**
@@ -119,26 +79,31 @@ const navigateTo = (module) => {
 <style scoped>
 .dashboard {
   min-height: 100vh;
-  background-color: #F8F7F2;
-  padding: 120px 40px 40px;
-  box-sizing: border-box;
+  background-color: #f5f1e8;
+  display: flex;
+  flex-direction: column;
+  padding-top: 72px; /* Espacio para el header fijo */
 }
 
 .dashboard-container {
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
+  padding: 2rem;
+  box-sizing: border-box;
+  flex-grow: 1;
 }
 
 .dashboard-title {
   font-size: 32px;
-  color: #2C3E50;
+  color: #4a634b;
   margin-bottom: 40px;
   text-align: center;
 }
 
 .modules-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   padding: 20px;
 }
@@ -161,7 +126,7 @@ const navigateTo = (module) => {
 .module-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  border-color: #c38757;
+  border-color: #4a634b;
 }
 
 .icon-container {
@@ -170,13 +135,13 @@ const navigateTo = (module) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #F8F7F2;
+  background: #f5f1e8;
   border-radius: 50%;
   transition: all 0.3s ease;
 }
 
 .module-card:hover .icon-container {
-  background: #c38757;
+  background: #4a634b;
 }
 
 .module-card:hover .icon-container img {
@@ -191,7 +156,7 @@ const navigateTo = (module) => {
 
 .module-card h3 {
   font-size: 16px;
-  color: #2C3E50;
+  color: #4a634b;
   margin: 0;
   font-weight: 600;
 }
@@ -209,8 +174,8 @@ const navigateTo = (module) => {
 }
 
 @media (max-width: 600px) {
-  .dashboard {
-    padding: 100px 20px 40px;
+  .dashboard-container {
+    padding: 1rem;
   }
 
   .modules-grid {

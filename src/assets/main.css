@@ -1,0 +1,26 @@
+/* Estilos globales */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+/* Ajustes para el header fijo */
+.suppliers-container,
+.coffee-lots-container,
+.roasting-container,
+.details-container,
+.compare-container,
+.form-container {
+  padding-top: 72px; /* Espacio para el header fijo */
+}
+
+/* Mantener los márgenes internos para el contenido */
+.content-container {
+  padding: 1rem 2rem 2rem;
+} 

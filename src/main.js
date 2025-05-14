@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import './style.css'
+import './assets/main.css'
 import App from './App.vue'
 import PrimeVue from 'primevue/config'
 import router from './router'
@@ -38,5 +39,6 @@ app
     .component('pv-calendar', Calendar)
     .component('pv-slider', Slider)
     .component('pv-progress-spinner', ProgressSpinner)
+    .component('pv-input-text', InputText)
     .use(i18n)
     .mount('#app') //

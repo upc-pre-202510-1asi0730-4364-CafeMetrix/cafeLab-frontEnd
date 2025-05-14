@@ -7,10 +7,18 @@ import CuppingSessionList from '../sensory-evaluation/components/CuppingSessionL
 import CuppingSessionDetail from '../sensory-evaluation/components/CuppingSessionDetail.vue'
 import InventoryView from '../administration/InventoryView.vue'
 import CostRegisterWizard from '../administration/CostRegisterWizard.vue'
+import OwnerDashboard from '../dashboard/OwnerDashboard.vue'
+import SuppliersList from '../supply/components/SuppliersList.vue'
+import SupplierDetails from '../supply/components/SupplierDetails.vue'
+import CoffeeLotsList from '../coffee/components/CoffeeLotsList.vue'
+import LotDetails from '../coffee/components/LotDetails.vue'
+import RoastingProfilesList from '../roasting/components/RoastingProfilesList.vue'
+import RoastingProfileDetails from '../roasting/components/RoastingProfileDetails.vue'
+import RoastingProfilesCompare from '../roasting/components/RoastingProfilesCompare.vue'
 
 const routes = [
-    { path: '/', redirect: '/planes' },
-    { path: '/planes', name: 'Planes', component: () => import('../auth/components/CompletePlanPayment.component.vue') },
+    { path: '/', redirect: '/CompletePayment' },
+    { path: '/CompletePayment', name: 'Planes', component: () => import('../auth/components/CompletePlanPayment.component.vue') },
     { path: '/pago-barista', name: 'PagoBarista', component: PaymentProcess },
     { path: '/pago-completo', name: 'PagoCompleto', component: CompletePlanPayment },
     { path: '/dashboard-barista', name: 'DashboardBarista', component: BaristaDashboard },
@@ -40,11 +48,49 @@ const routes = [
     { path: '/defectos', name: 'Defectos', component: { template: '<div>Módulo de Librería de Defectos (en desarrollo)</div>' } },
     { path: '/correlacion', name: 'Correlacion', component: { template: '<div>Módulo de Correlación Tueste-Sabor (en desarrollo)</div>' } },
     { path: '/calibracion', name: 'Calibracion', component: { template: '<div>Módulo de Calibración de Molienda (en desarrollo)</div>' } },
-]
-
-const router = createRouter({
+    {
+      path: '/suppliers',
+      name: 'Suppliers',
+      component: SuppliersList
+    },
+    {
+      path: '/suppliers/:id',
+      name: 'SupplierDetails',
+      component: SupplierDetails,
+      props: route => ({ supplierId: route.params.id })
+    },
+    // Coffee Lot routes
+    {
+      path: '/lots',
+      name: 'CoffeeLots',
+      component: CoffeeLotsList
+    },
+    {
+      path: '/lots/:id',
+      name: 'LotDetails',
+      component: LotDetails,
+      props: route => ({ lotId: route.params.id })
+    },
+    // Roasting Profile routes
+    {
+      path: '/roasting',
+      name: 'RoastingProfiles',
+      component: RoastingProfilesList
+    },
+    {
+      path: '/roasting/:id',
+      name: 'RoastingProfileDetails',
+      component: RoastingProfileDetails
+    },
+    {
+      path: '/roasting/compare/:ids',
+      name: 'RoastingProfilesCompare',
+      component: RoastingProfilesCompare
+    }
+  ]
+  const router = createRouter({
     history: createWebHistory(),
     routes
-})
+  })
 
-export default router
+export default router; 
