@@ -36,13 +36,19 @@ export class PortfolioService {
       // Obtener los datos del portafolio
       const portfolioData = await this.apiService.get(`${this.endpoint}/${id}`);
       
-      // Obtener las recetas asociadas a este portafolio
-      const recipes = await this.apiService.get(`${this.recipeEndpoint}?portfolioId=${id}`);
-      
-      // Crear el objeto Portfolio y añadir las recetas
+      // Crear el objeto Portfolio
       const portfolio = new Portfolio(portfolioData);
-      // Asegurarnos de que recipes siempre sea un array, incluso si está vacío
-      portfolio.recipes = recipes || [];
+      
+      try {
+        // Intentar obtener las recetas asociadas a este portafolio
+        const recipes = await this.apiService.get(`${this.recipeEndpoint}?portfolioId=${id}`);
+        // Asegurarnos de que recipes siempre sea un array, incluso si está vacío
+        portfolio.recipes = recipes || [];
+      } catch (recipeError) {
+        // Si falla al obtener las recetas, establecer un array vacío
+        console.warn(`No se pudieron cargar recetas para el portafolio ${id}:`, recipeError);
+        portfolio.recipes = [];
+      }
       
       return portfolio;
     } catch (error) {

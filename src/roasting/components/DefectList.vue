@@ -98,7 +98,7 @@
 
 <script>
 // Importa el componente HeaderBar (ahora CuppingHeader.vue)
-import HeaderBar from '../../shared/components/CuppingHeader.vue';
+import HeaderBar from '../../shared/components/CuppingHeader.component.vue';
 
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router'; // Agregamos useRouter para la redirección

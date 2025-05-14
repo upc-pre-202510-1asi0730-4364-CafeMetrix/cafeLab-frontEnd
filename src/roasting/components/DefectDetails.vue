@@ -29,7 +29,7 @@
 
 <script>
 // Importa HeaderBar (CuppingHeader.vue)
-import HeaderBar from '../../shared/components/CuppingHeader.vue';
+import HeaderBar from '../../shared/components/CuppingHeader.component.vue';
 import { getDefectById } from '../services/defectApi.js';
 
 export default {

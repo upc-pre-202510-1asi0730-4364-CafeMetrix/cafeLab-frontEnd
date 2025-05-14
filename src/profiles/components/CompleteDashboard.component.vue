@@ -95,10 +95,10 @@ const routeMap = {
   lotes: '/lots',
   perfiles: '/roasting',
   cata: '/cata',
-  defectos: '/defectos',
-  correlacion: '/correlacion',
+  defectos: '/defects',
+  correlacion: '/tasting-pattern',
   recetas: '/recetas',
-  calibracion: '/calibracion',
+  calibracion: '/calibration',
   inventario: '/inventario',
   costos: '/costos'
 };

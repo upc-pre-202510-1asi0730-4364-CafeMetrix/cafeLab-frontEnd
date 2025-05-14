@@ -16,7 +16,7 @@ export class Portfolio {
     this.name = data.name;
     this.createdAt = data.createdAt;
     this.recipeIds = data.recipeIds || [];
-    this.recipes = data.recipes || [];
+    this.recipes = Array.isArray(data.recipes) ? data.recipes : [];
   }
 
   /**

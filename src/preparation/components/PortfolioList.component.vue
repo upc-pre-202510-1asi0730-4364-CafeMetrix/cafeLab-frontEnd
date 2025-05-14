@@ -1,191 +1,195 @@
 <template>
-  <div class="portfolio-page">
-    <CuppingHeader />
-    <BreadcrumbNavigation :items="breadcrumbItems" />
-    
-    <div class="search-container">
-      <div class="search-box">
-        <i class="pi pi-search"></i>
-        <pv-inputtext 
-          type="text" 
-          v-model="searchQuery" 
-          placeholder="Buscar..." 
-          @input="filterItems"
-        />
-      </div>
-    </div>
-
-    <!-- Mensaje de carga o error -->
-    <div v-if="loading" class="loading-message">
-      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-      <p>Cargando datos...</p>
-    </div>
-    
-    <div v-if="errorMessage" class="error-message">
-      <i class="pi pi-exclamation-triangle" style="font-size: 1.5rem"></i>
-      <p>{{ errorMessage }}</p>
-      <button @click="loadData" class="retry-btn">Reintentar</button>
-    </div>
-    
-    <!-- Debug Info para desarrollo (oculto) -->
-    <div v-if="debug" class="debug-info">
-      <h3>Información de Depuración</h3>
-      <button @click="debug = false" class="close-debug">Cerrar</button>
-      <div>
-        <h4>API URL</h4>
-        <code>{{ apiBaseUrl }}</code>
-      </div>
-      <div>
-        <h4>Portafolios Cargados ({{ portfolios.length }})</h4>
-        <pre>{{ JSON.stringify(portfolios, null, 2) }}</pre>
-      </div>
-      <div>
-        <h4>Recetas Sin Portafolio ({{ beveragesWithoutPortfolio.length }})</h4>
-        <pre>{{ JSON.stringify(beveragesWithoutPortfolio, null, 2) }}</pre>
-      </div>
-    </div>
-
-    <!-- Sección de Portafolios -->
-    <div v-if="!loading && !errorMessage" class="section-header">
-      <h2>{{ $t('recipes.portfolios') }}</h2>
-      <button class="create-btn" @click="showNewPortfolioModal = true">
-        {{ $t('recipes.createPortfolio') }}
-      </button>
-    </div>
-
-    <div v-if="!loading && !errorMessage" class="portfolios-container">
-      <div v-if="filteredPortfolios.length === 0" class="empty-message">
-        <p>No hay portafolios disponibles</p>
-      </div>
-      <div 
-        v-for="portfolio in filteredPortfolios" 
-        :key="portfolio.id" 
-        class="portfolio-item"
-        @click="navigateToPortfolio(portfolio.id)"
-      >
-        <div class="portfolio-content">
-          <h3>{{ portfolio.name }}</h3>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sección de Bebidas sin portfolio -->
-    <div v-if="!loading && !errorMessage" class="section-header">
-      <h2>{{ $t('recipes.beveragesWithoutPortfolio') }}</h2>
-      <button class="create-btn" @click="navigateToNewRecipe()">
-        {{ $t('recipes.createBeverage') }}
-      </button>
-    </div>
-
-    <div v-if="!loading && !errorMessage" class="beverages-grid">
-      <div v-if="filteredBeverages.length === 0" class="empty-message">
-        <p>No hay recetas sin portafolio</p>
-      </div>
-      <div 
-        v-for="beverage in filteredBeverages" 
-        :key="beverage.id" 
-        class="beverage-card"
-      >
-        <img :src="beverage.image || '/placeholder-coffee.jpg'" :alt="beverage.name" />
-        <div class="beverage-content">
-          <h4>{{ beverage.name }}</h4>
-          <p>{{ beverage.preparationTime }}</p>
-        </div>
-        <div v-if="getPortfolioName(beverage.portfolioId)" class="recipe-portfolio-badge">
-          <i class="pi pi-folder"></i> {{ getPortfolioName(beverage.portfolioId) }}
-        </div>
-        <div class="beverage-actions">
-          <button @click.stop="navigateToRecipeDetail(beverage.id)" class="action-btn view-btn">
-            <i class="pi pi-eye"></i>
-          </button>
-          <button @click.stop="openAssignPortfolioModal(beverage)" class="action-btn assign-btn">
-            <i class="pi pi-link"></i>
-          </button>
-          <button @click.stop="confirmDeleteRecipe(beverage)" class="action-btn delete-btn">
-            <i class="pi pi-trash"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para crear nuevo portafolio -->
-    <div v-if="showNewPortfolioModal" class="modal-overlay">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>{{ isEditingPortfolio ? 'Editar Portafolio' : $t('recipes.newPortfolio') }}</h2>
-          <button class="close-btn" @click="closePortfolioModal">
-            <i class="pi pi-times"></i>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <label>{{ $t('recipes.portfolioName') }}</label>
-          <input 
+  <div class="page-wrapper">
+    <div class="portfolio-page">
+      <CuppingHeader />
+      <BreadcrumbNavigation :items="breadcrumbItems" />
+      
+      <div class="search-container">
+        <div class="search-box">
+          <i class="pi pi-search"></i>
+          <pv-inputtext 
             type="text" 
-            v-model="currentPortfolio.name"
-            :placeholder="$t('recipes.portfolioNamePlaceholder')"
-            class="white-background-input"
+            v-model="searchQuery" 
+            placeholder="Buscar..." 
+            @input="filterItems"
           />
         </div>
+      </div>
 
-        <div class="modal-footer">
-          <button class="create-modal-btn" @click="savePortfolio">
-            {{ isEditingPortfolio ? 'Actualizar' : $t('recipes.create') }}
-          </button>
+      <!-- Mensaje de carga o error -->
+      <div v-if="loading" class="loading-message">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        <p>Cargando datos...</p>
+      </div>
+      
+      <div v-if="errorMessage" class="error-message">
+        <i class="pi pi-exclamation-triangle" style="font-size: 1.5rem"></i>
+        <p>{{ errorMessage }}</p>
+        <button @click="loadData" class="retry-btn">Reintentar</button>
+      </div>
+      
+      <!-- Debug Info para desarrollo (oculto) -->
+      <div v-if="debug" class="debug-info">
+        <h3>Información de Depuración</h3>
+        <button @click="debug = false" class="close-debug">Cerrar</button>
+        <div>
+          <h4>API URL</h4>
+          <code>{{ apiBaseUrl }}</code>
+        </div>
+        <div>
+          <h4>Portafolios Cargados ({{ portfolios.length }})</h4>
+          <pre>{{ JSON.stringify(portfolios, null, 2) }}</pre>
+        </div>
+        <div>
+          <h4>Recetas Sin Portafolio ({{ beveragesWithoutPortfolio.length }})</h4>
+          <pre>{{ JSON.stringify(beveragesWithoutPortfolio, null, 2) }}</pre>
         </div>
       </div>
-    </div>
-    
-    <!-- Modal para asignar receta a portafolio -->
-    <div v-if="showAssignPortfolioModal" class="modal-overlay">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Asignar Receta a Portafolio</h2>
-          <button class="close-btn" @click="showAssignPortfolioModal = false">
-            <i class="pi pi-times"></i>
-          </button>
-        </div>
 
-        <div class="modal-body">
-          <label>Seleccionar Portafolio</label>
-          <select v-model="selectedPortfolioId" class="portfolio-select white-background-input">
-            <option value="">Selecciona un portafolio</option>
-            <option v-for="portfolio in portfolios" :key="portfolio.id" :value="portfolio.id">
-              {{ portfolio.name }}
-            </option>
-          </select>
-        </div>
+      <!-- Sección de Portafolios -->
+      <div v-if="!loading && !errorMessage" class="section-header">
+        <h2>{{ $t('recipes.portfolios') }}</h2>
+        <button class="create-btn" @click="showNewPortfolioModal = true">
+          {{ $t('recipes.createPortfolio') }}
+        </button>
+      </div>
 
-        <div class="modal-footer">
-          <button class="create-modal-btn" @click="assignToPortfolio" :disabled="!selectedPortfolioId">
-            Asignar
-          </button>
+      <div v-if="!loading && !errorMessage" class="portfolios-container">
+        <div v-if="filteredPortfolios.length === 0" class="empty-message">
+          <p>No hay portafolios disponibles</p>
+        </div>
+        <div 
+          v-for="portfolio in filteredPortfolios" 
+          :key="portfolio.id" 
+          class="portfolio-item"
+          @click="navigateToPortfolio(portfolio.id)"
+        >
+          <div class="portfolio-content">
+            <h3>{{ portfolio.name }}</h3>
+          </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Modal de confirmación para eliminar -->
-    <div v-if="showDeleteConfirmation" class="modal-overlay">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Confirmar Eliminación</h2>
-          <button class="close-btn" @click="showDeleteConfirmation = false">
-            <i class="pi pi-times"></i>
-          </button>
-        </div>
 
-        <div class="modal-body confirmation-content">
-          <i class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #d32f2f;"></i>
-          <p class="confirmation-message">{{ deleteConfirmationMessage }}</p>
-        </div>
+      <!-- Sección de Bebidas sin portfolio -->
+      <div v-if="!loading && !errorMessage" class="section-header">
+        <h2>{{ $t('recipes.beveragesWithoutPortfolio') || 'Bebidas sin portafolio asociado' }}</h2>
+        <button class="create-btn" @click="navigateToNewRecipe()">
+          {{ $t('recipes.createBeverage') || 'Crear Bebida' }}
+        </button>
+      </div>
 
-        <div class="modal-footer">
-          <button class="cancel-btn" @click="showDeleteConfirmation = false">
-            Cancelar
-          </button>
-          <button class="delete-confirm-btn" @click="deleteConfirmed">
-            Eliminar
-          </button>
+      <div v-if="!loading && !errorMessage" class="beverage-container">
+        <div v-if="filteredBeverages.length === 0" class="empty-message">
+          <p>No hay recetas sin portafolio</p>
+        </div>
+        <div v-else class="beverages-grid">
+          <div 
+            v-for="beverage in filteredBeverages" 
+            :key="beverage.id" 
+            class="beverage-card"
+          >
+            <img :src="beverage.image || '/placeholder-coffee.jpg'" :alt="beverage.name" />
+            <div class="beverage-content">
+              <h4>{{ beverage.name }}</h4>
+              <p>{{ beverage.preparationTime }}</p>
+            </div>
+            <div v-if="getPortfolioName(beverage.portfolioId)" class="recipe-portfolio-badge">
+              <i class="pi pi-folder"></i> {{ getPortfolioName(beverage.portfolioId) }}
+            </div>
+            <div class="beverage-actions">
+              <button @click.stop="navigateToRecipeDetail(beverage.id)" class="action-btn view-btn">
+                <i class="pi pi-eye"></i>
+              </button>
+              <button @click.stop="openAssignPortfolioModal(beverage)" class="action-btn assign-btn">
+                <i class="pi pi-link"></i>
+              </button>
+              <button @click.stop="confirmDeleteRecipe(beverage)" class="action-btn delete-btn">
+                <i class="pi pi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para crear nuevo portafolio -->
+      <div v-if="showNewPortfolioModal" class="modal-overlay">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h2>{{ isEditingPortfolio ? 'Editar Portafolio' : $t('recipes.newPortfolio') }}</h2>
+            <button class="close-btn" @click="closePortfolioModal">
+              <i class="pi pi-times"></i>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <label>{{ $t('recipes.portfolioName') }}</label>
+            <input 
+              type="text" 
+              v-model="currentPortfolio.name"
+              :placeholder="$t('recipes.portfolioNamePlaceholder')"
+              class="white-background-input"
+            />
+          </div>
+
+          <div class="modal-footer">
+            <button class="create-modal-btn" @click="savePortfolio">
+              {{ isEditingPortfolio ? 'Actualizar' : $t('recipes.create') }}
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal para asignar receta a portafolio -->
+      <div v-if="showAssignPortfolioModal" class="modal-overlay">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h2>Asignar Receta a Portafolio</h2>
+            <button class="close-btn" @click="showAssignPortfolioModal = false">
+              <i class="pi pi-times"></i>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <label>Seleccionar Portafolio</label>
+            <select v-model="selectedPortfolioId" class="portfolio-select white-background-input">
+              <option value="">Selecciona un portafolio</option>
+              <option v-for="portfolio in portfolios" :key="portfolio.id" :value="portfolio.id">
+                {{ portfolio.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="modal-footer">
+            <button class="create-modal-btn" @click="assignToPortfolio" :disabled="!selectedPortfolioId">
+              Asignar
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal de confirmación para eliminar -->
+      <div v-if="showDeleteConfirmation" class="modal-overlay">
+        <div class="modal-container">
+          <div class="modal-header">
+            <h2>Confirmar Eliminación</h2>
+            <button class="close-btn" @click="showDeleteConfirmation = false">
+              <i class="pi pi-times"></i>
+            </button>
+          </div>
+
+          <div class="modal-body confirmation-content">
+            <i class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #d32f2f;"></i>
+            <p class="confirmation-message">{{ deleteConfirmationMessage }}</p>
+          </div>
+
+          <div class="modal-footer">
+            <button class="cancel-btn" @click="showDeleteConfirmation = false">
+              Cancelar
+            </button>
+            <button class="delete-confirm-btn" @click="deleteConfirmed">
+              Eliminar
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -418,11 +422,30 @@ const getPortfolioName = (portfolioId) => {
 </script>
 
 <style scoped>
+/* Estilo para el wrapper de la página completa */
+.page-wrapper {
+  background-color: #F8F7F2;
+  min-height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+/* Estilo para el fondo de la página completa */
 .portfolio-page {
   padding: 20px;
   padding-top: 100px; /* Espacio para el header */
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* Agregar un fondo claro al cuerpo de la página para evitar el fondo negro */
+:deep(body) {
+  background-color: #F8F7F2;
 }
 
 .search-container {
@@ -844,5 +867,13 @@ const getPortfolioName = (portfolioId) => {
   border-radius: 4px;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
+}
+
+.beverage-container {
+  margin-bottom: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 </style> 

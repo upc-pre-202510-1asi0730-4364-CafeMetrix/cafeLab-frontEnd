@@ -34,9 +34,9 @@
       </div>
       
       <div v-if="!portfolio?.recipes || portfolio?.recipes?.length === 0" class="empty-state">
-        <p>{{ $t('recipes.noRecipesInPortfolio') }}</p>
-        <button @click="showAddRecipeModal = true">
-          {{ $t('recipes.addFirstRecipe') }}
+        <p>{{ $t('recipes.noRecipesInPortfolio') || 'No hay recetas en este portafolio' }}</p>
+        <button @click="showAddRecipeModal = true" class="primary-btn">
+          {{ $t('recipes.addFirstRecipe') || 'Añadir la primera receta' }}
         </button>
       </div>
       

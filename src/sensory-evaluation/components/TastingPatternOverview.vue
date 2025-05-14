@@ -79,7 +79,7 @@ import { getTastingData } from '../services/fakeTastingApi'; // Importa la API f
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
 // Importa el Header
-import HeaderBar from '../../shared/components/CuppingHeader.vue';
+import HeaderBar from '../../shared/components/CuppingHeader.component.vue';
 
 // Registra los componentes de chart.js
 ChartJS.register(

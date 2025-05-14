@@ -62,7 +62,7 @@
 import { ref, onMounted } from 'vue';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { getTastingData } from '../services/fakeTastingApi'; // Importa la API falsa
-import HeaderBar from '../../shared/components/CuppingHeader.vue'; // Importa el HeaderBar
+import HeaderBar from '../../shared/components/CuppingHeader.component.vue'; // Importa el HeaderBar
 
 // Registra los componentes de chart.js
 ChartJS.register(
