@@ -1,8 +1,5 @@
-import axios from 'axios';
+import httpInstance from '../../shared/services/http.instance';
 import { User } from '../model/user.entity';
-
-// Configuración de la API
-const API_URL = 'http://localhost:3000';
 
 export default {
     /**
@@ -15,7 +12,7 @@ export default {
             // Marcar como primer inicio de sesión
             userData.isFirstLogin = true;
 
-            const response = await axios.post(`${API_URL}/users`, userData);
+            const response = await httpInstance.post('/users', userData);
             return response.data;
         } catch (error) {
             console.error('Error al registrar usuario:', error);
@@ -29,7 +26,7 @@ export default {
      */
     async getUsers() {
         try {
-            const response = await axios.get(`${API_URL}/users`);
+            const response = await httpInstance.get('/users');
             console.log('Usuarios obtenidos:', response.data);
             return response.data;
         } catch (error) {
@@ -46,7 +43,7 @@ export default {
     async findUserByEmail(email) {
         try {
             console.log('Buscando usuario por email:', email);
-            const response = await axios.get(`${API_URL}/users?email=${email}`);
+            const response = await httpInstance.get(`/users?email=${email}`);
             console.log('Resultado de búsqueda:', response.data);
             return response.data.length > 0 ? response.data[0] : null;
         } catch (error) {
@@ -64,7 +61,7 @@ export default {
     async login(email, password) {
         try {
             console.log('Intentando login con:', { email, password });
-            const response = await axios.get(`${API_URL}/users?email=${email}`);
+            const response = await httpInstance.get(`/users?email=${email}`);
 
             if (response.data.length > 0) {
                 const user = response.data[0];

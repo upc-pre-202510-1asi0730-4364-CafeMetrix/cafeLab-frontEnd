@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import httpInstance from '../../shared/services/http.instance';
 
 export default {
   name: 'SelectPlan',
@@ -60,9 +60,9 @@ export default {
           // Guardar en localStorage
           localStorage.setItem('currentUser', JSON.stringify(user));
 
-          // También guardar en el servidor
+          // También guardar en el servidor usando la instancia http
           try {
-            await axios.put(`http://localhost:3000/users/${user.id}`, user);
+            await httpInstance.put(`/users/${user.id}`, user);
             console.log('Plan guardado exitosamente:', planType);
           } catch (error) {
             console.error('Error al guardar plan en servidor:', error);

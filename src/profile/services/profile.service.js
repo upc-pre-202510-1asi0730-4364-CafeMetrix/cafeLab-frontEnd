@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:3000';
+import httpInstance from '../../shared/services/http.instance';
 
 export default {
     /**
@@ -55,8 +53,8 @@ export default {
 
             console.log('Usuario actualizado a enviar:', updatedUser);
 
-            // Enviamos la solicitud al servidor
-            const response = await axios.put(`${API_URL}/users/${userId}`, updatedUser);
+            // Enviamos la solicitud al servidor utilizando httpInstance
+            const response = await httpInstance.put(`/users/${userId}`, updatedUser);
             console.log('Respuesta del servidor:', response.data);
 
             // Actualizamos el usuario en localStorage
@@ -147,7 +145,7 @@ export default {
 
             const user = JSON.parse(userStr);
             const userId = user.id;
-            const response = await axios.get(`${API_URL}/users/${userId}`);
+            const response = await httpInstance.get(`/users/${userId}`);
 
             // Asegurarnos de que los campos críticos estén presentes en la respuesta
             const profileData = response.data;
@@ -183,7 +181,7 @@ export default {
             const userId = user.id;
             const updatedUser = { ...user, paymentMethod };
 
-            const response = await axios.put(`${API_URL}/users/${userId}`, updatedUser);
+            const response = await httpInstance.put(`/users/${userId}`, updatedUser);
 
             // Actualizamos el usuario en localStorage
             localStorage.setItem('currentUser', JSON.stringify(updatedUser));
