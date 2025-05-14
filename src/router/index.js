@@ -15,7 +15,11 @@ import LotDetails from '../coffee/components/LotDetails.vue'
 import RoastingProfilesList from '../roasting/components/RoastingProfilesList.vue'
 import RoastingProfileDetails from '../roasting/components/RoastingProfileDetails.vue'
 import RoastingProfilesCompare from '../roasting/components/RoastingProfilesCompare.vue'
-
+import DefectList from '../roasting/components/DefectList.vue';
+import DefectDetails from '../roasting/components/DefectDetails.vue';
+import TastingPattern from '../sensory-evaluation/components/TastingPattern.vue';
+import TastingPatternOverview from '../sensory-evaluation/components/TastingPatternOverview.vue'
+import Calibration from '../roasting/components/Calibration.vue';
 const routes = [
     { path: '/', redirect: '/CompletePayment' },
     { path: '/CompletePayment', name: 'Planes', component: () => import('../auth/components/CompletePlanPayment.component.vue') },
@@ -24,16 +28,14 @@ const routes = [
     { path: '/dashboard-barista', name: 'DashboardBarista', component: BaristaDashboard },
     { path: '/dashboard', name: 'Dashboard', component: CompleteDashboard },
     { path: '/cata', name: 'CuppingSessions', component: CuppingSessionList },
-    {
-        path: '/cata/:id',
-        name: 'CuppingSessionDetail',
-        component: CuppingSessionDetail
-    },
-    {
-        path: '/comparar-catas/:ids',
-        name: 'cupping-comparison',
-        component: () => import('../sensory-evaluation/components/CuppingComparison.vue')
-    },
+    { path: '/defects', name: 'defectList', component: DefectList, },
+    { path: '/defect/:defectId', name: 'defectDetails',  component: DefectDetails, props: true, },
+    { path: '/tasting-pattern', name: 'TastingPattern', component: () => import('../sensory-evaluation/components/TastingPattern.vue')},
+    { path: '/tasting-pattern-overview', name: 'TastingPatternOverview', component: () => import('../sensory-evaluation/components/TastingPatternOverview.vue')},
+    { path: '/tasting-pattern-overview', name: 'TastingPatternOverview', component: TastingPatternOverview, },
+    { path: '/calibration', name: 'Calibration', component: Calibration,},
+    { path: '/cata/:id',  name: 'CuppingSessionDetail',  component: CuppingSessionDetail },
+    { path: '/comparar-catas/:ids',  name: 'cupping-comparison',  component: () => import('../sensory-evaluation/components/CuppingComparison.vue') },
     { path: '/inventario', name: 'Inventario', component: InventoryView },
     { path: '/costos', name: 'Costos', component: CostRegisterWizard },
     { path: '/recetas', name: 'Recetas', component: () => import('../preparation/components/PortfolioList.component.vue') },
