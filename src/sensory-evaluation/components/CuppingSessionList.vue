@@ -52,7 +52,7 @@ import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import CuppingHeader from '../../shared/components/CuppingHeader.vue'
+import CuppingHeader from '../../shared/components/CuppingHeader.component.vue'
 import CuppingFilterModal from '../../shared/components/CuppingFilterModal.vue'
 import NewCuppingButton from '../components/NewCuppingButton.vue'
 

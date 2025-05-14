@@ -34,7 +34,7 @@ import { ref, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import Slider from 'primevue/slider'
 import Button from 'primevue/button'
-import CuppingHeader from '../../shared/components/CuppingHeader.vue'
+import CuppingHeader from '../../shared/components/CuppingHeader.component.vue'
 
 const route = useRoute()
 const sessionId = route.params.id

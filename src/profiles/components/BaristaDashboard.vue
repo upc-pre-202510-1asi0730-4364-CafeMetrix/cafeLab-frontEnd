@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import HeaderBar from '../../shared/components/HeaderBar.vue'
+import HeaderBar from '../../shared/components/HeaderBar.component.vue'
 import { useRouter } from 'vue-router'
 import { onMounted, onUnmounted } from 'vue'
 

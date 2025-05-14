@@ -1,13 +1,13 @@
 <template>
   <header class="cupping-header">
-    <div class="logo-btn">
+    <div class="logo-btn" @click="navigateTo('/dashboard')">
       <img src="/logo.png" alt="Café Lab" class="logo-img" />
     </div>
     <nav class="nav-buttons">
-      <button>Inicio</button>
-      <button>Funcionalidades</button>
-      <button>Contáctanos</button>
-      <button>Perfil</button>
+      <button @click="navigateTo('/dashboard')">Inicio</button>
+      <button @click="navigateTo('/recetas')">Recetas</button>
+      <button @click="navigateTo('/cata')">Catación</button>
+      <button @click="navigateTo('/perfil')">Perfil</button>
       <button class="lang-btn" @click="toggleLanguage">{{ currentLangLabel }} ▸</button>
     </nav>
   </header>
@@ -16,14 +16,20 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 const { locale } = useI18n()
+const router = useRouter()
 
 const currentLangLabel = computed(() => (locale.value === 'es' ? 'ES' : 'EN'))
 
 function toggleLanguage() {
   locale.value = locale.value === 'es' ? 'en' : 'es'
   localStorage.setItem('locale', locale.value)
+}
+
+function navigateTo(path) {
+  router.push(path)
 }
 </script>
 
@@ -35,11 +41,12 @@ function toggleLanguage() {
   justify-content: space-between;
   align-items: center;
   font-family: 'Inter', sans-serif;
-  width: 100vw;
+  width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 100;
+  height: 72px; /* Altura fija para el header */
 }
 
 .logo-btn {
@@ -53,6 +60,7 @@ function toggleLanguage() {
   box-shadow: 2px 2px 8px rgba(0,0,0,0.13);
   margin: 0;
   padding: 0;
+  cursor: pointer;
 }
 
 .logo-img {

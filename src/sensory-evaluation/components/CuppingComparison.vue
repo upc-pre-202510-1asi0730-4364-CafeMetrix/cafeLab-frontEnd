@@ -27,7 +27,7 @@
 import { onMounted, ref, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import CuppingHeader from '../../shared/components/CuppingHeader.vue'
+import CuppingHeader from '../../shared/components/CuppingHeader.component.vue'
 
 const route = useRoute()
 const { locale } = useI18n()

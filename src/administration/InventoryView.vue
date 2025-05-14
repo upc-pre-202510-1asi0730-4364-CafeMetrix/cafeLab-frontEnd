@@ -51,7 +51,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import CuppingHeader from '../shared/components/CuppingHeader.vue'
+import CuppingHeader from '../shared/components/CuppingHeader.component.vue'
 import RegisterConsumptionModal from './RegisterConsumptionModal.vue'
 import { getMovimientos, registrarConsumo } from './fakeInventoryApi.js'
 

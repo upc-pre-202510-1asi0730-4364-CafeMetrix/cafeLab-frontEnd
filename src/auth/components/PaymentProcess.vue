@@ -53,9 +53,9 @@
 </template>
 
 <script setup>
-import CuppingHeader from '../../shared/components/CuppingHeader.vue'
+import CuppingHeader from '../../shared/components/CuppingHeader.component.vue'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const router = useRouter()
 
@@ -67,6 +67,16 @@ const expiry = ref('')
 const cvc = ref('')
 const holder = ref('')
 const country = ref('')
+
+// Añadir clase de fondo cuando se monta el componente
+onMounted(() => {
+  document.body.classList.add('payment-bg')
+})
+
+// Eliminar clase de fondo cuando se desmonta el componente
+onUnmounted(() => {
+  document.body.classList.remove('payment-bg')
+})
 
 const continuar = () => {
   if (
