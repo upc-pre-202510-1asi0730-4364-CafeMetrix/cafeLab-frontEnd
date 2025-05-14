@@ -7,14 +7,23 @@ import SignupOwner from '../auth/components/signup-owner.component.vue';
 
 // Importamos los componentes de dashboard
 import BaristaHome from '../dashboard/components/barista-placeholder.component.vue';
-import OwnerHome from '../dashboard/components/owner-placeholder.component.vue';
 import CompletePlaceholder from '../dashboard/components/complete-placeholder.component.vue';
+import OwnerDashboard from '../dashboard/OwnerDashboard.vue';
 
 // Importamos el componente de edición de perfil
 import EditProfile from '../profile/components/edit-profile.component.vue';
 
 // Para selección de suscripción
 import SelectPlan from '../subscription/components/select-plan.component.vue';
+
+// Importamos componentes específicos de la gestión
+import SuppliersList from '../supply/components/SuppliersList.vue';
+import SupplierDetails from '../supply/components/SupplierDetails.vue';
+import CoffeeLotsList from '../coffee/components/CoffeeLotsList.vue';
+import LotDetails from '../coffee/components/LotDetails.vue';
+import RoastingProfilesList from '../roasting/components/RoastingProfilesList.vue';
+import RoastingProfileDetails from '../roasting/components/RoastingProfileDetails.vue';
+import RoastingProfilesCompare from '../roasting/components/RoastingProfilesCompare.vue';
 
 // Componente para páginas no encontradas
 const NotFound = { template: '<div>Página no encontrada</div>' };
@@ -52,7 +61,7 @@ const routes = [
     {
         path: '/owner-home',
         name: 'OwnerHome',
-        component: OwnerHome
+        component: OwnerDashboard
     },
     {
         path: '/complete-dashboard',
@@ -63,6 +72,54 @@ const routes = [
         path: '/select-plan',
         name: 'SelectPlan',
         component: SelectPlan
+    },
+    // Rutas específicas de gestión de cafetería
+    // Supplier routes
+    {
+        path: '/suppliers',
+        name: 'Suppliers',
+        component: SuppliersList,
+        meta: { requiresAuth: true, role: 'dueno_cafeteria' }
+    },
+    {
+        path: '/suppliers/:id',
+        name: 'SupplierDetails',
+        component: SupplierDetails,
+        props: route => ({ supplierId: route.params.id }),
+        meta: { requiresAuth: true, role: 'dueno_cafeteria' }
+    },
+    // Coffee Lot routes
+    {
+        path: '/lots',
+        name: 'CoffeeLots',
+        component: CoffeeLotsList,
+        meta: { requiresAuth: true, role: 'dueno_cafeteria' }
+    },
+    {
+        path: '/lots/:id',
+        name: 'LotDetails',
+        component: LotDetails,
+        props: route => ({ lotId: route.params.id }),
+        meta: { requiresAuth: true, role: 'dueno_cafeteria' }
+    },
+    // Roasting Profile routes
+    {
+        path: '/roasting',
+        name: 'RoastingProfiles',
+        component: RoastingProfilesList,
+        meta: { requiresAuth: true, role: 'dueno_cafeteria' }
+    },
+    {
+        path: '/roasting/:id',
+        name: 'RoastingProfileDetails',
+        component: RoastingProfileDetails,
+        meta: { requiresAuth: true, role: 'dueno_cafeteria' }
+    },
+    {
+        path: '/roasting/compare/:ids',
+        name: 'RoastingProfilesCompare',
+        component: RoastingProfilesCompare,
+        meta: { requiresAuth: true, role: 'dueno_cafeteria' }
     },
     {
         path: '/:pathMatch(.*)*',
@@ -76,10 +133,10 @@ const router = createRouter({
     routes
 });
 
-
 router.beforeEach((to, from, next) => {
     const publicPages = ['/login', '/signup-barista', '/signup-owner'];
     const dashboardPages = ['/barista-home', '/owner-home', '/complete-dashboard'];
+    const ownerSpecificPages = ['/suppliers', '/lots', '/roasting']; // Páginas específicas de dueño
     const authRequired = !publicPages.includes(to.path);
     const loggedIn = localStorage.getItem('currentUser');
 
@@ -93,6 +150,17 @@ router.beforeEach((to, from, next) => {
         console.log('Usuario actual:', user);
         console.log('¿Tiene plan?:', user.hasPlan);
         console.log('Plan seleccionado:', user.plan);
+
+        // Verificar si la ruta tiene requisitos de rol específicos
+        if (to.meta && to.meta.role && to.meta.role !== user.role) {
+            console.log(`Usuario con rol ${user.role} intentando acceder a ruta para ${to.meta.role}`);
+            // Redirigir según su rol
+            if (user.role === 'barista') {
+                return next('/barista-home');
+            } else if (user.role === 'dueno_cafeteria') {
+                return next('/owner-home');
+            }
+        }
 
         // Si el usuario tiene plan completo, redirigir al dashboard completo
         if (user.hasPlan === true && user.plan === 'complete') {
@@ -134,7 +202,7 @@ router.beforeEach((to, from, next) => {
         }
 
         // Si intenta acceder a dashboards pero no tiene plan seleccionado
-        if (dashboardPages.includes(to.path) && user.hasPlan !== true) {
+        if ((dashboardPages.includes(to.path) || ownerSpecificPages.some(path => to.path.startsWith(path))) && user.hasPlan !== true) {
             console.log('Usuario sin plan intenta acceder al dashboard');
             return next('/select-plan');
         }

@@ -51,5 +51,173 @@
   "common": {
     "back": "Back",
     "required_field": "This field is required"
+  },
+  "supply": {
+    "title": "Suppliers",
+    "home": "Home",
+    "registerButton": "Register Supplier",
+    "search": "Search...",
+    "tableHeaders": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "location": "Location"
+    },
+    "actions": {
+      "view": "View supplier details",
+      "edit": "Edit supplier information"
+    },
+    "menu": {
+      "home": "Home",
+      "features": "Features",
+      "contact": "Contact Us",
+      "profile": "Profile"
+    },
+    "registerForm": {
+      "title": "New Supplier",
+      "contactInfo": "Contact Information",
+      "productInfo": "Product Information",
+      "lotName": "Lot Name",
+      "coffeeType": "Coffee Type",
+      "contactNumber": "Contact Number",
+      "location": "Location",
+      "coffeeTypes": "Coffee Types",
+      "altitude": "Altitude",
+      "arabica": "Arabica",
+      "robusta": "Robusta",
+      "liberica": "Liberica",
+      "excelsa": "Excelsa",
+      "altitude1": "0-900 masl",
+      "altitude2": "900-1200 masl",
+      "altitude3": "1200-1500 masl",
+      "altitude4": "1500-2100 masl",
+      "register": "Register",
+      "back": "Back"
+    },
+    "editForm": {
+      "title": "Edit Supplier",
+      "update": "Register",
+      "editField": "Edit field"
+    },
+    "details": {
+      "contactInfo": "Contact Information",
+      "productInfo": "Product Information",
+      "supplierName": "Supplier Name",
+      "email": "Email",
+      "contactNumber": "Contact Number",
+      "location": "Location",
+      "coffeeTypes": "Coffee Types",
+      "altitude": "Altitude",
+      "noDataAvailable": "No data available"
+    }
+  },
+  "coffee": {
+    "title": "Coffee Lots",
+    "home": "Home",
+    "registerButton": "Register Lot",
+    "search": "Search...",
+    "tableHeaders": {
+      "name": "Name",
+      "type": "Type",
+      "altitude": "Altitude",
+      "supplier": "Supplier"
+    },
+    "actions": {
+      "view": "View lot details",
+      "edit": "Edit lot information"
+    },
+    "registerForm": {
+      "title": "New Coffee Lot",
+      "information": "Information",
+      "name": "Name",
+      "type": "Coffee Type",
+      "process": "Process",
+      "altitude": "Altitude",
+      "weight": "Weight",
+      "origin": "Origin",
+      "certifications": "Certifications",
+      "productionDate": "Production Date",
+      "register": "Register",
+      "back": "Back",
+      "addCertification": "Add certification"
+    },
+    "editForm": {
+      "title": "Edit Coffee Lot",
+      "update": "Register",
+      "editField": "Edit field"
+    },
+    "details": {
+      "information": "Lot Information",
+      "name": "Name",
+      "process": "Process",
+      "quantity": "Quantity",
+      "origin": "Origin",
+      "productionDate": "Production Date",
+      "type": "Coffee Type",
+      "altitude": "Altitude",
+      "certifications": "Certifications",
+      "noDataAvailable": "No data available"
+    }
+  },
+  "roasting": {
+    "title": "Roast Profiles",
+    "home": "Home",
+    "registerButton": "Register Profile",
+    "search": "Search...",
+    "compare": "Compare",
+    "tableHeaders": {
+      "name": "Name",
+      "type": "Type",
+      "altitude": "Altitude",
+      "supplier": "Supplier"
+    },
+    "actions": {
+      "favorite": "Mark as favorite",
+      "unfavorite": "Remove from favorites",
+      "duplicate": "Duplicate profile",
+      "edit": "Edit profile",
+      "delete": "Delete profile",
+      "view": "View profile details"
+    },
+    "registerForm": {
+      "title": "New Roast Profile",
+      "information": "Information",
+      "name": "Profile Name",
+      "type": "Roast Type",
+      "altitude": "Altitude",
+      "supplier": "Supplier",
+      "register": "Register",
+      "back": "Back"
+    },
+    "editForm": {
+      "title": "Edit Roast Profile",
+      "update": "Update",
+      "editField": "Edit field"
+    },
+    "details": {
+      "information": "Profile Information",
+      "name": "Name",
+      "type": "Type",
+      "altitude": "Altitude",
+      "supplier": "Supplier",
+      "noDataAvailable": "No data available"
+    },
+    "filter": {
+      "title": "Filter",
+      "type": "Type",
+      "altitude": "Altitude",
+      "supplier": "Supplier",
+      "applyFilter": "Apply Filter",
+      "clearFilter": "Clear",
+      "allTypes": "All Types",
+      "allAltitudes": "All Altitudes",
+      "allSuppliers": "All Suppliers"
+    }
+  },
+  "dashboard": {
+    "modules": {
+      "inventory": "Inventory",
+      "costs": "Cost Management"
+    }
   }
 }
