@@ -28,6 +28,7 @@ import { onMounted, ref, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import CuppingHeader from '../../shared/components/CuppingHeader.vue'
+import api from '../../shared/config/api'
 
 const route = useRoute()
 const { locale } = useI18n()
@@ -45,10 +46,11 @@ async function updateCharts() {
 }
 
 onMounted(async () => {
-  const stored = localStorage.getItem('cuppingSessions')
-  const allSessions = stored ? JSON.parse(stored) : []
   const ids = route.params.ids ? route.params.ids.split(',').map(Number) : []
-  comparedSessions.value = allSessions.filter(s => ids.includes(s.id))
+  const sessions = await Promise.all(
+    ids.map(id => api.get(`/cuppingSessions/${id}`).then(res => res.data))
+  )
+  comparedSessions.value = sessions
   canvasRefs.value = []
   await updateCharts()
 })
@@ -72,13 +74,13 @@ function drawAllCharts() {
       console.log('No context for canvas', index)
       return
     }
-    const ratings = session.ratings || {
-      fragancia: 5,
-      sabor: 5,
-      acidez: 5,
-      cuerpo: 5,
-      balance: 5,
-      postgusto: 5
+    const ratings = {
+      fragancia: session.ratings?.fragancia ?? 5,
+      sabor: session.ratings?.sabor ?? 5,
+      acidez: session.ratings?.acidez ?? 5,
+      cuerpo: session.ratings?.cuerpo ?? 5,
+      balance: session.ratings?.balance ?? 5,
+      postgusto: session.ratings?.postgusto ?? 5
     }
     console.log('Drawing for session', session.name, 'ratings:', ratings)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -125,12 +127,12 @@ function drawAllCharts() {
 
     // datos
     ctx.beginPath()
-    for (let i = 0; i <= points; i++) {
-      const value = ratings[attributes[i % points]] || 0
-      const angle = i * angleStep
-      const r = (value / 10) * maxRadius
-      const x = centerX + r * Math.cos(angle)
-      const y = centerY + r * Math.sin(angle)
+    for (let i = 0; i <= attributes.length; i++) {
+      const value = ratings[attributes[i % attributes.length]] || 0
+      const angle = i * ((2 * Math.PI) / attributes.length)
+      const r = (value / 10) * 100
+      const x = canvas.width / 2 + r * Math.cos(angle)
+      const y = canvas.height / 2 + r * Math.sin(angle)
       if (i === 0) ctx.moveTo(x, y)
       else ctx.lineTo(x, y)
     }

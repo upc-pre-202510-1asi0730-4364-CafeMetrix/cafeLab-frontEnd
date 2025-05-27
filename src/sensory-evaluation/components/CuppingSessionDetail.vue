@@ -17,9 +17,8 @@
       </div>
 
       <div class="info-panel">
-        <p><strong>{{ $t('cupping.linkedLot') }}:</strong><br /> {{ session?.lot || 'N/A' }}</p>
-        <p><strong>{{ $t('cupping.linkedProfile') }}:</strong><br /> {{ session?.profile || 'N/A' }}</p>
-
+        <p><strong>{{ $t('cupping.linkedLot') }}:</strong><br />{{ session?.lot || 'N/A' }}</p>
+        <p><strong>{{ $t('cupping.linkedProfile') }}:</strong><br />{{ session?.profile || 'N/A' }}</p>
         <div class="actions">
           <Button :label="$t('cupping.defectLibrary')" class="action-btn" />
           <Button :label="$t('cupping.saveSession')" class="action-btn" @click="saveSession" />
@@ -35,6 +34,7 @@ import { useRoute } from 'vue-router'
 import Slider from 'primevue/slider'
 import Button from 'primevue/button'
 import CuppingHeader from '../../shared/components/CuppingHeader.vue'
+import api from '../../shared/config/api'
 
 const route = useRoute()
 const sessionId = route.params.id
@@ -52,14 +52,21 @@ const ratings = ref({
 
 const radarCanvas = ref(null)
 
-onMounted(() => {
-  const allSessions = JSON.parse(localStorage.getItem('cuppingSessions') || '[]')
-  const found = allSessions.find(s => s.id === Number(sessionId))
-  if (found) {
-    session.value = found
-    if (found.ratings) {
-      ratings.value = { ...found.ratings }
-    }
+const defaultRatings = {
+  fragancia: 5,
+  sabor: 5,
+  acidez: 5,
+  cuerpo: 5,
+  balance: 5,
+  postgusto: 5
+};
+
+onMounted(async () => {
+  const response = await api.get(`/cuppingSessions/${sessionId}`);
+  session.value = response.data;
+  console.log('Detalle de cata cargado:', session.value);
+  if (response.data.ratings) {
+    ratings.value = { ...response.data.ratings };
   }
 })
 
@@ -130,24 +137,17 @@ const drawRadarChart = () => {
   })
 }
 
-const saveSession = () => {
-  const stored = localStorage.getItem('cuppingSessions')
-  let sessions = stored ? JSON.parse(stored) : []
-
-  const index = sessions.findIndex(s => s.id === Number(sessionId))
-  if (index !== -1) {
-    sessions[index].ratings = { ...ratings.value }
-    localStorage.setItem('cuppingSessions', JSON.stringify(sessions))
-    alert('Sesión de cata guardada correctamente.')
-  } else {
-    const newSession = {
-      id: Number(sessionId),
+const saveSession = async () => {
+  try {
+    const updatedSession = {
       ...session.value,
-      ratings: { ...ratings.value }
-    }
-    sessions.push(newSession)
-    localStorage.setItem('cuppingSessions', JSON.stringify(sessions))
-    alert('Sesión de cata guardada correctamente.')
+      ratings: { ...defaultRatings, ...ratings.value }
+    };
+    await api.put(`/cuppingSessions/${sessionId}`, updatedSession);
+    alert('Sesión de cata guardada correctamente.');
+  } catch (error) {
+    console.error('Error saving session:', error);
+    alert('Error al guardar la sesión de cata');
   }
 }
 

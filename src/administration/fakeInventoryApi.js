@@ -1,3 +1,5 @@
+import api from '../shared/config/api';
+
 // Fake API para movimientos de inventario con persistencia en localStorage
 const STORAGE_KEY = 'movimientosInventario';
 
@@ -13,8 +15,8 @@ function saveMovimientos(movs) {
 let movimientos = loadMovimientos();
 
 export async function getMovimientos() {
-  movimientos = loadMovimientos();
-  return Promise.resolve([...movimientos]);
+  const response = await api.get('/movimientosInventario');
+  return response.data;
 }
 
 export async function registrarConsumo({ fecha, lote, producto, cantidad, tipoCafe }) {
@@ -26,7 +28,6 @@ export async function registrarConsumo({ fecha, lote, producto, cantidad, tipoCa
     cantidad,
     tipoCafe
   };
-  movimientos.unshift(nuevoMovimiento);
-  saveMovimientos(movimientos);
-  return Promise.resolve(nuevoMovimiento);
+  const response = await api.post('/movimientosInventario', nuevoMovimiento);
+  return response.data;
 } 

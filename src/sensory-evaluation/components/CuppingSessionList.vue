@@ -55,6 +55,8 @@ import Column from 'primevue/column'
 import CuppingHeader from '../../shared/components/CuppingHeader.vue'
 import CuppingFilterModal from '../../shared/components/CuppingFilterModal.vue'
 import NewCuppingButton from '../components/NewCuppingButton.vue'
+import { getCuppingSessions } from '../services/fakeCuppingService'
+import api from '../../shared/config/api'
 
 const router = useRouter()
 const filterModalVisible = ref(false)
@@ -62,6 +64,15 @@ const cuppingSessions = ref([])
 const appliedFilters = ref(null)
 const searchTerm = ref('')
 const selectedSessions = ref([])
+
+const defaultRatings = {
+  fragancia: 5,
+  sabor: 5,
+  acidez: 5,
+  cuerpo: 5,
+  balance: 5,
+  postgusto: 5
+};
 
 const filteredSessions = computed(() => {
   return cuppingSessions.value.filter((s) => {
@@ -79,23 +90,39 @@ const handleFilterApply = (filters) => {
   filterModalVisible.value = false
 }
 
-const handleNewCuppingCreated = (newSession) => {
-  cuppingSessions.value.push({
-    id: cuppingSessions.value.length + 1,
-    name: newSession.name,
-    date: new Date().toISOString().split('T')[0],
-    origin: newSession.lot,
-    variety: newSession.profile,
-    process: 'N/A',
-    lot: newSession.lot,
-    profile: newSession.profile,
-    ratings: newSession.ratings || null
-  })
-  localStorage.setItem('cuppingSessions', JSON.stringify(cuppingSessions.value))
+const handleNewCuppingCreated = async (newSession) => {
+  try {
+    const maxId = cuppingSessions.value.reduce((max, s) => {
+      const idNum = typeof s.id === 'number' ? s.id : parseInt(s.id, 10);
+      return idNum > max ? idNum : max;
+    }, 0);
+
+    const newId = maxId + 1;
+
+    const lot = newSession.lot && newSession.lot.trim() !== "" ? newSession.lot : "N/A";
+    const profile = newSession.profile && newSession.profile.trim() !== "" ? newSession.profile : "N/A";
+
+    const response = await api.post('/cuppingSessions', {
+      id: newId,
+      name: newSession.name,
+      date: new Date().toISOString().split('T')[0],
+      origin: lot,
+      variety: profile,
+      process: 'N/A',
+      lot,
+      profile,
+      ratings: { ...defaultRatings, ...(newSession.ratings || {}) }
+    });
+    cuppingSessions.value.push(response.data);
+    router.push(`/cata/${Number(response.data.id)}`);
+  } catch (error) {
+    console.error('Error creating new cupping session:', error);
+    alert('Error al crear la nueva sesión de cata');
+  }
 }
 
 const handleRowClick = (event) => {
-  router.push(`/cata/${event.data.id}`)
+  router.push(`/cata/${Number(event.data.id)}`)
 }
 
 const compareSessions = () => {
@@ -123,60 +150,10 @@ const actionTemplate = (session) => {
   ])
 }
 
-onMounted(() => {
+onMounted(async () => {
   document.body.classList.add('cupping-mode')
-  const stored = localStorage.getItem('cuppingSessions')
-  if (stored) {
-    cuppingSessions.value = JSON.parse(stored)
-  } else {
-    cuppingSessions.value = [
-      {
-        id: 1,
-        name: 'Cata Andina',
-        date: '2024-05-01',
-        origin: 'Perú',
-        variety: 'Typica',
-        process: 'Lavado',
-        lot: 'Lote A',
-        profile: 'Cafe ABC',
-        ratings: { fragancia: 6, cuerpo: 7, acidez: 5, dulzura: 6, amargor: 4, aftertaste: 5 }
-      },
-      {
-        id: 2,
-        name: 'Altura Cusco',
-        date: '2024-05-02',
-        origin: 'Cusco',
-        variety: 'Caturra',
-        process: 'Honey',
-        lot: 'Lote B',
-        profile: 'Cafe XYZ',
-        ratings: { fragancia: 7, cuerpo: 5, acidez: 6, dulzura: 5, amargor: 6, aftertaste: 4 }
-      },
-      {
-        id: 3,
-        name: 'Valle del Café',
-        date: '2024-05-03',
-        origin: 'Jaén',
-        variety: 'Bourbon',
-        process: 'Lavado',
-        lot: 'Lote C',
-        profile: 'Cafe 123',
-        ratings: { fragancia: 8, cuerpo: 6, acidez: 7, dulzura: 7, amargor: 3, aftertaste: 5 }
-      },
-      {
-        id: 4,
-        name: 'Flor de Cata',
-        date: '2024-05-04',
-        origin: 'Chanchamayo',
-        variety: 'Geisha',
-        process: 'Natural',
-        lot: 'Lote D',
-        profile: 'Cafe Premium',
-        ratings: { fragancia: 6, cuerpo: 6, acidez: 6, dulzura: 6, amargor: 6, aftertaste: 6 }
-      }
-    ]
-    localStorage.setItem('cuppingSessions', JSON.stringify(cuppingSessions.value))
-  }
+  const sessions = await getCuppingSessions();
+  cuppingSessions.value = sessions;
 })
 
 onUnmounted(() => {
