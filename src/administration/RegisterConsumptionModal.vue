@@ -1,4 +1,4 @@
-<template>
+emplate>
   <Dialog v-model:visible="internalVisible" modal :style="{ width: '600px' }">
     <h2>Registrar Consumo</h2>
     <div class="modal-content">

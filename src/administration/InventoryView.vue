@@ -53,7 +53,6 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import CuppingHeader from '../shared/components/CuppingHeader.vue'
 import RegisterConsumptionModal from './RegisterConsumptionModal.vue'
-import { getMovimientos, registrarConsumo } from './fakeInventoryApi.js'
 
 const movimientos = ref([])
 const modalVisible = ref(false)
