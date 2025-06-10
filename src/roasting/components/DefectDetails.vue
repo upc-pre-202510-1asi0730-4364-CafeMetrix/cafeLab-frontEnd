@@ -30,7 +30,7 @@
 <script>
 // Importa HeaderBar (CuppingHeader.vue)
 import HeaderBar from '../../shared/components/CuppingHeader.vue';
-import { getDefectById } from '../services/defectApi.js';
+import { defectApi } from '../api/defectApi.js';
 
 export default {
   components: {
@@ -45,8 +45,12 @@ export default {
     // Obtener el ID del defecto desde la URL
     const defectId = this.$route.params.defectId;
     if (defectId) {
-      // Cargar los detalles del defecto basado en el ID
-      this.defect = await getDefectById(defectId);
+      try {
+        const response = await defectApi.getById(defectId);
+        this.defect = response.data;
+      } catch (error) {
+        console.error('Error al cargar el defecto:', error);
+      }
     }
   },
   methods: {

@@ -53,6 +53,31 @@
       </p>
     </div>
 
+    <!-- Tabla de defectos -->
+    <div class="defects-table-container">
+      <h3>Defectos</h3>
+      <table class="defect-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Severidad</th>
+            <th>Categoría</th>
+            <th>Solución</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="defect in defects" :key="defect.id">
+            <td>{{ defect.name }}</td>
+            <td>{{ defect.description }}</td>
+            <td>{{ defect.severity }}</td>
+            <td>{{ defect.category }}</td>
+            <td>{{ defect.solution }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Botón para navegar a TastingPatternOverview -->
     <button @click="goToTastingPatternOverview" class="go-to-library-btn">Biblioteca de Relación</button>
   </div>
@@ -63,6 +88,7 @@ import { ref, onMounted } from 'vue';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { getTastingData } from '../services/fakeTastingApi'; // Importa la API falsa
 import HeaderBar from '../../shared/components/CuppingHeader.vue'; // Importa el HeaderBar
+import { defectApi } from '../../roasting/api/defectApi';
 
 // Registra los componentes de chart.js
 ChartJS.register(
@@ -88,6 +114,7 @@ export default {
         { id: 'session3', name: 'Cata 3', date: '2023-07-22' },
       ],
       chartData: null, // Datos del gráfico
+      defects: ref([]),
     };
   },
   methods: {
@@ -127,6 +154,13 @@ export default {
     getTastingData().then((data) => {
       this.chartData = data; // Asignamos los datos al estado
       this.createChart(); // Creamos el gráfico después de recibir los datos
+    });
+
+    // Llamamos a la API de defectos para obtener los datos
+    defectApi.getAll().then((response) => {
+      this.defects = response.data;
+    }).catch((e) => {
+      console.error('Error al cargar defectos', e);
     });
   },
 };
@@ -233,5 +267,33 @@ export default {
   position: fixed;
   bottom: 20px;
   right: 20px;
+}
+
+.defects-table-container {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.defect-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.defect-table th, .defect-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.defect-table th {
+  background-color: #4b6f6b;
+  color: white;
+}
+
+.defect-table td {
+  background-color: white;
 }
 </style>

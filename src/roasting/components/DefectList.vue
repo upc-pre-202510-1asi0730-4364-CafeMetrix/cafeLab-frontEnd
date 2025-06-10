@@ -12,14 +12,10 @@
 
     <!-- Filtros de búsqueda -->
     <div class="filters">
-      <select v-model="searchCoffee" class="dropdown">
-        <option value="">Tipo de Café</option>
-        <option v-for="coffee in coffeeOptions" :key="coffee" :value="coffee">{{ coffee }}</option>
-      </select>
-
-      <select v-model="searchDefect" class="dropdown">
-        <option value="">Tipo de Defecto</option>
-        <option v-for="defect in defectOptions" :key="defect" :value="defect">{{ defect }}</option>
+      <input type="text" v-model="searchTerm" placeholder="Buscar..." class="search-bar" />
+      <select v-model="selectedCategory" class="dropdown">
+        <option value="">Categoría</option>
+        <option v-for="cat in defectCategories" :key="cat" :value="cat">{{ cat }}</option>
       </select>
     </div>
 
@@ -28,22 +24,24 @@
       <table class="defect-table">
         <thead>
         <tr>
-          <th>Peso (g)</th>
-          <th>Café</th>
-          <th>Defecto</th>
-          <th>Porcentaje (%)</th>
-          <th>Acción</th> <!-- Nueva columna para la acción con botón -->
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Severidad</th>
+          <th>Categoría</th>
+          <th>Solución</th>
+          <th>Acción</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="defect in filteredDefects" :key="defect.id">
-          <td>{{ defect.peso }} g</td>
-          <td>{{ defect.cafe }}</td>
-          <td>{{ defect.defecto }}</td>
-          <td>{{ defect.porcentaje }}%</td>
+          <td>{{ defect.name }}</td>
+          <td>{{ defect.description }}</td>
+          <td>{{ defect.severity }}</td>
+          <td>{{ defect.category }}</td>
+          <td>{{ defect.solution }}</td>
           <td>
             <!-- Botón con ícono de lupa -->
-            <button class="view-btn" @click="viewDefect(defect)">
+            <button class="view-btn" @click="openModal(defect)">
               <i class="fa fa-search"></i>
             </button>
           </td> <!-- Botón circular -->
@@ -62,20 +60,24 @@
         <h2>Agregar Defecto</h2>
         <form @submit.prevent="addNewDefect">
           <div>
-            <label for="cafe" class="form-label">Café:</label>
-            <input type="text" id="cafe" v-model="newDefect.cafe" required />
+            <label for="name" class="form-label">Nombre:</label>
+            <input type="text" id="name" v-model="newDefect.name" required />
           </div>
           <div>
-            <label for="defecto" class="form-label">Defecto:</label>
-            <input type="text" id="defecto" v-model="newDefect.defecto" required />
+            <label for="description" class="form-label">Descripción:</label>
+            <input type="text" id="description" v-model="newDefect.description" required />
           </div>
           <div>
-            <label for="peso" class="form-label">Peso (g):</label>
-            <input type="number" id="peso" v-model="newDefect.peso" required />
+            <label for="severity" class="form-label">Severidad:</label>
+            <input type="text" id="severity" v-model="newDefect.severity" required />
           </div>
           <div>
-            <label for="porcentaje" class="form-label">Porcentaje (%):</label>
-            <input type="number" id="porcentaje" v-model="newDefect.porcentaje" required />
+            <label for="category" class="form-label">Categoría:</label>
+            <input type="text" id="category" v-model="newDefect.category" required />
+          </div>
+          <div>
+            <label for="solution" class="form-label">Solución:</label>
+            <input type="text" id="solution" v-model="newDefect.solution" required />
           </div>
           <button type="submit" class="add-submit-btn">Agregar</button>
         </form>
@@ -88,8 +90,11 @@
         <span class="close" @click="closeModal">&times;</span>
         <h2>Ficha de defecto</h2>
         <div class="modal-body">
-          <p><strong>Causas probables:</strong> {{ selectedDefect.causas || 'No disponible' }}</p>
-          <p><strong>Soluciones recomendadas:</strong> {{ selectedDefect.soluciones || 'No disponible' }}</p>
+          <p><strong>Nombre:</strong> {{ selectedDefect?.name }}</p>
+          <p><strong>Descripción:</strong> {{ selectedDefect?.description }}</p>
+          <p><strong>Severidad:</strong> {{ selectedDefect?.severity }}</p>
+          <p><strong>Categoría:</strong> {{ selectedDefect?.category }}</p>
+          <p><strong>Solución:</strong> {{ selectedDefect?.solution }}</p>
         </div>
       </div>
     </div>
@@ -98,13 +103,10 @@
 
 <script>
 // Importa el componente HeaderBar (ahora CuppingHeader.vue)
-import HeaderBar from '../../shared/components/CuppingHeader.vue';
-
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router'; // Agregamos useRouter para la redirección
-import { getDefects, addDefect } from '../services/defectApi.js'; // La API falsa
-
-
+import HeaderBar from '../../shared/components/HeaderBar.vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { defectApi } from '../api/defectApi.js'; // Usar la API real
 
 export default {
   components: {
@@ -116,61 +118,76 @@ export default {
     const showModal = ref(false);
     const showAddDefectModal = ref(false);
     const selectedDefect = ref(null);
-    const newDefect = ref({ cafe: '', defecto: '', peso: '', porcentaje: '' });
-    const searchCoffee = ref('');
-    const searchDefect = ref('');
-    const coffeeOptions = ref(['Typica', 'Arabica', 'Robusta']);
-    const defectOptions = ref(['Quemado', 'Verde', 'Roto']);
+    const newDefect = ref({ name: '', description: '', severity: '', category: '', solution: '' });
+    const searchTerm = ref('');
+    const selectedCategory = ref('');
 
-    const loadDefects = async () => {
-      defects.value = await getDefects();
-    };
-
-    const filteredDefects = computed(() => {
-      return defects.value.filter(
-          (defect) =>
-              (defect.cafe.toLowerCase().includes(searchCoffee.value.toLowerCase()) || !searchCoffee.value) &&
-              (defect.defecto.toLowerCase().includes(searchDefect.value.toLowerCase()) || !searchDefect.value)
-      );
+    const defectCategories = computed(() => {
+      const cats = defects.value.map(d => d.category).filter(Boolean);
+      return [...new Set(cats)];
     });
 
+    const filteredDefects = computed(() => {
+      return defects.value.filter(defect => {
+        const matchesSearch =
+          defect.name.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+          defect.description.toLowerCase().includes(searchTerm.value.toLowerCase());
+        const matchesCategory =
+          !selectedCategory.value || defect.category === selectedCategory.value;
+        return matchesSearch && matchesCategory;
+      });
+    });
+
+    const loadDefects = async () => {
+      try {
+        const response = await defectApi.getAll();
+        defects.value = response.data;
+      } catch (error) {
+        console.error('Error al cargar defectos:', error);
+      }
+    };
+
     const addNewDefect = async () => {
-      const defectData = { ...newDefect.value, id: Date.now() };
-      await addDefect(defectData);
-      loadDefects();
-      showAddDefectModal.value = false;
-      newDefect.value = { cafe: '', defecto: '', peso: '', porcentaje: '' };
+      try {
+        await defectApi.create(newDefect.value);
+        await loadDefects();
+        showAddDefectModal.value = false;
+        newDefect.value = { name: '', description: '', severity: '', category: '', solution: '' };
+      } catch (error) {
+        console.error('Error al agregar defecto:', error);
+      }
     };
 
     const closeAddDefectModal = () => {
       showAddDefectModal.value = false;
     };
 
-    const viewDefect = (defect) => {
-      // Redirige a la página de detalles del defecto con su ID
-      router.push({ name: 'defectDetails', params: { defectId: defect.id } });
+    const openModal = (defect) => {
+      selectedDefect.value = defect;
+      showModal.value = true;
     };
 
     const closeModal = () => {
       showModal.value = false;
     };
 
-    loadDefects();
+    onMounted(() => {
+      loadDefects();
+    });
 
     return {
       defects,
-      searchCoffee,
-      searchDefect,
+      searchTerm,
+      selectedCategory,
       filteredDefects,
       addNewDefect,
       newDefect,
-      coffeeOptions,
-      defectOptions,
+      defectCategories,
       showAddDefectModal,
       closeAddDefectModal,
       showModal,
       selectedDefect,
-      viewDefect,
+      openModal,
       closeModal
     };
   },
@@ -271,11 +288,16 @@ body {
 
 .modal-content {
   background-color: white;
+  color: #222;
   padding: 20px;
   border-radius: 8px;
   width: 50%;
   max-width: 600px;
   text-align: center;
+}
+
+.modal-body {
+  color: #222;
 }
 
 .close {

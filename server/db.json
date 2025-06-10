@@ -1,10 +1,248 @@
 {
-  "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true
-  }
+  "calibrations": [
+    {
+      "id": 1,
+      "method": "Espresso",
+      "grind": "3.5",
+      "opening": 2.5,
+      "volume": 30,
+      "equipment": "Maquina Espresso",
+      "date": "2024-03-20",
+      "volumeFinal": 28,
+      "visualization": "calibration1.jpg",
+      "comments": "Calibración inicial para espresso",
+      "notes": "Ajustar molienda para mejor extracción"
+    },
+    {
+      "id": 2,
+      "method": "Filtrado",
+      "grind": "4.0",
+      "opening": 3.0,
+      "volume": 250,
+      "equipment": "Maquina Filtrado",
+      "date": "2024-03-21",
+      "volumeFinal": 245,
+      "visualization": "calibration2.jpg",
+      "comments": "Calibración para café filtrado",
+      "notes": "Tiempo de extracción óptimo: 3:30"
+    },
+    {
+      "id": 3,
+      "method": "Espresso",
+      "grind": "3.2",
+      "opening": 2.3,
+      "volume": 28,
+      "equipment": "Maquina Espresso",
+      "date": "2024-03-22",
+      "volumeFinal": 26,
+      "visualization": "calibration3.jpg",
+      "comments": "Ajuste fino para espresso",
+      "notes": "Mejorar consistencia"
+    },
+    {
+      "id": 4,
+      "method": "Filtrado",
+      "grind": "4.2",
+      "opening": 3.2,
+      "volume": 300,
+      "equipment": "Maquina Filtrado",
+      "date": "2024-03-23",
+      "volumeFinal": 290,
+      "visualization": "calibration4.jpg",
+      "comments": "Calibración para Chemex",
+      "notes": "Ajustar tiempo de extracción"
+    },
+    {
+      "id": 5,
+      "method": "Espresso",
+      "grind": "3.7",
+      "opening": 2.7,
+      "volume": 32,
+      "equipment": "Maquina Espresso",
+      "date": "2024-03-24",
+      "volumeFinal": 30,
+      "visualization": "calibration5.jpg",
+      "comments": "Calibración para ristretto",
+      "notes": "Ajustar presión"
+    },
+    {
+      "id": 6,
+      "method": "Filtrado",
+      "grind": "4.5",
+      "opening": 3.5,
+      "volume": 400,
+      "equipment": "Maquina Filtrado",
+      "date": "2024-03-25",
+      "volumeFinal": 380,
+      "visualization": "calibration6.jpg",
+      "comments": "Calibración para batch brew",
+      "notes": "Optimizar flujo"
+    },
+    {
+      "id": 7,
+      "method": "Espresso",
+      "grind": "3.3",
+      "opening": 2.4,
+      "volume": 29,
+      "equipment": "Maquina Espresso",
+      "date": "2024-03-26",
+      "volumeFinal": 27,
+      "visualization": "calibration7.jpg",
+      "comments": "Calibración para lungo",
+      "notes": "Ajustar temperatura"
+    },
+    {
+      "id": 8,
+      "method": "Filtrado",
+      "grind": "4.3",
+      "opening": 3.3,
+      "volume": 350,
+      "equipment": "Maquina Filtrado",
+      "date": "2024-03-27",
+      "volumeFinal": 330,
+      "visualization": "calibration8.jpg",
+      "comments": "Calibración para V60",
+      "notes": "Mejorar uniformidad"
+    },
+    {
+      "id": 9,
+      "method": "Espresso",
+      "grind": "3.6",
+      "opening": 2.6,
+      "volume": 31,
+      "equipment": "Maquina Espresso",
+      "date": "2024-03-28",
+      "volumeFinal": 29,
+      "visualization": "calibration9.jpg",
+      "comments": "Calibración para doble shot",
+      "notes": "Ajustar distribución"
+    },
+    {
+      "id": 10,
+      "method": "Filtrado",
+      "grind": "4.4",
+      "opening": 3.4,
+      "volume": 375,
+      "equipment": "Maquina Filtrado",
+      "date": "2024-03-29",
+      "volumeFinal": 360,
+      "visualization": "calibration10.jpg",
+      "comments": "Calibración para Kalita",
+      "notes": "Optimizar flujo"
+    },
+    {
+      "id": 11,
+      "method": "Espresso",
+      "grind": "3.4",
+      "opening": 2.5,
+      "volume": 30,
+      "equipment": "Maquina Espresso",
+      "date": "2024-03-30",
+      "volumeFinal": 28,
+      "visualization": "calibration11.jpg",
+      "comments": "Calibración final espresso",
+      "notes": "Ajustes finales"
+    }
+  ],
+  "defects": [
+    {
+      "id": 1,
+      "name": "Quaker",
+      "description": "Granos sin tostar o parcialmente tostados",
+      "severity": "Alto",
+      "category": "Tostado",
+      "solution": "Ajustar temperatura y tiempo de tostado",
+      "image": "quaker.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Black Bean",
+      "description": "Granos completamente carbonizados",
+      "severity": "Alto",
+      "category": "Tostado",
+      "solution": "Reducir temperatura final de tostado",
+      "image": "black_bean.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Sour Bean",
+      "description": "Granos con sabor agrio",
+      "severity": "Medio",
+      "category": "Proceso",
+      "solution": "Revisar proceso de fermentación",
+      "image": "sour_bean.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Floater",
+      "description": "Granos que flotan en el agua",
+      "severity": "Bajo",
+      "category": "Densidad",
+      "solution": "Mejorar selección de granos",
+      "image": "floater.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Broken Bean",
+      "description": "Granos partidos o dañados",
+      "severity": "Medio",
+      "category": "Procesamiento",
+      "solution": "Ajustar configuración del molino",
+      "image": "broken_bean.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Shell",
+      "description": "Cáscaras de café en el grano",
+      "severity": "Bajo",
+      "category": "Procesamiento",
+      "solution": "Mejorar proceso de limpieza",
+      "image": "shell.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Stinker",
+      "description": "Granos con olor desagradable",
+      "severity": "Alto",
+      "category": "Fermentación",
+      "solution": "Revisar proceso de fermentación",
+      "image": "stinker.jpg"
+    },
+    {
+      "id": 8,
+      "name": "Faded Bean",
+      "description": "Granos con color desvanecido",
+      "severity": "Medio",
+      "category": "Almacenamiento",
+      "solution": "Mejorar condiciones de almacenamiento",
+      "image": "faded_bean.jpg"
+    },
+    {
+      "id": 9,
+      "name": "Immature Bean",
+      "description": "Granos verdes o inmaduros",
+      "severity": "Alto",
+      "category": "Cosecha",
+      "solution": "Mejorar selección durante la cosecha",
+      "image": "immature_bean.jpg"
+    },
+    {
+      "id": 10,
+      "name": "Withered Bean",
+      "description": "Granos arrugados o deshidratados",
+      "severity": "Medio",
+      "category": "Procesamiento",
+      "solution": "Ajustar proceso de secado",
+      "image": "withered_bean.jpg"
+    },
+    {
+      "id": 11,
+      "name": "Fungus Damage",
+      "description": "Granos con daño por hongos",
+      "severity": "Alto",
+      "category": "Almacenamiento",
+      "solution": "Controlar humedad y temperatura",
+      "image": "fungus_damage.jpg"
+    }
+  ]
 }
