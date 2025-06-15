@@ -1,11 +1,11 @@
 <script>
 export default {
-  name: 'Café Lab',
-}
+  name: 'OwnerDashboard',
+};
 </script>
 
 <template>
-  <router-view></router-view>
+  <p>owner-dashboard works!</p>
 </template>
 
 <style scoped>

@@ -1,11 +1,11 @@
 <script>
 export default {
-  name: 'Café Lab',
-}
+  name: 'BaristaDashboard',
+};
 </script>
 
 <template>
-  <router-view></router-view>
+  <p>barista-dashboard works!</p>
 </template>
 
 <style scoped>

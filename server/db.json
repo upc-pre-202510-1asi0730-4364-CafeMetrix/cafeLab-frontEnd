@@ -1,0 +1,105 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Eduardo Dueñas",
+      "email": "duardo@gmail.com",
+      "password": "123456",
+      "role": "dueno_cafeteria",
+      "cafeteriaName": "Sui Generis",
+      "experience": "2 años",
+      "profilePicture": "",
+      "paymentMethod": "mastercard",
+      "isFirstLogin": false,
+      "plan": "admin",
+      "hasPlan": true
+    },
+    {
+      "name": "Wilmer Casas",
+      "email": "wilmer@gmail.com",
+      "password": "123456",
+      "experience": "2 años",
+      "role": "barista",
+      "cafeteriaName": "",
+      "profilePicture": "",
+      "paymentMethod": {
+        "value": "mastercard",
+        "label": "Mastercard"
+      },
+      "isFirstLogin": false,
+      "plan": "barista",
+      "hasPlan": true,
+      "id": 2
+    },
+    {
+      "name": "Distro Diaz",
+      "email": "dist@gmail.com",
+      "password": "123456",
+      "experience": "1 dia",
+      "role": "barista",
+      "cafeteriaName": "",
+      "profilePicture": "",
+      "paymentMethod": "mastercard",
+      "isFirstLogin": false,
+      "plan": "barista",
+      "hasPlan": true,
+      "id": 3
+    },
+    {
+      "name": "Roman Alvarez",
+      "email": "roman@gmail.com",
+      "password": "12345",
+      "experience": "4 años",
+      "role": "barista",
+      "cafeteriaName": "",
+      "profilePicture": "",
+      "paymentMethod": "visa",
+      "isFirstLogin": false,
+      "plan": "barista",
+      "hasPlan": true,
+      "id": 4
+    },
+    {
+      "name": "Enrique Casas",
+      "email": "enrique@gmail.com",
+      "password": "12345",
+      "experience": "12 años",
+      "role": "barista",
+      "cafeteriaName": "",
+      "profilePicture": "",
+      "paymentMethod": "mastercard",
+      "isFirstLogin": false,
+      "plan": "barista",
+      "hasPlan": true,
+      "id": 5
+    },
+    {
+      "name": "Luis Vitinha",
+      "email": "viti@gmail.com",
+      "password": "12345",
+      "experience": "2 años",
+      "role": "barista",
+      "cafeteriaName": "",
+      "profilePicture": "",
+      "paymentMethod": "mastercard",
+      "isFirstLogin": false,
+      "plan": "barista",
+      "hasPlan": true,
+      "id": 6
+    },
+    {
+      "name": "Xavier Doué",
+      "email": "doue@gmail.com",
+      "password": "12345",
+      "role": "dueno_cafeteria",
+      "cafeteriaName": "Paris Saint Germain",
+      "experience": "3 años",
+      "profilePicture": "",
+      "paymentMethod": "visa",
+      "isFirstLogin": false,
+      "plan": "complete",
+      "hasPlan": true,
+      "id": 7
+    }
+  ]
+}

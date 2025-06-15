@@ -1,11 +1,11 @@
 <script>
 export default {
-  name: 'Café Lab',
-}
+  name: 'CompleteDashboard',
+};
 </script>
 
 <template>
-  <router-view></router-view>
+  <p>complete-dashboard works!</p>
 </template>
 
 <style scoped>
