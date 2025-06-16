@@ -1,0 +1,304 @@
+{
+  "cuppingSessions": [
+    {
+      "id": "1",
+      "name": "Cata Andina",
+      "date": "2024-05-01",
+      "origin": "Perú",
+      "variety": "Typica",
+      "process": "Lavado",
+      "lot": "Lote A",
+      "profile": "Cafe ABC",
+      "ratings": {
+        "fragancia": 6,
+        "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 7,
+        "balance": 5,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": "2",
+      "name": "Altura Cusco",
+      "date": "2024-05-02",
+      "origin": "Cusco",
+      "variety": "Caturra",
+      "process": "Honey",
+      "lot": "Lote B",
+      "profile": "Cafe XYZ",
+      "ratings": {
+        "fragancia": 7,
+        "sabor": 5,
+        "acidez": 6,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 4
+      }
+    },
+    {
+      "id": "3",
+      "name": "Valle Salvaje de Arequipa",
+      "date": "2025-05-27",
+      "origin": "asasa",
+      "variety": "zzzzz",
+      "process": "N/A",
+      "lot": "asasa",
+      "profile": "zzzzz",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 8,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": "4",
+      "name": "Valle Del Bosque",
+      "date": "2025-05-27",
+      "origin": "Perú",
+      "variety": "Caturra",
+      "process": "N/A",
+      "lot": "Perú",
+      "profile": "Caturra",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 0,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": "5",
+      "name": "U202311745",
+      "date": "2025-05-27",
+      "origin": "tezt",
+      "variety": "ejemplo",
+      "process": "N/A",
+      "lot": "tezt",
+      "profile": "ejemplo",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": "6",
+      "name": "pipip",
+      "date": "2025-05-27",
+      "origin": "hola",
+      "variety": "que",
+      "process": "N/A",
+      "lot": "hola",
+      "profile": "que",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": "7",
+      "name": "bn",
+      "date": "2025-05-27",
+      "origin": "lol",
+      "variety": "si",
+      "process": "N/A",
+      "lot": "lol",
+      "profile": "si",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": "8",
+      "name": "ola",
+      "date": "2025-05-27",
+      "origin": "si",
+      "variety": "jaja",
+      "process": "N/A",
+      "lot": "si",
+      "profile": "jaja",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": "9",
+      "name": "que",
+      "date": "2025-05-27",
+      "origin": "so",
+      "variety": "rallado",
+      "process": "N/A",
+      "lot": "so",
+      "profile": "rallado",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": "10",
+      "name": "za",
+      "date": "2025-05-27",
+      "origin": "bor",
+      "variety": "az",
+      "process": "N/A",
+      "lot": "bor",
+      "profile": "az",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": "11",
+      "name": "tilin",
+      "date": "2025-06-05",
+      "origin": "THILING",
+      "variety": "2446",
+      "process": "N/A",
+      "lot": "THILING",
+      "profile": "2446",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": 12,
+      "name": "pavo",
+      "date": "2025-06-16",
+      "origin": "infinito",
+      "variety": "dos",
+      "process": "N/A",
+      "lot": "infinito",
+      "profile": "dos",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 5
+      }
+    }
+  ],
+  "costosLote": [
+    {
+      "id": "8806",
+      "fecha": "2025-05-27T05:35:11.811Z",
+      "lote": "sds",
+      "materiaPrima": "0.10",
+      "manoObra": "76935.00",
+      "transporte": "1288.00",
+      "almacenamiento": "924.00",
+      "procesamiento": 11509,
+      "otrosCostos": 942,
+      "totales": {
+        "totalLote": 91598.1,
+        "costPerKg": 228995.25,
+        "costPerCup": 4579.905000000001
+      },
+      "detalle": {
+        "costoKgCafeVerde": 0.26,
+        "cantidadCafeVerde": 0.4,
+        "horasTrabajadas": 15,
+        "costoPorHora": 223,
+        "numeroTrabajadores": 23,
+        "costoTransporteKgCafeVerde": 56,
+        "cantidadTransporteCafeVerde": 23,
+        "energiaElectrica": 12,
+        "mantenimientoMaquinaria": 221,
+        "insumosProcesamiento": 55,
+        "aguaUtilizada": 8989,
+        "depreciacionEquipos": 2232,
+        "diasAlmacen": 12,
+        "costoDiarioAlmacen": 77,
+        "controlCalidad": 112,
+        "certificaciones": 454,
+        "seguros": 33,
+        "gastosAdministrativos": 343
+      }
+    },
+    {
+      "id": "5605",
+      "fecha": "2025-05-27T05:35:14.300Z",
+      "lote": "sds",
+      "materiaPrima": "0.10",
+      "manoObra": "76935.00",
+      "transporte": "1288.00",
+      "almacenamiento": "924.00",
+      "procesamiento": 11509,
+      "otrosCostos": 942,
+      "totales": {
+        "totalLote": 91598.1,
+        "costPerKg": 228995.25,
+        "costPerCup": 4579.905000000001
+      },
+      "detalle": {
+        "costoKgCafeVerde": 0.26,
+        "cantidadCafeVerde": 0.4,
+        "horasTrabajadas": 15,
+        "costoPorHora": 223,
+        "numeroTrabajadores": 23,
+        "costoTransporteKgCafeVerde": 56,
+        "cantidadTransporteCafeVerde": 23,
+        "energiaElectrica": 12,
+        "mantenimientoMaquinaria": 221,
+        "insumosProcesamiento": 55,
+        "aguaUtilizada": 8989,
+        "depreciacionEquipos": 2232,
+        "diasAlmacen": 12,
+        "costoDiarioAlmacen": 77,
+        "controlCalidad": 112,
+        "certificaciones": 454,
+        "seguros": 33,
+        "gastosAdministrativos": 343
+      }
+    }
+  ],
+  "movimientosInventario": [
+    {
+      "id": "1748324146407",
+      "fecha": "2025-05-27",
+      "lote": "Lote B",
+      "producto": "Latte",
+      "cantidad": "12",
+      "tipoCafe": "verde"
+    }
+  ]
+}
