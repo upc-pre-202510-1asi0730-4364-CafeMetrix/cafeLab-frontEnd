@@ -199,7 +199,7 @@
       }
     },
     {
-      "id": 12,
+      "id": "12",
       "name": "pavo",
       "date": "2025-06-16",
       "origin": "infinito",
@@ -210,6 +210,24 @@
       "ratings": {
         "fragancia": 5,
         "sabor": 5,
+        "acidez": 5,
+        "cuerpo": 5,
+        "balance": 5,
+        "postgusto": 5
+      }
+    },
+    {
+      "id": "13",
+      "name": "testing",
+      "date": "2025-06-16",
+      "origin": "kolo",
+      "variety": "hugie",
+      "process": "N/A",
+      "lot": "kolo",
+      "profile": "hugie",
+      "ratings": {
+        "fragancia": 5,
+        "sabor": 0,
         "acidez": 5,
         "cuerpo": 5,
         "balance": 5,
