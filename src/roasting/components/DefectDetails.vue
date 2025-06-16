@@ -5,32 +5,25 @@
 
     <div class="defect-card">
       <h2>Ficha de defecto</h2>
-      <div class="details">
-        <p><strong>Café:</strong> {{ defect.cafe }}</p>
-        <p><strong>Peso:</strong> {{ defect.peso }} kg</p>
-        <p><strong>Porcentaje:</strong> {{ defect.porcentaje }}%</p>
-      </div>
-
-      <!-- Causas y soluciones -->
-      <div class="additional-info">
-        <div class="info-item">
-          <h4>Causas probables:</h4>
-          <p>{{ defect.causas || 'No disponible' }}</p>
+      <div class="defect-info">
+        <div class="causes-block">
+          <span class="block-title">Causas probables</span>
+          <div class="block-content">{{ defect.causas || defect.description || 'No disponible' }}</div>
         </div>
-        <div class="info-item">
-          <h4>Soluciones recomendadas:</h4>
-          <p>{{ defect.soluciones || 'No disponible' }}</p>
+        <div class="solutions-block">
+          <span class="block-title">Soluciones recomendadas</span>
+          <div class="block-content">{{ defect.soluciones || defect.solution || 'No disponible' }}</div>
         </div>
       </div>
+      <button @click="closeDetails" class="close-btn">Cerrar</button>
     </div>
-    <button @click="closeDetails">Cerrar</button>
   </div>
 </template>
 
 <script>
 // Importa HeaderBar (CuppingHeader.vue)
 import HeaderBar from '../../shared/components/CuppingHeader.vue';
-import { defectApi } from '../api/defectApi.js';
+import { getDefectById } from '../service';
 
 export default {
   components: {
@@ -46,7 +39,7 @@ export default {
     const defectId = this.$route.params.defectId;
     if (defectId) {
       try {
-        const response = await defectApi.getById(defectId);
+        const response = await getDefectById(defectId);
         this.defect = response.data;
       } catch (error) {
         console.error('Error al cargar el defecto:', error);
@@ -78,27 +71,39 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.details p {
-  margin: 8px 0;
-}
-
-.additional-info {
+.defect-info {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  align-items: stretch;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
-.info-item {
-  width: 48%;
+.causes-block, .solutions-block {
+  flex: 1;
+  background: #f5f5f5;
+  border-radius: 20px;
+  margin: 0 20px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 180px;
 }
 
-.info-item h4 {
-  font-weight: bold;
-  margin-bottom: 5px;
+.block-title {
+  font-size: 1.3em;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.block-content {
+  font-size: 1.1em;
   color: #414535;
+  text-align: center;
 }
 
-button {
+.close-btn {
   background-color: #414535;
   color: white;
   border: none;
@@ -109,7 +114,7 @@ button {
   margin-top: 20px;
 }
 
-button:hover {
+.close-btn:hover {
   background-color: #3c3f31;
 }
 </style>

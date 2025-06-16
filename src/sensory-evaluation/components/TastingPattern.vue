@@ -53,31 +53,6 @@
       </p>
     </div>
 
-    <!-- Tabla de defectos -->
-    <div class="defects-table-container">
-      <h3>Defectos</h3>
-      <table class="defect-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Severidad</th>
-            <th>Categoría</th>
-            <th>Solución</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="defect in defects" :key="defect.id">
-            <td>{{ defect.name }}</td>
-            <td>{{ defect.description }}</td>
-            <td>{{ defect.severity }}</td>
-            <td>{{ defect.category }}</td>
-            <td>{{ defect.solution }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
     <!-- Botón para navegar a TastingPatternOverview -->
     <button @click="goToTastingPatternOverview" class="go-to-library-btn">Biblioteca de Relación</button>
   </div>
@@ -88,7 +63,7 @@ import { ref, onMounted } from 'vue';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { getTastingData } from '../services/fakeTastingApi'; // Importa la API falsa
 import HeaderBar from '../../shared/components/CuppingHeader.vue'; // Importa el HeaderBar
-import { defectApi } from '../../roasting/api/defectApi';
+import { getAllDefects } from '../../roasting/service';
 
 // Registra los componentes de chart.js
 ChartJS.register(
@@ -149,7 +124,7 @@ export default {
       });
     },
   },
-  onMounted() {
+  mounted() {
     // Llamamos a la API falsa para obtener los datos del gráfico
     getTastingData().then((data) => {
       this.chartData = data; // Asignamos los datos al estado
@@ -157,7 +132,7 @@ export default {
     });
 
     // Llamamos a la API de defectos para obtener los datos
-    defectApi.getAll().then((response) => {
+    getAllDefects().then((response) => {
       this.defects = response.data;
     }).catch((e) => {
       console.error('Error al cargar defectos', e);

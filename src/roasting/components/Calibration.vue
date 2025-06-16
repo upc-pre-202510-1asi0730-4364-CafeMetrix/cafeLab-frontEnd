@@ -9,37 +9,31 @@
 
     <!-- Filtros de búsqueda -->
     <div class="filters">
-      <input type="text" v-model="searchTerm" placeholder="Buscar..." class="search-bar" />
-      <select v-model="selectedCategory" class="dropdown">
-        <option value="">Categoría</option>
-        <option v-for="cat in defectCategories" :key="cat" :value="cat">{{ cat }}</option>
-      </select>
+      <input type="text" v-model="searchTerm" placeholder="Buscar por método, equipo o fecha..." class="search-bar" />
     </div>
 
-    <!-- Tabla de defectos -->
-    <div class="defects-table-container">
-      <h3>Defectos</h3>
-      <table class="defect-table">
+    <!-- Tabla de calibraciones -->
+    <div class="calibrations-table-container">
+      <h3>Calibraciones</h3>
+      <table class="calibration-table">
         <thead>
           <tr>
             <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Severidad</th>
-            <th>Categoría</th>
-            <th>Solución</th>
+            <th>Método</th>
+            <th>Equipo</th>
+            <th>Apertura (mm)</th>
             <th>Acción</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="defect in filteredDefects" :key="defect.id">
-            <td>{{ defect.name }}</td>
-            <td>{{ defect.description }}</td>
-            <td>{{ defect.severity }}</td>
-            <td>{{ defect.category }}</td>
-            <td>{{ defect.solution }}</td>
+          <tr v-for="cal in filteredCalibrations" :key="cal.id">
+            <td>{{ cal.nombre }}</td>
+            <td>{{ cal.method }}</td>
+            <td>{{ cal.equipment }}</td>
+            <td>{{ cal.opening }}</td>
             <td>
-              <button class="icon-btn" @click="openViewModal(defect)"><i class="fa fa-search"></i></button>
-              <button class="icon-btn" @click="openEditModal(defect)"><i class="fa fa-pencil"></i></button>
+              <button class="icon-btn" @click="openEditModal(cal)"><i class="fa fa-pencil"></i></button>
+              <button class="icon-btn" @click="openViewModal(cal)"><i class="fa fa-search"></i></button>
             </td>
           </tr>
         </tbody>
@@ -51,117 +45,200 @@
 
     <!-- Modal para registrar o editar calibración -->
     <div v-if="showRegisterModal" class="modal">
-      <div class="modal-content">
+      <div class="modal-content calibration-modal-content">
         <span class="close" @click="closeRegisterModal">&times;</span>
-        <h2>{{ editMode ? 'Editar Calibración' : 'Registrar Nueva Calibración' }}</h2>
-        <form @submit.prevent="editMode ? updateCalibration() : registerCalibration">
-          <table>
-            <tbody>
-              <!-- Primera fila -->
-              <tr>
-                <td><label for="calibration-method">Selección de Método:</label></td>
-                <td>
-                  <select id="calibration-method" v-model="newCalibration.method" required>
-                    <option value="">Seleccione Método</option>
-                    <option>Espresso</option>
-                    <option>Filtrado</option>
-                  </select>
-                </td>
-                <td><label for="calibration-grind">N° de molienda:</label></td>
-                <td><input type="text" id="calibration-grind" v-model="newCalibration.grind" required /></td>
-              </tr>
-
-              <!-- Segunda fila -->
-              <tr>
-                <td><label for="calibration-opening">Apertura (mm):</label></td>
-                <td><input type="number" id="calibration-opening" v-model="newCalibration.opening" required /></td>
-                <td><label for="calibration-volume">Volumen en taza (ml):</label></td>
-                <td><input type="number" id="calibration-volume" v-model="newCalibration.volume" required /></td>
-              </tr>
-
-              <!-- Tercera fila -->
-              <tr>
-                <td><label for="calibration-equipment">Selección de equipo:</label></td>
-                <td>
-                  <select id="calibration-equipment" v-model="newCalibration.equipment" required>
-                    <option value="">Seleccione Equipo</option>
-                    <option>Maquina Espresso</option>
-                    <option>Maquina Filtrado</option>
-                  </select>
-                </td>
-                <td><label for="calibration-date">Fecha de calibración:</label></td>
-                <td><input type="date" id="calibration-date" v-model="newCalibration.date" required /></td>
-              </tr>
-
-              <!-- Cuarta fila -->
-              <tr>
-                <td><label for="calibration-volume-final">Volumen final (ml):</label></td>
-                <td><input type="number" id="calibration-volume-final" v-model="newCalibration.volumeFinal" required /></td>
-                <td><label for="calibration-visualization">Visualización:</label></td>
-                <td><input type="file" id="calibration-visualization" @change="handleFileUpload" /></td>
-              </tr>
-
-              <!-- Quinta fila -->
-              <tr>
-                <td><label for="calibration-comments">Comentarios:</label></td>
-                <td colspan="3"><textarea id="calibration-comments" v-model="newCalibration.comments"></textarea></td>
-              </tr>
-
-              <!-- Sexta fila -->
-              <tr>
-                <td><label for="calibration-notes">Notas:</label></td>
-                <td colspan="3"><textarea id="calibration-notes" v-model="newCalibration.notes"></textarea></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <button type="submit" class="submit-btn">Registrar Calibración</button>
+        <h2 class="modal-title">Registrar Calibracion</h2>
+        <form @submit.prevent="editMode ? updateCalibration() : registerCalibration" class="calibration-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Selección de Método</label>
+              <select v-model="newCalibration.method" required>
+                <option value="">Seleccione Método</option>
+                <option>Espresso</option>
+                <option>Filtrado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>N° de molienda</label>
+              <input type="text" v-model="newCalibration.grind" required />
+            </div>
+            <div class="form-group">
+              <label>Apertura (mm)</label>
+              <input type="number" v-model="newCalibration.opening" required />
+            </div>
+            <div class="form-group">
+              <label>Volumen en taza (ml)</label>
+              <input type="number" v-model="newCalibration.volume" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Selección de equipo</label>
+              <select v-model="newCalibration.equipment" required>
+                <option value="">Seleccione Equipo</option>
+                <option>Maquina Espresso</option>
+                <option>Maquina Filtrado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Fecha de calibración</label>
+              <input type="date" v-model="newCalibration.date" required />
+            </div>
+            <div class="form-group">
+              <label>Volumen final (ml)</label>
+              <input type="number" v-model="newCalibration.volumeFinal" required />
+            </div>
+            <div class="form-group file-group">
+              <label>Visualización</label>
+              <label class="file-label">
+                <input type="file" @change="handleFileUpload" style="display:none;" />
+                <span class="file-btn">Adjuntar muestras <i class="fa fa-upload"></i></span>
+              </label>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group flex-2">
+              <label>Comentarios:</label>
+              <textarea v-model="newCalibration.comments" placeholder="La densidad del espresso puede variar entre 0.95-1.05 g/mL"></textarea>
+            </div>
+            <div class="form-group flex-2">
+              <label>Notas:</label>
+              <textarea v-model="newCalibration.notes" placeholder="A mayor altitud, menor punto de ebullición del agua"></textarea>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="cb1" disabled />
+              <input type="checkbox" id="cb2" disabled />
+              <input type="checkbox" id="cb3" disabled />
+            </div>
+          </div>
+          <button type="submit" class="register-btn-modern">Registrar Calibracion</button>
         </form>
       </div>
     </div>
 
-    <!-- Modal de ver defecto -->
-    <div v-if="showViewModal" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeViewModal">&times;</span>
-        <h2>Ficha de defecto</h2>
-        <div class="modal-body">
-          <p><strong>Nombre:</strong> {{ selectedDefect?.name }}</p>
-          <p><strong>Descripción:</strong> {{ selectedDefect?.description }}</p>
-          <p><strong>Severidad:</strong> {{ selectedDefect?.severity }}</p>
-          <p><strong>Categoría:</strong> {{ selectedDefect?.category }}</p>
-          <p><strong>Solución:</strong> {{ selectedDefect?.solution }}</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal de editar defecto -->
-    <div v-if="showEditModal" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeEditModal">&times;</span>
-        <h2>Editar defecto</h2>
-        <form @submit.prevent="saveEditDefect">
-          <div>
-            <label>Nombre:</label>
-            <input type="text" v-model="editDefectData.name" required />
+    <!-- Modal para ver/editar calibración -->
+    <div v-if="showViewModal || showEditModal" class="modal">
+      <div class="modal-content calibration-modal-content">
+        <span class="close" @click="showViewModal ? closeViewModal() : closeEditModal()">&times;</span>
+        <h2 class="modal-title">{{ showEditModal ? 'Editar Calibración' : 'Ficha de Calibración' }}</h2>
+        <form v-if="showEditModal" @submit.prevent="saveEditCalibration" class="calibration-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Selección de Método</label>
+              <select v-model="editCalibrationData.method" required>
+                <option value="">Seleccione Método</option>
+                <option>Espresso</option>
+                <option>Filtrado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>N° de molienda</label>
+              <input type="text" v-model="editCalibrationData.grind" required />
+            </div>
+            <div class="form-group">
+              <label>Apertura (mm)</label>
+              <input type="number" v-model="editCalibrationData.opening" required />
+            </div>
+            <div class="form-group">
+              <label>Volumen en taza (ml)</label>
+              <input type="number" v-model="editCalibrationData.volume" required />
+            </div>
           </div>
-          <div>
-            <label>Descripción:</label>
-            <input type="text" v-model="editDefectData.description" required />
+          <div class="form-row">
+            <div class="form-group">
+              <label>Selección de equipo</label>
+              <select v-model="editCalibrationData.equipment" required>
+                <option value="">Seleccione Equipo</option>
+                <option>Maquina Espresso</option>
+                <option>Maquina Filtrado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Fecha de calibración</label>
+              <input type="date" v-model="editCalibrationData.date" required />
+            </div>
+            <div class="form-group">
+              <label>Volumen final (ml)</label>
+              <input type="number" v-model="editCalibrationData.volumeFinal" required />
+            </div>
+            <div class="form-group file-group">
+              <label>Visualización</label>
+              <label class="file-label">
+                <input type="file" @change="handleFileUpload" style="display:none;" />
+                <span class="file-btn">Adjuntar muestras <i class="fa fa-upload"></i></span>
+              </label>
+            </div>
           </div>
-          <div>
-            <label>Severidad:</label>
-            <input type="text" v-model="editDefectData.severity" required />
+          <div class="form-row">
+            <div class="form-group flex-2">
+              <label>Comentarios:</label>
+              <textarea v-model="editCalibrationData.comments"></textarea>
+            </div>
+            <div class="form-group flex-2">
+              <label>Notas:</label>
+              <textarea v-model="editCalibrationData.notes"></textarea>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="cb1" disabled />
+              <input type="checkbox" id="cb2" disabled />
+              <input type="checkbox" id="cb3" disabled />
+            </div>
           </div>
-          <div>
-            <label>Categoría:</label>
-            <input type="text" v-model="editDefectData.category" required />
+          <button type="submit" class="register-btn-modern">Guardar Cambios</button>
+        </form>
+        <form v-else class="calibration-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Selección de Método</label>
+              <input type="text" :value="selectedCalibration?.method" disabled />
+            </div>
+            <div class="form-group">
+              <label>N° de molienda</label>
+              <input type="text" :value="selectedCalibration?.grind" disabled />
+            </div>
+            <div class="form-group">
+              <label>Apertura (mm)</label>
+              <input type="number" :value="selectedCalibration?.opening" disabled />
+            </div>
+            <div class="form-group">
+              <label>Volumen en taza (ml)</label>
+              <input type="number" :value="selectedCalibration?.volume" disabled />
+            </div>
           </div>
-          <div>
-            <label>Solución:</label>
-            <input type="text" v-model="editDefectData.solution" required />
+          <div class="form-row">
+            <div class="form-group">
+              <label>Selección de equipo</label>
+              <input type="text" :value="selectedCalibration?.equipment" disabled />
+            </div>
+            <div class="form-group">
+              <label>Fecha de calibración</label>
+              <input type="date" :value="selectedCalibration?.date" disabled />
+            </div>
+            <div class="form-group">
+              <label>Volumen final (ml)</label>
+              <input type="number" :value="selectedCalibration?.volumeFinal" disabled />
+            </div>
+            <div class="form-group file-group">
+              <label>Visualización</label>
+              <input type="text" :value="selectedCalibration?.visualization" disabled />
+            </div>
           </div>
-          <button type="submit" class="add-submit-btn">Guardar</button>
+          <div class="form-row">
+            <div class="form-group flex-2">
+              <label>Comentarios:</label>
+              <textarea :value="selectedCalibration?.comments" disabled></textarea>
+            </div>
+            <div class="form-group flex-2">
+              <label>Notas:</label>
+              <textarea :value="selectedCalibration?.notes" disabled></textarea>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="cb1" disabled />
+              <input type="checkbox" id="cb2" disabled />
+              <input type="checkbox" id="cb3" disabled />
+            </div>
+          </div>
+          <button type="button" class="register-btn-modern" @click="closeViewModal">Cerrar</button>
         </form>
       </div>
     </div>
@@ -169,17 +246,15 @@
 </template>
 
 <script>
-import axios from 'axios'; // Importar Axios para las peticiones HTTP
-import { defectApi } from '../../roasting/api/defectApi';
+import axios from 'axios';
+import { getCalibrations } from '../service';
 
 export default {
   data() {
     return {
       showRegisterModal: false,
-      editMode: false, // Indica si es modo edición o nuevo registro
-      selectedMethod: '',
-      methods: ['Espresso', 'Filtrado'],
-      calibrationRecords: [], // Los registros que obtendremos desde la API
+      editMode: false,
+      calibrationRecords: [],
       newCalibration: {
         method: '',
         grind: '',
@@ -192,81 +267,58 @@ export default {
         comments: '',
         notes: '',
       },
-      defects: [],
       searchTerm: '',
-      selectedCategory: '',
       showViewModal: false,
       showEditModal: false,
-      selectedDefect: null,
-      editDefectData: { name: '', description: '', severity: '', category: '', solution: '' },
+      selectedCalibration: null,
+      editCalibrationData: {},
     };
   },
   computed: {
-    defectCategories() {
-      // Devuelve las categorías únicas de los defectos
-      const cats = this.defects.map(d => d.category).filter(Boolean);
-      return [...new Set(cats)];
-    },
-    filteredDefects() {
-      return this.defects.filter(defect => {
-        const matchesSearch =
-          defect.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          defect.description.toLowerCase().includes(this.searchTerm.toLowerCase());
-        const matchesCategory =
-          !this.selectedCategory || defect.category === this.selectedCategory;
-        return matchesSearch && matchesCategory;
-      });
+    filteredCalibrations() {
+      const term = this.searchTerm.toLowerCase();
+      return this.calibrationRecords.filter(cal =>
+        (cal.method && cal.method.toLowerCase().includes(term)) ||
+        (cal.equipment && cal.equipment.toLowerCase().includes(term)) ||
+        (cal.date && cal.date.toLowerCase().includes(term))
+      );
     }
   },
   methods: {
-    // Cargar los registros de calibración desde la API
     loadCalibrations() {
-      axios.get('https://jsonplaceholder.typicode.com/posts') // Usamos JSONPlaceholder como API falsa
-          .then(response => {
-            this.calibrationRecords = response.data.slice(0, 5); // Limitar a 5 registros para la demo
-          })
-          .catch(error => {
-            console.error("Hubo un error al obtener los datos:", error);
-          });
+      getCalibrations()
+        .then(response => {
+          this.calibrationRecords = response.data;
+        })
+        .catch(error => {
+          console.error('Error al obtener calibraciones:', error);
+        });
     },
-    // Registrar una nueva calibración
     registerCalibration() {
-      const calibrationData = { ...this.newCalibration, userId: 1 };
-
-      axios.post('https://jsonplaceholder.typicode.com/posts', calibrationData)
-          .then(response => {
-            this.calibrationRecords.unshift(response.data); // Mostrar el nuevo registro
-            this.showRegisterModal = false; // Cerrar el modal
-            this.resetForm();
-          })
-          .catch(error => {
-            console.error("Hubo un error al registrar los datos:", error);
-          });
+      axios.post('/api/calibrations', this.newCalibration)
+        .then(() => {
+          this.loadCalibrations();
+          this.showRegisterModal = false;
+          this.resetForm();
+        })
+        .catch(error => {
+          console.error('Error al registrar calibración:', error);
+        });
     },
-    // Actualizar un registro existente
-    updateCalibration() {
-      axios.put(`https://jsonplaceholder.typicode.com/posts/${this.newCalibration.id}`, this.newCalibration)
-          .then(response => {
-            const index = this.calibrationRecords.findIndex(record => record.id === this.newCalibration.id);
-            this.calibrationRecords[index] = response.data; // Actualizar el registro en la tabla
-            this.showRegisterModal = false; // Cerrar el modal
-            this.resetForm();
-          })
-          .catch(error => {
-            console.error("Hubo un error al actualizar los datos:", error);
-          });
+    openEditModal(cal) {
+      this.editCalibrationData = { ...cal };
+      this.editMode = true;
+      this.showRegisterModal = true;
     },
-    // Configurar el modal para la edición
-    openEditModal(defect) {
-      this.editDefectData = { ...defect };
-      this.showEditModal = true;
+    openViewModal(cal) {
+      this.selectedCalibration = cal;
+      this.showViewModal = true;
     },
-    // Función para manejar el cambio de archivo (visualización)
-    handleFileUpload(event) {
-      const file = event.target.files[0];
-      this.newCalibration.visualization = file;
+    closeRegisterModal() {
+      this.showRegisterModal = false;
+      this.editMode = false;
+      this.resetForm();
     },
-    // Resetear el formulario
     resetForm() {
       this.newCalibration = {
         method: '',
@@ -280,40 +332,38 @@ export default {
         comments: '',
         notes: '',
       };
-      this.editMode = false;
-    },
-    // Cerrar el modal de registro
-    closeRegisterModal() {
-      this.showRegisterModal = false;
-      this.resetForm();
-    },
-    openViewModal(defect) {
-      this.selectedDefect = defect;
-      this.showViewModal = true;
     },
     closeViewModal() {
       this.showViewModal = false;
     },
-    async saveEditDefect() {
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      this.newCalibration.visualization = file;
+    },
+    async saveEditCalibration() {
       try {
-        await defectApi.update(this.editDefectData.id, this.editDefectData);
-        this.loadDefects();
+        await axios.put(`/api/calibrations/${this.editCalibrationData.id}`, this.editCalibrationData);
+        this.loadCalibrations();
         this.showEditModal = false;
       } catch (e) {
-        console.error('Error al guardar defecto', e);
+        console.error('Error al guardar calibración', e);
       }
     },
-    loadDefects() {
-      defectApi.getAll().then(response => {
-        this.defects = response.data;
-      }).catch(e => console.error('Error al cargar defectos', e));
+    updateCalibration() {
+      axios.put(`/api/calibrations/${this.newCalibration.id}`, this.newCalibration)
+        .then(() => {
+          this.loadCalibrations();
+          this.showRegisterModal = false;
+          this.resetForm();
+        })
+        .catch(error => {
+          console.error('Error al actualizar calibración', error);
+        });
     }
   },
   mounted() {
-    // Cargar los registros cuando el componente se monte
     this.loadCalibrations();
-    this.loadDefects();
-  },
+  }
 };
 </script>
 
@@ -336,26 +386,31 @@ export default {
   color: #414535;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.calibrations-table-container {
+  margin-top: 24px;
 }
 
-table th,
-table td {
+.calibration-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f8f7f2;
+}
+
+.calibration-table th, .calibration-table td {
   padding: 10px;
   text-align: left;
   border: 1px solid #ddd;
   vertical-align: middle;
 }
 
-table th {
-  background-color: #4b6f6b;
+.calibration-table th {
+  background-color: #618985;
   color: white;
 }
 
-table td {
+.calibration-table td {
   background-color: white;
+  color: #414535;
 }
 
 input,
@@ -465,6 +520,172 @@ button.submit-btn:hover {
 
 .add-submit-btn:hover {
   background-color: #5a6c6a;
+}
+
+.defect-modal-content {
+  background-color: #fff;
+  color: #414535;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  padding: 30px 30px 20px 30px;
+  max-width: 900px;
+  width: 90vw;
+  text-align: left;
+}
+.calibration-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.details-block, .results-block {
+  flex: 1;
+  background: #f5f5f5;
+  border-radius: 20px;
+  margin: 0 20px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 180px;
+}
+.block-title {
+  font-size: 1.3em;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+.block-content {
+  font-size: 1.1em;
+  color: #414535;
+  text-align: center;
+}
+.close-btn {
+  background-color: #414535;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 20px;
+}
+.close-btn:hover {
+  background-color: #3c3f31;
+}
+.calibration-modal-content {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 32px 36px 24px 36px;
+  max-width: 800px;
+  width: 90vw;
+  position: relative;
+}
+.modal-title {
+  font-size: 1.4em;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #414535;
+  text-align: left;
+}
+.calibration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.form-row {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 0;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 120px;
+}
+.flex-2 {
+  flex: 2;
+}
+.form-group label {
+  font-size: 0.98em;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #414535;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border: 1px solid #d1d1c9;
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 1em;
+  background: #f8f7f2;
+  color: #414535;
+  outline: none;
+  margin-bottom: 0;
+  transition: border 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border: 1.5px solid #618985;
+}
+.form-group textarea {
+  min-height: 48px;
+  resize: vertical;
+}
+.file-group .file-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.file-btn {
+  background: #414535;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.file-btn:hover {
+  background: #5a6c6a;
+}
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 18px;
+  margin-left: 12px;
+}
+.checkbox-group input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  accent-color: #e57373;
+  border-radius: 4px;
+  border: 2px solid #e57373;
+  background: #fff;
+}
+.register-btn-modern {
+  background: #414535;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  border: none;
+  margin-top: 18px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.register-btn-modern:hover {
+  background: #5a6c6a;
 }
 </style>
 

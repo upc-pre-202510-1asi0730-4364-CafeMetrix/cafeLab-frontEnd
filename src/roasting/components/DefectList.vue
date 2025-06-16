@@ -10,13 +10,28 @@
       </div>
     </div>
 
-    <!-- Filtros de búsqueda -->
-    <div class="filters">
-      <input type="text" v-model="searchTerm" placeholder="Buscar..." class="search-bar" />
-      <select v-model="selectedCategory" class="dropdown">
-        <option value="">Categoría</option>
-        <option v-for="cat in defectCategories" :key="cat" :value="cat">{{ cat }}</option>
-      </select>
+    <!-- Filtros de búsqueda modernos -->
+    <div class="filters-row">
+      <div class="filter-block">
+        <label class="filter-label">Tipo de Café</label>
+        <div class="filter-input-group">
+          <input type="text" v-model="searchCafe" placeholder="Buscar café..." class="search-bar" />
+          <select v-model="selectedCafe" class="dropdown">
+            <option value="">Todos</option>
+            <option v-for="cafe in uniqueCafes" :key="cafe" :value="cafe">{{ cafe }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-block">
+        <label class="filter-label">Tipo de Defecto</label>
+        <div class="filter-input-group">
+          <input type="text" v-model="searchDefecto" placeholder="Buscar defecto..." class="search-bar" />
+          <select v-model="selectedDefecto" class="dropdown">
+            <option value="">Todos</option>
+            <option v-for="defecto in uniqueDefectos" :key="defecto" :value="defecto">{{ defecto }}</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <!-- Tabla de defectos -->
@@ -24,34 +39,31 @@
       <table class="defect-table">
         <thead>
         <tr>
-          <th>Nombre</th>
-          <th>Descripción</th>
-          <th>Severidad</th>
-          <th>Categoría</th>
-          <th>Solución</th>
+          <th>Peso</th>
+          <th>Café</th>
+          <th>Defecto</th>
+          <th>Porcentaje</th>
           <th>Acción</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="defect in filteredDefects" :key="defect.id">
-          <td>{{ defect.name }}</td>
-          <td>{{ defect.description }}</td>
-          <td>{{ defect.severity }}</td>
-          <td>{{ defect.category }}</td>
-          <td>{{ defect.solution }}</td>
+          <td>{{ defect.peso || '' }}</td>
+          <td>{{ defect.cafe || '' }}</td>
+          <td>{{ defect.defecto }}</td>
+          <td>{{ defect.porcentaje || '' }}</td>
           <td>
-            <!-- Botón con ícono de lupa -->
             <button class="view-btn" @click="openModal(defect)">
               <i class="fa fa-search"></i>
             </button>
-          </td> <!-- Botón circular -->
+          </td>
         </tr>
         </tbody>
       </table>
     </div>
 
     <!-- Botón para agregar un defecto -->
-    <button @click="showAddDefectModal = true" class="add-btn">Agregar defecto</button>
+    <button @click="showAddDefectModal = true" class="add-btn-modern">Agregar defecto</button>
 
     <!-- Modal para agregar defecto -->
     <div v-if="showAddDefectModal" class="modal">
@@ -84,20 +96,26 @@
       </div>
     </div>
 
-    <!-- Ventana emergente para detalles del defecto -->
+    <!-- Modal de ver defecto moderno -->
     <div v-if="showModal" class="modal">
-      <div class="modal-content">
+      <div class="modal-content defect-modal-content">
         <span class="close" @click="closeModal">&times;</span>
         <h2>Ficha de defecto</h2>
-        <div class="modal-body">
-          <p><strong>Nombre:</strong> {{ selectedDefect?.name }}</p>
-          <p><strong>Descripción:</strong> {{ selectedDefect?.description }}</p>
-          <p><strong>Severidad:</strong> {{ selectedDefect?.severity }}</p>
-          <p><strong>Categoría:</strong> {{ selectedDefect?.category }}</p>
-          <p><strong>Solución:</strong> {{ selectedDefect?.solution }}</p>
+        <div class="defect-info">
+          <div class="causes-block">
+            <span class="block-title">Causas probables</span>
+            <div class="block-content">{{ selectedDefect?.causas || 'No disponible' }}</div>
+          </div>
+          <div class="solutions-block">
+            <span class="block-title">Soluciones recomendadas</span>
+            <div class="block-content">{{ selectedDefect?.soluciones || 'No disponible' }}</div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Mensaje de error -->
+    <div v-if="errorMsg" class="error-message">{{ errorMsg }}</div>
   </div>
 </template>
 
@@ -106,7 +124,7 @@
 import HeaderBar from '../../shared/components/HeaderBar.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { defectApi } from '../api/defectApi.js'; // Usar la API real
+import { getAllDefects, createDefect } from '../service';
 
 export default {
   components: {
@@ -119,42 +137,48 @@ export default {
     const showAddDefectModal = ref(false);
     const selectedDefect = ref(null);
     const newDefect = ref({ name: '', description: '', severity: '', category: '', solution: '' });
-    const searchTerm = ref('');
-    const selectedCategory = ref('');
+    const searchCafe = ref('');
+    const searchDefecto = ref('');
+    const selectedCafe = ref('');
+    const selectedDefecto = ref('');
+    const errorMsg = ref('');
 
-    const defectCategories = computed(() => {
-      const cats = defects.value.map(d => d.category).filter(Boolean);
-      return [...new Set(cats)];
-    });
+    const uniqueCafes = computed(() => [...new Set(defects.value.map(d => d.cafe).filter(Boolean))]);
+    const uniqueDefectos = computed(() => [...new Set(defects.value.map(d => d.defecto).filter(Boolean))]);
 
     const filteredDefects = computed(() => {
       return defects.value.filter(defect => {
-        const matchesSearch =
-          defect.name.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-          defect.description.toLowerCase().includes(searchTerm.value.toLowerCase());
-        const matchesCategory =
-          !selectedCategory.value || defect.category === selectedCategory.value;
-        return matchesSearch && matchesCategory;
+        const matchCafe = (!selectedCafe.value || defect.cafe === selectedCafe.value) &&
+          (!searchCafe.value || (defect.cafe && defect.cafe.toLowerCase().includes(searchCafe.value.toLowerCase())));
+        const matchDefecto = (!selectedDefecto.value || defect.defecto === selectedDefecto.value) &&
+          (!searchDefecto.value || (defect.defecto && defect.defecto.toLowerCase().includes(searchDefecto.value.toLowerCase())));
+        return matchCafe && matchDefecto;
       });
     });
 
     const loadDefects = async () => {
       try {
-        const response = await defectApi.getAll();
+        const response = await getAllDefects();
+        console.log('Defectos recibidos:', response.data);
         defects.value = response.data;
+        errorMsg.value = '';
       } catch (error) {
         console.error('Error al cargar defectos:', error);
+        errorMsg.value = 'No se pudieron cargar los defectos.';
       }
     };
 
     const addNewDefect = async () => {
       try {
-        await defectApi.create(newDefect.value);
+        console.log('Nuevo defecto a agregar:', newDefect.value);
+        await createDefect(newDefect.value);
         await loadDefects();
         showAddDefectModal.value = false;
         newDefect.value = { name: '', description: '', severity: '', category: '', solution: '' };
+        errorMsg.value = '';
       } catch (error) {
         console.error('Error al agregar defecto:', error);
+        errorMsg.value = 'No se pudo agregar el defecto.';
       }
     };
 
@@ -163,7 +187,7 @@ export default {
     };
 
     const openModal = (defect) => {
-      selectedDefect.value = defect;
+      selectedDefect.value = { ...defect };
       showModal.value = true;
     };
 
@@ -177,18 +201,22 @@ export default {
 
     return {
       defects,
-      searchTerm,
-      selectedCategory,
+      showModal,
+      showAddDefectModal,
+      selectedDefect,
+      newDefect,
+      searchCafe,
+      searchDefecto,
+      selectedCafe,
+      selectedDefecto,
+      uniqueCafes,
+      uniqueDefectos,
       filteredDefects,
       addNewDefect,
-      newDefect,
-      defectCategories,
-      showAddDefectModal,
       closeAddDefectModal,
-      showModal,
-      selectedDefect,
       openModal,
-      closeModal
+      closeModal,
+      errorMsg
     };
   },
 };
@@ -219,17 +247,45 @@ body {
 }
 
 /* Filtros */
-.filters {
+.filters-row {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 32px;
+  margin-bottom: 24px;
+}
+
+.filter-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #414535;
+}
+
+.filter-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.search-bar {
+  flex: 2;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #111;
 }
 
 .dropdown {
+  flex: 1;
   padding: 8px;
-  font-size: 14px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #ccc;
+  background: #fff;
+  color: #111;
 }
 
 /* Tabla de defectos */
@@ -315,19 +371,24 @@ body {
   color: black;
   text-decoration: none;
   cursor: pointer;
-
 }
 
-.add-btn {
+.add-btn-modern {
   background-color: #414535;
   color: white;
-  padding: 10px 15px;
-  width: auto;
-  border-radius: 5px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  border: none;
+  margin-top: 18px;
   cursor: pointer;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
+  float: right;
+  transition: background 0.2s;
+}
+
+.add-btn-modern:hover {
+  background-color: #5a6c6a;
 }
 
 .form-label {
@@ -354,5 +415,64 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
   background-color: #5a6c6a;
+}
+
+/* Mensaje de error */
+.error-message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.defect-modal-content {
+  background-color: #fff;
+  color: #414535;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  padding: 30px 30px 20px 30px;
+  max-width: 900px;
+  width: 90vw;
+  text-align: left;
+}
+.defect-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.causes-block, .solutions-block {
+  flex: 1;
+  background: #f5f5f5;
+  border-radius: 20px;
+  margin: 0 20px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 180px;
+}
+.block-title {
+  font-size: 1.3em;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+.block-content {
+  font-size: 1.1em;
+  color: #414535;
+  text-align: center;
+}
+.close-btn {
+  background-color: #414535;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 20px;
+}
+.close-btn:hover {
+  background-color: #3c3f31;
 }
 </style>
