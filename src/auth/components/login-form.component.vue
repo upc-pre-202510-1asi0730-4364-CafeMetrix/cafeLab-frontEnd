@@ -8,12 +8,6 @@ import { useI18n } from 'vue-i18n';
 export default {
   name: 'LoginForm',
   extends: BaseFormComponent,
-  methods: {
-    isInvalidControl(controlName) {
-      const control = this.form[controlName];
-      return control?.invalid && control?.touched;
-    }
-  },
   setup() {
     const router = useRouter();
     const { t } = useI18n();
@@ -28,26 +22,41 @@ export default {
       password: ['required']
     };
 
+    // ✅ Se define localmente
+    function isInvalidControl(controlName) {
+      const control = form[controlName];
+      return control?.invalid && control?.touched;
+    }
+
+    function isFormValid() {
+      const emailValid = !isInvalidControl('email');
+      const passwordValid = !isInvalidControl('password');
+      return emailValid && passwordValid;
+    }
+
     function onSubmit() {
       if (isFormValid()) {
         userService.login(form.email, form.password)
             .then(user => {
-              console.log('Logged in user:', user);
+              if (!user || !user.id) {
+                console.error('Credenciales incorrectas');
+                return;
+              }
+
               localStorage.setItem('currentUser', JSON.stringify(user));
-              router.push({ name: 'loginSuccess' });
+
+              if (user.isFirstLogin) {
+                router.push({ name: 'EditProfile' });
+              } else if (user.hasPlan) {
+                router.push({ name: 'loginSuccess' });
+              } else {
+                router.push({ name: 'select-plan' });
+              }
             })
             .catch(error => {
               console.error('Login error:', error);
-              // Manejar el error de inicio de sesión, como mostrar un mensaje de error al usuario
             });
       }
-    }
-
-    function isFormValid() {
-      const isInvalidControl = this.$options.methods.isInvalidControl;
-      const emailValid = !isInvalidControl('email');
-      const passwordValid = !isInvalidControl('password');
-      return emailValid && passwordValid;
     }
 
     function onRegisterBarista() {
@@ -62,6 +71,7 @@ export default {
       t,
       form,
       validationRules,
+      isInvalidControl, // 👈 necesario para el template
       onSubmit,
       onRegisterBarista,
       onRegisterOwner
@@ -70,13 +80,15 @@ export default {
 };
 </script>
 
+
 <template>
   <div class="login-form-container">
     <h2>{{ t('LOGIN.TITLE') }}</h2>
     <form class="login-form" @submit.prevent="onSubmit">
       <div class="p-field">
         <pv-float-label for="email">
-          <pv-input-text id="email" v-model="form.email" type="email" :class="{ 'p-invalid': isInvalidControl('email') }" />
+          <pv-input-text id="email" v-model="form.email" type="email"
+                         :class="{ 'p-invalid': isInvalidControl('email') }"/>
           <label>{{ t('LOGIN.EMAIL') }}</label>
         </pv-float-label>
         <small v-if="isInvalidControl('email')" class="p-error">{{ errorMessagesForControl('email') }}</small>
@@ -84,7 +96,7 @@ export default {
 
       <div class="p-field">
         <pv-float-label for="password">
-          <pv-password id="password" v-model="form.password" :class="{ 'p-invalid': isInvalidControl('password') }" />
+          <pv-password id="password" v-model="form.password" :class="{ 'p-invalid': isInvalidControl('password') }"/>
           <label>{{ t('LOGIN.PASSWORD') }}</label>
         </pv-float-label>
         <small v-if="isInvalidControl('password')" class="p-error">{{ errorMessagesForControl('password') }}</small>
@@ -151,9 +163,8 @@ export default {
   overflow: hidden;
   background: linear-gradient(135deg, #4D6443 0%, #5a6b2a 100%);
   color: white;
-  box-shadow:
-      0 4px 14px rgba(77, 100, 67, 0.4),
-      0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 14px rgba(77, 100, 67, 0.4),
+  0 2px 4px rgba(0, 0, 0, 0.1);
   background-size: 200% 200%;
   animation: subtle-shine 3s ease-in-out infinite;
 }
@@ -162,9 +173,8 @@ export default {
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   color: #4D6443;
   transform: translateY(-2px);
-  box-shadow:
-      0 8px 25px rgba(0, 0, 0, 0.15),
-      0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15),
+  0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .modern-button:active,
@@ -174,14 +184,17 @@ export default {
   transform: translateY(0);
   outline: none;
   border: 2px solid #4D6443;
-  box-shadow:
-      0 0 0 3px rgba(77, 100, 67, 0.1),
-      0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 3px rgba(77, 100, 67, 0.1),
+  0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 @keyframes subtle-shine {
-  0%, 100% { background-position: 0 50%; }
-  50% { background-position: 100% 50%; }
+  0%, 100% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .modern-button::before {
@@ -241,9 +254,8 @@ export default {
   color: white;
   transform: translateY(0);
   outline: none;
-  box-shadow:
-      0 0 0 3px rgba(77, 100, 67, 0.2),
-      0 2px 8px rgba(77, 100, 67, 0.2);
+  box-shadow: 0 0 0 3px rgba(77, 100, 67, 0.2),
+  0 2px 8px rgba(77, 100, 67, 0.2);
 }
 
 .register-buttons button::before {

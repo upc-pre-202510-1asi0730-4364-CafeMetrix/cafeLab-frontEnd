@@ -1,6 +1,6 @@
 <template>
   <div class="logup-owner-success-page">
-    <Toolbarinit class="toolbar" />
+    <HeaderBarInit class="toolbar" />
     <div class="success-content">
       <div class="success-message">
         <h2>{{ $t('LOGUP_OWNER_SUCCESS.TITLE') }}</h2>
@@ -16,12 +16,12 @@
 
 <script>
 import { useRouter } from 'vue-router';
-import Toolbarinit from '../../public/components/toolbarinit.component.vue';
+import HeaderBarInit from '../../public/components/headerBarInit.vue';
 
 export default {
   name: 'LogupOwnerSuccessPage',
   components: {
-    Toolbarinit
+    HeaderBarInit
   },
   setup() {
     const router = useRouter();

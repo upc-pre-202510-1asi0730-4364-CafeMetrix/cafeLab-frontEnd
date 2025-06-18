@@ -1,6 +1,6 @@
 <template>
   <div class="login-success-page">
-    <Toolbarinit />
+    <HeaderBarInit />
     <div class="success-message">
       <h2>{{ $t('LOGIN_SUCCESS.TITLE') }}</h2>
       <p>{{ $t('LOGIN_SUCCESS.MESSAGE', { name: currentUser?.name }) }}</p>
@@ -16,12 +16,12 @@
 import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import Toolbarinit from '../../public/components/toolbarinit.component.vue';
+import HeaderBarInit from "../../public/components/headerBarInit.vue";
 
 export default {
   name: 'LoginSuccessPage',
   components: {
-    Toolbarinit
+    HeaderBarInit
   },
   setup() {
     const router = useRouter();
@@ -46,7 +46,7 @@ export default {
           case 'barista':
             router.push({ name: 'baristaDashboard' });
             break;
-          case 'admin':
+          case 'owner':
             router.push({ name: 'ownerDashboard' });
             break;
           case 'complete':

@@ -1,5 +1,5 @@
 <template>
-  <Toolbarinit />
+  <HeaderBarInit />
   <div class="logup-owner-page">
     <div class="background-image"></div>
     <div class="form-container">
@@ -10,13 +10,13 @@
 
 <script>
 import LogupOwnerForm from '../components/logup-owner-form.vue';
-import Toolbarinit from '../../public/components/toolbarinit.component.vue';
+import HeaderBarInit from '../../public/components/headerBarInit.vue';
 
 export default {
   name: 'LogupOwnerPage',
   components: {
     LogupOwnerForm,
-    Toolbarinit
+    HeaderBarInit
   }
 };
 </script>

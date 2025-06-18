@@ -1,6 +1,6 @@
 <template>
   <div class="logup-barista-success-page">
-    <Toolbarinit class="toolbar" />
+    <HeaderBarInit class="toolbar" />
     <div class="success-content">
       <div class="success-message">
         <h2>{{ t('LOGUP_BARISTA_SUCCESS.TITLE') }}</h2>
@@ -17,13 +17,13 @@
 
 <script>
 import { useRouter } from 'vue-router';
-import Toolbarinit from '../../public/components/toolbarinit.component.vue';
+import HeaderBarInit from '../../public/components/headerBarInit.vue';
 import { useI18n } from 'vue-i18n';
 
 export default {
   name: 'LogupBaristaSuccessPage',
   components: {
-    Toolbarinit
+    HeaderBarInit
   },
   setup() {
     const router = useRouter();

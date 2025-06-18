@@ -15,16 +15,24 @@ export class UserService {
      * @returns {Promise<AxiosResponse<any>>} Promise that resolves to the authenticated user
      */
     login(email, password) {
-        return httpInstance.get(`${this.resourceEndpoint}?email=${email}&password=${password}`)
+        return httpInstance.get(this.resourceEndpoint)
             .then(response => {
                 const users = response.data;
-                if (users.length === 1) {
-                    return users[0];
-                } else {
-                    throw new Error('Invalid email or password');
+                const user = users.find(u => u.email === email && u.password === password);
+
+                if (!user) {
+                    throw new Error('Email o contraseña incorrectos');
                 }
+
+                return user;
+            })
+            .catch(error => {
+                console.error('[UserService] Error en login:', error.message);
+                throw error;
             });
     }
+
+
 
     /**
      * Registers a new user
@@ -42,8 +50,11 @@ export class UserService {
      * @returns {Promise<AxiosResponse<any>>} Promise that resolves to the updated user
      */
     updateProfile(userId, updatedUser) {
-        return httpInstance.put(`${this.resourceEndpoint}/${userId}`, updatedUser);
+        return httpInstance.put(`${this.resourceEndpoint}/${String(userId)}`, updatedUser)
+            .then(response => response.data); // ✅ Devuelve solo los datos
     }
+
+
 
     /**
      * Retrieves a user by ID

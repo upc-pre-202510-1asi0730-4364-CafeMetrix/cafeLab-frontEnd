@@ -41,7 +41,10 @@
         </small>
       </div>
 
-      <pv-button type="submit" class="modern-button">{{ t('EDIT_PROFILE.SUBMIT') }}</pv-button>
+      <pv-button class="modern-button" type="submit">
+        {{ t('EDIT_PROFILE.SUBMIT') }}
+      </pv-button>
+
     </form>
   </div>
 </template>
@@ -51,6 +54,9 @@ import { reactive, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import userService from '../services/user.service.js';
+import { useAuthService} from "../services/authService.js";
+
+const authService = useAuthService({})
 
 export default {
   name: 'EditProfileForm',
@@ -100,7 +106,7 @@ export default {
 
     const errorMessagesForControl = (controlName) => {
       if (!form[controlName] || form[controlName].length === 0) return t('EDIT_PROFILE.REQUIRED');
-      if (controlName === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return t('EDIT_PROFILE.EMAIL_INVALID');
+      if (controlName === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return t('EDIT_PROFILE.INVALID_EMAIL');
       return '';
     };
 
@@ -129,36 +135,48 @@ export default {
       };
 
       userService.updateProfile(currentUser.value.id, updatedUser)
+          .then(() => {
+            return userService.getUserById(currentUser.value.id); // 🔁 Hacer un GET real
+          })
           .then(response => {
-            const updated = response.data;
-            localStorage.setItem('currentUser', JSON.stringify(updated));
-            redirectAfterUpdate(updated);
+            const freshUser = response.data;
+            localStorage.setItem('currentUser', JSON.stringify(freshUser));
+            authService.setCurrentUser(freshUser);
+            redirectAfterUpdate(freshUser);
           })
           .catch(error => {
             console.error('Update profile error:', error);
           });
+
     };
 
     function redirectAfterUpdate(updatedUser) {
-      if (updatedUser?.hasPlan) {
+      if (!updatedUser) {
+        console.error('redirectAfterUpdate: updatedUser es undefined');
+        return router.push({ name: 'login' }); // o muestra un error visible
+      }
+
+      if (!updatedUser.hasPlan) {
+        return router.push({ name: 'select-plan' });
+      }
+
+      if (updatedUser.plan) {
         switch (updatedUser.plan) {
           case 'barista':
-            router.push({ name: 'baristaDashboard' });
-            break;
-          case 'admin':
-            router.push({ name: 'ownerDashboard' });
-            break;
+            return router.push({ name: 'baristaDashboard' });
+          case 'owner':
+            return router.push({ name: 'ownerDashboard' });
           case 'complete':
-            router.push({ name: 'completeDashboard' });
-            break;
+            return router.push({ name: 'completeDashboard' });
           default:
-            router.push({ name: '/' });
-            break;
+            return router.push({ name: 'select-plan' });
         }
-      } else {
-        router.push({ name: 'selectPlan' });
       }
+
+      return router.push({ name: 'select-plan' });
     }
+
+
 
     return {
       t,

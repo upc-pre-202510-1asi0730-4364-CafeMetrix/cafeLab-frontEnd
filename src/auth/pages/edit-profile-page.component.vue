@@ -1,7 +1,7 @@
 <template>
   <div class="edit-profile-page">
-    <Toolbar v-if="showToolbar" />
-    <Toolbarinit v-else />
+    <HeaderBar v-if="showToolbar" />
+    <HeaderBarInit v-else />
     <div class="edit-profile-page-content">
       <EditProfileForm />
     </div>
@@ -11,15 +11,15 @@
 <script>
 import { computed, onMounted } from 'vue';
 import EditProfileForm from '../../auth/components/edit-profile-form.component.vue';
-import Toolbar from '../../public/components/toolbar.component.vue';
-import Toolbarinit from '../../public/components/toolbarinit.component.vue';
+import HeaderBar from "../../public/components/headerBar.vue";
+import HeaderBarInit from "../../public/components/headerBarInit.vue";
 
 export default {
   name: 'EditProfilePage',
   components: {
+    HeaderBarInit,
     EditProfileForm,
-    Toolbar,
-    Toolbarinit
+    HeaderBar
   },
   setup() {
     const currentUser = computed(() => {
@@ -30,7 +30,6 @@ export default {
     const showToolbar = computed(() => !!currentUser.value?.hasPlan);
 
     onMounted(() => {
-      // Lógica de inicialización, si es necesario
     });
 
     return {

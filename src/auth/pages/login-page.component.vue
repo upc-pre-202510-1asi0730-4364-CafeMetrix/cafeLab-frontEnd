@@ -1,6 +1,6 @@
 <template>
   <div class="login-page">
-    <Toolbarinit />
+    <HeaderBarInit />
     <div class="login-page-content">
       <LoginForm />
     </div>
@@ -9,13 +9,12 @@
 
 <script>
 import LoginForm from '../components/login-form.component.vue';
-import Toolbarinit from '../../public/components/toolbarinit.component.vue';
-
+import HeaderBarInit from "../../public/components/headerBarInit.vue";
 export default {
   name: 'LoginPage',
   components: {
     LoginForm,
-    Toolbarinit
+    HeaderBarInit
   }
 };
 </script>
