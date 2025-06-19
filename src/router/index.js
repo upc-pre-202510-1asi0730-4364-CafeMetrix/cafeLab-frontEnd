@@ -4,19 +4,15 @@ import { useAuthService } from "../auth/services/authService.js";
 import SelectPlan from "../subscription/components/select-plan.vue";
 import ConfirmPlan from "../subscription/components/confirm-plan.vue";
 import SupplierPage from "../supply/page/SupplierPage.vue";
-import CuppingSessionList from '../sensory-evaluation/components/CuppingSessionList.vue'
-import CuppingSessionDetail from '../sensory-evaluation/components/CuppingSessionDetail.vue'
+
 import InventoryView from '../administration/pages/InventoryView.vue'
 import CostRegisterWizard from '../administration/pages/CostRegisterWizard.vue'
 import CoffeeLots from '../coffee-lot/pages/LotsPage.vue'
 
 import DefectList from '../roasting/components/DefectList.vue';
 import DefectDetails from '../roasting/components/DefectDetails.vue';
-import TastingPattern from '../sensory-evaluation/components/TastingPattern.vue';
-import TastingPatternOverview from '../sensory-evaluation/components/TastingPatternOverview.vue'
 import Calibration from '../roasting/components/Calibration.vue';
 import RoastingPage from '../roasting/pages/RoastingPage.vue'
-import SensoryEvaluationPage from '../sensory-evaluation/pages/SensoryEvaluationPage.vue'
 import DefectPage from '../roasting/pages/DefectPage.vue'
 import CalibrationPage from '../roasting/pages/CalibrationPage.vue'
 
@@ -47,28 +43,14 @@ const routes = [
     { path: '/select-plan', name: 'select-plan', component: SelectPlan },
     { path: '/confirm-plan', name: 'confirm-plan', component: ConfirmPlan },
     { path: '/dashboard/barista',       name: 'baristaDashboard',    component: BaristaDashboard,        meta: { title: 'Barista Dashboard' } },
-    { path: '/cata', name: 'CuppingSessions', component: CuppingSessionList },
 
-    {
-        path: '/cata/:id',
-        name: 'CuppingSessionDetail',
-        component: CuppingSessionDetail
-    },
-    {
-        path: '/comparar-catas/:ids',
-        name: 'cupping-comparison',
-        component: () => import('../sensory-evaluation/components/CuppingComparison.vue')
-    },
+
     { path: '/defects', name: 'defectList', component: DefectList, },
     { path: '/defect/:defectId', name: 'defectDetails',  component: DefectDetails, props: true, },
-    { path: '/tasting-pattern', name: 'TastingPattern', component: () => import('../sensory-evaluation/components/TastingPattern.vue')},
-    { path: '/tasting-pattern-overview', name: 'TastingPatternOverview', component: () => import('../sensory-evaluation/components/TastingPatternOverview.vue')},
-    { path: '/tasting-pattern-overview', name: 'TastingPatternOverview', component: TastingPatternOverview, },
     { path: '/calibration', name: 'Calibration', component: Calibration,},
     { path: '/roasting', component: RoastingPage },
     { path: '/roasting/defects', component: DefectPage },
     { path: '/roasting/calibrations', component: CalibrationPage },
-    { path: '/sensory-evaluation', component: SensoryEvaluationPage },
 
 
 
