@@ -291,7 +291,8 @@
     "profile": "Profile",
     "contact": "Contact Us",
     "logout": "Logout",
-    "logoutConfirm": "Are you sure you want to log out?"
+    "logoutConfirm": "Are you sure you want to log out?",
+    "home": "Home"
 
   },
   "breadcrumb": {
@@ -363,5 +364,8 @@
     "cuppingSession": "Cupping Session",
     "tips": "Tips",
     "tipsPlaceholder": "Write useful tips for this recipe..."
+  },
+  "ERRORS": {
+    "LOAD_LOTS": "Lots no found"
   }
 }

@@ -378,7 +378,7 @@ async function loadLots() {
     console.log('Lotes cargados:', lots.value);
   } catch (err) {
     console.error('Error al cargar lotes:', err);
-    error.value = t('ERROR.LOAD_LOTS');
+    error.value = t('ERRORS.LOAD_LOTS');
     lots.value = []; // Garantiza que se actualice
   } finally {
     loading.value = false;

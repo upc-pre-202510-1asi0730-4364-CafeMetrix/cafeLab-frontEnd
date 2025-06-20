@@ -113,6 +113,7 @@
       "CARD_HOLDER_INVALID": "El nombre del titular debe tener al menos 2 caracteres",
       "COUNTRY_REQUIRED": "El país es obligatorio",
       "COUNTRY_INVALID": "El país debe tener al menos 2 caracteres"
+
     },
     "EXAMPLES": {
       "EMAIL": "Ejemplo: usuario@ejemplo.com",
@@ -292,7 +293,8 @@
     "profile": "Perfil",
     "contact": "Contact Us",
     "logout": "Cerrar sesión",
-    "logoutConfirm": "¿Estás seguro de que deseas cerrar sesión?"
+    "logoutConfirm": "¿Estás seguro de que deseas cerrar sesión?",
+    "home": "Home"
   },
   "breadcrumb": {
     "home": "Inicio",
@@ -363,5 +365,8 @@
     "cuppingSession": "Sesión de Cata",
     "tips": "Consejos",
     "tipsPlaceholder": "Escribe consejos útiles para esta receta..."
+  },
+  "ERRORS": {
+    "LOAD_LOTS": "Lotes no encontrados"
   }
 }
