@@ -47,8 +47,8 @@
     <div v-if="showRegisterModal" class="modal">
       <div class="modal-content calibration-modal-content">
         <span class="close" @click="closeRegisterModal">&times;</span>
-        <h2 class="modal-title">{{ t('CALIBRATION.REGISTER_MODAL_TITLE') }}</h2>
-        <form @submit.prevent="editMode ? updateCalibration() : registerCalibration" class="calibration-form">
+        <h2 class="modal-title">{{ editMode ? t('CALIBRATION.EDIT_MODAL_TITLE') : t('CALIBRATION.REGISTER_MODAL_TITLE') }}</h2>
+        <form @submit.prevent="editMode ? updateCalibration() : registerCalibration()" class="calibration-form">
           <div class="form-row">
             <div class="form-group">
               <label>{{ t('CALIBRATION.FORM_SELECT_METHOD') }}</label>
@@ -111,16 +111,16 @@
               <input type="checkbox" id="cb3" disabled />
             </div>
           </div>
-          <button type="submit" class="register-btn-modern">{{ t('CALIBRATION.FORM_SUBMIT_REGISTER') }}</button>
+          <button type="submit" class="register-btn-modern">{{ editMode ? t('CALIBRATION.FORM_SUBMIT_EDIT') : t('CALIBRATION.FORM_SUBMIT_REGISTER') }}</button>
         </form>
       </div>
     </div>
 
-    <!-- Modal para ver/editar calibración -->
-    <div v-if="showViewModal || showEditModal" class="modal">
-      <div class="modal-content calibration-modal-content">
-        <span class="close" @click="showViewModal ? closeViewModal() : closeEditModal()">&times;</span>
-        <h2 class="modal-title">{{ showEditModal ? t('CALIBRATION.EDIT_MODAL_TITLE') : t('CALIBRATION.VIEW_MODAL_TITLE') }}</h2>
+    <!-- Modal para ver calibración -->
+    <div v-if="showViewModal" class="modal">
+       <div class="modal-content calibration-modal-content">
+        <span class="close" @click="closeViewModal">&times;</span>
+        <h2 class="modal-title">{{ t('CALIBRATION.VIEW_MODAL_TITLE') }}</h2>
         <form v-if="showEditModal" @submit.prevent="saveEditCalibration" class="calibration-form">
           <div class="form-row">
             <div class="form-group">
@@ -215,11 +215,17 @@
 import axios from 'axios';
 import { getAllCalibrations, saveCalibration } from '../service';
 import HeaderBar from '../../public/components/headerBar.vue';
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 export default {
+  name: 'Calibration',
+  components: {
+    HeaderBar,
+  },
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   data() {
     return {
       showRegisterModal: false,
@@ -239,7 +245,6 @@ export default {
       },
       searchTerm: '',
       showViewModal: false,
-      showEditModal: false,
       selectedCalibration: null,
       editCalibrationData: {},
     };
@@ -252,7 +257,7 @@ export default {
         (cal.equipment && cal.equipment.toLowerCase().includes(term)) ||
         (cal.date && cal.date.toLowerCase().includes(term))
       );
-    }
+    },
   },
   methods: {
     loadCalibrations() {
@@ -268,8 +273,7 @@ export default {
       axios.post('/api/calibrations', this.newCalibration)
         .then(() => {
           this.loadCalibrations();
-          this.showRegisterModal = false;
-          this.resetForm();
+          this.closeRegisterModal();
         })
         .catch(error => {
           console.error('Error al registrar calibración:', error);
@@ -291,16 +295,8 @@ export default {
     },
     resetForm() {
       this.newCalibration = {
-        method: '',
-        grind: '',
-        opening: '',
-        volume: '',
-        equipment: '',
-        date: '',
-        volumeFinal: '',
-        visualization: '',
-        comments: '',
-        notes: '',
+        method: '', grind: '', opening: '', volume: '', equipment: '',
+        date: '', volumeFinal: '', visualization: '', comments: '', notes: '',
       };
     },
     closeViewModal() {
@@ -308,32 +304,26 @@ export default {
     },
     handleFileUpload(event) {
       const file = event.target.files[0];
-      this.newCalibration.visualization = file;
-    },
-    async saveEditCalibration() {
-      try {
-        await axios.put(`/api/calibrations/${this.editCalibrationData.id}`, this.editCalibrationData);
-        this.loadCalibrations();
-        this.showEditModal = false;
-      } catch (e) {
-        console.error('Error al guardar calibración', e);
+      if (this.editMode) {
+        this.editCalibrationData.visualization = file;
+      } else {
+        this.newCalibration.visualization = file;
       }
     },
     updateCalibration() {
-      axios.put(`/api/calibrations/${this.newCalibration.id}`, this.newCalibration)
+      axios.put(`/api/calibrations/${this.editCalibrationData.id}`, this.editCalibrationData)
         .then(() => {
           this.loadCalibrations();
-          this.showRegisterModal = false;
-          this.resetForm();
+          this.closeRegisterModal();
         })
         .catch(error => {
-          console.error('Error al actualizar calibración', error);
+          console.error('Error al actualizar calibración:', error);
         });
-    }
+    },
   },
   mounted() {
     this.loadCalibrations();
-  }
+  },
 };
 </script>
 
