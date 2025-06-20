@@ -1,24 +1,27 @@
 <template>
   <div class="defect-details-modal">
     <div class="defect-card">
-      <h2>Ficha de defecto</h2>
+      <h2>{{ t('DEFECTS.DETAILS_MODAL_TITLE') }}</h2>
       <div class="defect-info">
         <div class="causes-block">
-          <span class="block-title">Causas probables</span>
-          <div class="block-content">{{ defect.causas || 'No disponible' }}</div>
+          <span class="block-title">{{ t('DEFECTS.DETAILS_PROBABLE_CAUSES') }}</span>
+          <div class="block-content">{{ defect.causas || t('DEFECTS.NOT_AVAILABLE') }}</div>
         </div>
         <div class="solutions-block">
-          <span class="block-title">Soluciones recomendadas</span>
-          <div class="block-content">{{ defect.soluciones || 'No disponible' }}</div>
+          <span class="block-title">{{ t('DEFECTS.DETAILS_RECOMMENDED_SOLUTIONS') }}</span>
+          <div class="block-content">{{ defect.soluciones || t('DEFECTS.NOT_AVAILABLE') }}</div>
         </div>
       </div>
-      <button @click="$emit('close')" class="close-btn">Cerrar</button>
+      <button @click="$emit('close')" class="close-btn">{{ t('DEFECTS.CLOSE_BUTTON') }}</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { defineProps, defineEmits } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 defineProps({
   defect: {

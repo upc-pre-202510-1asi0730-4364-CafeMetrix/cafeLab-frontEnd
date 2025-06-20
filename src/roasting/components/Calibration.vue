@@ -3,26 +3,26 @@
     <!-- Breadcrumb -->
     <div class="breadcrumb-container">
       <div class="breadcrumb">
-        {{ $t('breadcrumb.home') }} > <strong>{{ $t('breadcrumb.calibration') }}</strong>
+        {{ t('breadcrumb.home') }} > <strong>{{ t('CALIBRATION.PAGE_TITLE') }}</strong>
       </div>
     </div>
 
     <!-- Filtros de búsqueda -->
     <div class="filters">
-      <input type="text" v-model="searchTerm" placeholder="Buscar por método, equipo o fecha..." class="search-bar" />
+      <input type="text" v-model="searchTerm" :placeholder="t('CALIBRATION.SEARCH_PLACEHOLDER')" class="search-bar" />
     </div>
 
     <!-- Tabla de calibraciones -->
     <div class="calibrations-table-container">
-      <h3>Calibraciones</h3>
+      <h3>{{ t('CALIBRATION.TABLE_TITLE') }}</h3>
       <table class="calibration-table">
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Método</th>
-            <th>Equipo</th>
-            <th>Apertura (mm)</th>
-            <th>Acción</th>
+            <th>{{ t('CALIBRATION.TABLE_HEADER_NAME') }}</th>
+            <th>{{ t('CALIBRATION.TABLE_HEADER_METHOD') }}</th>
+            <th>{{ t('CALIBRATION.TABLE_HEADER_EQUIPMENT') }}</th>
+            <th>{{ t('CALIBRATION.TABLE_HEADER_OPENING') }}</th>
+            <th>{{ t('CALIBRATION.TABLE_HEADER_ACTION') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -41,69 +41,69 @@
     </div>
 
     <!-- Botón para registrar nueva calibración -->
-    <button @click="showRegisterModal = true" class="register-btn">Registrar Nueva Calibración</button>
+    <button @click="showRegisterModal = true" class="register-btn">{{ t('CALIBRATION.REGISTER_BUTTON') }}</button>
 
     <!-- Modal para registrar o editar calibración -->
     <div v-if="showRegisterModal" class="modal">
       <div class="modal-content calibration-modal-content">
         <span class="close" @click="closeRegisterModal">&times;</span>
-        <h2 class="modal-title">Registrar Calibracion</h2>
+        <h2 class="modal-title">{{ t('CALIBRATION.REGISTER_MODAL_TITLE') }}</h2>
         <form @submit.prevent="editMode ? updateCalibration() : registerCalibration" class="calibration-form">
           <div class="form-row">
             <div class="form-group">
-              <label>Selección de Método</label>
+              <label>{{ t('CALIBRATION.FORM_SELECT_METHOD') }}</label>
               <select v-model="newCalibration.method" required>
-                <option value="">Seleccione Método</option>
-                <option>Espresso</option>
-                <option>Filtrado</option>
+                <option value="">{{ t('CALIBRATION.FORM_SELECT_METHOD_PLACEHOLDER') }}</option>
+                <option>{{ t('CALIBRATION.METHOD_ESPRESSO') }}</option>
+                <option>{{ t('CALIBRATION.METHOD_FILTER') }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label>N° de molienda</label>
+              <label>{{ t('CALIBRATION.FORM_GRIND_NUMBER') }}</label>
               <input type="text" v-model="newCalibration.grind" required />
             </div>
             <div class="form-group">
-              <label>Apertura (mm)</label>
+              <label>{{ t('CALIBRATION.FORM_OPENING') }}</label>
               <input type="number" v-model="newCalibration.opening" required />
             </div>
             <div class="form-group">
-              <label>Volumen en taza (ml)</label>
+              <label>{{ t('CALIBRATION.FORM_CUP_VOLUME') }}</label>
               <input type="number" v-model="newCalibration.volume" required />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Selección de equipo</label>
+              <label>{{ t('CALIBRATION.FORM_SELECT_EQUIPMENT') }}</label>
               <select v-model="newCalibration.equipment" required>
-                <option value="">Seleccione Equipo</option>
-                <option>Maquina Espresso</option>
-                <option>Maquina Filtrado</option>
+                <option value="">{{ t('CALIBRATION.FORM_SELECT_EQUIPMENT_PLACEHOLDER') }}</option>
+                <option>{{ t('CALIBRATION.EQUIPMENT_ESPRESSO') }}</option>
+                <option>{{ t('CALIBRATION.EQUIPMENT_FILTER') }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Fecha de calibración</label>
+              <label>{{ t('CALIBRATION.FORM_DATE') }}</label>
               <input type="date" v-model="newCalibration.date" required />
             </div>
             <div class="form-group">
-              <label>Volumen final (ml)</label>
+              <label>{{ t('CALIBRATION.FORM_FINAL_VOLUME') }}</label>
               <input type="number" v-model="newCalibration.volumeFinal" required />
             </div>
             <div class="form-group file-group">
-              <label>Visualización</label>
+              <label>{{ t('CALIBRATION.FORM_VISUALIZATION') }}</label>
               <label class="file-label">
                 <input type="file" @change="handleFileUpload" style="display:none;" />
-                <span class="file-btn">Adjuntar muestras <i class="fa fa-upload"></i></span>
+                <span class="file-btn">{{ t('CALIBRATION.FORM_ATTACH_SAMPLES') }} <i class="fa fa-upload"></i></span>
               </label>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group flex-2">
-              <label>Comentarios:</label>
-              <textarea v-model="newCalibration.comments" placeholder="La densidad del espresso puede variar entre 0.95-1.05 g/mL"></textarea>
+              <label>{{ t('CALIBRATION.FORM_COMMENTS') }}</label>
+              <textarea v-model="newCalibration.comments" :placeholder="t('CALIBRATION.FORM_COMMENTS_PLACEHOLDER')"></textarea>
             </div>
             <div class="form-group flex-2">
-              <label>Notas:</label>
-              <textarea v-model="newCalibration.notes" placeholder="A mayor altitud, menor punto de ebullición del agua"></textarea>
+              <label>{{ t('CALIBRATION.FORM_NOTES') }}</label>
+              <textarea v-model="newCalibration.notes" :placeholder="t('CALIBRATION.FORM_NOTES_PLACEHOLDER')"></textarea>
             </div>
             <div class="checkbox-group">
               <input type="checkbox" id="cb1" disabled />
@@ -111,7 +111,7 @@
               <input type="checkbox" id="cb3" disabled />
             </div>
           </div>
-          <button type="submit" class="register-btn-modern">Registrar Calibracion</button>
+          <button type="submit" class="register-btn-modern">{{ t('CALIBRATION.FORM_SUBMIT_REGISTER') }}</button>
         </form>
       </div>
     </div>
@@ -120,62 +120,62 @@
     <div v-if="showViewModal || showEditModal" class="modal">
       <div class="modal-content calibration-modal-content">
         <span class="close" @click="showViewModal ? closeViewModal() : closeEditModal()">&times;</span>
-        <h2 class="modal-title">{{ showEditModal ? 'Editar Calibración' : 'Ficha de Calibración' }}</h2>
+        <h2 class="modal-title">{{ showEditModal ? t('CALIBRATION.EDIT_MODAL_TITLE') : t('CALIBRATION.VIEW_MODAL_TITLE') }}</h2>
         <form v-if="showEditModal" @submit.prevent="saveEditCalibration" class="calibration-form">
           <div class="form-row">
             <div class="form-group">
-              <label>Selección de Método</label>
+              <label>{{ t('CALIBRATION.FORM_SELECT_METHOD') }}</label>
               <select v-model="editCalibrationData.method" required>
-                <option value="">Seleccione Método</option>
-                <option>Espresso</option>
-                <option>Filtrado</option>
+                <option value="">{{ t('CALIBRATION.FORM_SELECT_METHOD_PLACEHOLDER') }}</option>
+                <option>{{ t('CALIBRATION.METHOD_ESPRESSO') }}</option>
+                <option>{{ t('CALIBRATION.METHOD_FILTER') }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label>N° de molienda</label>
+              <label>{{ t('CALIBRATION.FORM_GRIND_NUMBER') }}</label>
               <input type="text" v-model="editCalibrationData.grind" required />
             </div>
             <div class="form-group">
-              <label>Apertura (mm)</label>
+              <label>{{ t('CALIBRATION.FORM_OPENING') }}</label>
               <input type="number" v-model="editCalibrationData.opening" required />
             </div>
             <div class="form-group">
-              <label>Volumen en taza (ml)</label>
+              <label>{{ t('CALIBRATION.FORM_CUP_VOLUME') }}</label>
               <input type="number" v-model="editCalibrationData.volume" required />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Selección de equipo</label>
+              <label>{{ t('CALIBRATION.FORM_SELECT_EQUIPMENT') }}</label>
               <select v-model="editCalibrationData.equipment" required>
-                <option value="">Seleccione Equipo</option>
-                <option>Maquina Espresso</option>
-                <option>Maquina Filtrado</option>
+                <option value="">{{ t('CALIBRATION.FORM_SELECT_EQUIPMENT_PLACEHOLDER') }}</option>
+                <option>{{ t('CALIBRATION.EQUIPMENT_ESPRESSO') }}</option>
+                <option>{{ t('CALIBRATION.EQUIPMENT_FILTER') }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Fecha de calibración</label>
+              <label>{{ t('CALIBRATION.FORM_DATE') }}</label>
               <input type="date" v-model="editCalibrationData.date" required />
             </div>
             <div class="form-group">
-              <label>Volumen final (ml)</label>
+              <label>{{ t('CALIBRATION.FORM_FINAL_VOLUME') }}</label>
               <input type="number" v-model="editCalibrationData.volumeFinal" required />
             </div>
             <div class="form-group file-group">
-              <label>Visualización</label>
+              <label>{{ t('CALIBRATION.FORM_VISUALIZATION') }}</label>
               <label class="file-label">
                 <input type="file" @change="handleFileUpload" style="display:none;" />
-                <span class="file-btn">Adjuntar muestras <i class="fa fa-upload"></i></span>
+                <span class="file-btn">{{ t('CALIBRATION.FORM_ATTACH_SAMPLES') }} <i class="fa fa-upload"></i></span>
               </label>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group flex-2">
-              <label>Comentarios:</label>
+              <label>{{ t('CALIBRATION.FORM_COMMENTS') }}</label>
               <textarea v-model="editCalibrationData.comments"></textarea>
             </div>
             <div class="form-group flex-2">
-              <label>Notas:</label>
+              <label>{{ t('CALIBRATION.FORM_NOTES') }}</label>
               <textarea v-model="editCalibrationData.notes"></textarea>
             </div>
             <div class="checkbox-group">
@@ -184,61 +184,27 @@
               <input type="checkbox" id="cb3" disabled />
             </div>
           </div>
-          <button type="submit" class="register-btn-modern">Guardar Cambios</button>
+          <button type="submit" class="register-btn-modern">{{ t('CALIBRATION.FORM_SUBMIT_EDIT') }}</button>
         </form>
         <form v-else class="calibration-form">
           <div class="form-row">
             <div class="form-group">
-              <label>Selección de Método</label>
+              <label>{{ t('CALIBRATION.FORM_SELECT_METHOD') }}</label>
               <input type="text" :value="selectedCalibration?.method" disabled />
             </div>
             <div class="form-group">
-              <label>N° de molienda</label>
+              <label>{{ t('CALIBRATION.FORM_GRIND_NUMBER') }}</label>
               <input type="text" :value="selectedCalibration?.grind" disabled />
             </div>
             <div class="form-group">
-              <label>Apertura (mm)</label>
-              <input type="number" :value="selectedCalibration?.opening" disabled />
+              <label>{{ t('CALIBRATION.FORM_OPENING') }}</label>
+              <input type="text" :value="selectedCalibration?.opening" disabled />
             </div>
             <div class="form-group">
-              <label>Volumen en taza (ml)</label>
-              <input type="number" :value="selectedCalibration?.volume" disabled />
+              <label>{{ t('CALIBRATION.FORM_CUP_VOLUME') }}</label>
+              <input type="text" :value="selectedCalibration?.volume" disabled />
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Selección de equipo</label>
-              <input type="text" :value="selectedCalibration?.equipment" disabled />
-            </div>
-            <div class="form-group">
-              <label>Fecha de calibración</label>
-              <input type="date" :value="selectedCalibration?.date" disabled />
-            </div>
-            <div class="form-group">
-              <label>Volumen final (ml)</label>
-              <input type="number" :value="selectedCalibration?.volumeFinal" disabled />
-            </div>
-            <div class="form-group file-group">
-              <label>Visualización</label>
-              <input type="text" :value="selectedCalibration?.visualization" disabled />
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group flex-2">
-              <label>Comentarios:</label>
-              <textarea :value="selectedCalibration?.comments" disabled></textarea>
-            </div>
-            <div class="form-group flex-2">
-              <label>Notas:</label>
-              <textarea :value="selectedCalibration?.notes" disabled></textarea>
-            </div>
-            <div class="checkbox-group">
-              <input type="checkbox" id="cb1" disabled />
-              <input type="checkbox" id="cb2" disabled />
-              <input type="checkbox" id="cb3" disabled />
-            </div>
-          </div>
-          <button type="button" class="register-btn-modern" @click="closeViewModal">Cerrar</button>
         </form>
       </div>
     </div>
@@ -251,6 +217,7 @@ import { getAllCalibrations, saveCalibration } from '../service';
 import HeaderBar from '../../public/components/headerBar.vue';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 export default {
   data() {

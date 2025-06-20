@@ -1,12 +1,13 @@
 <template>
   <div>
-    <h1>Defectos</h1>
+    <h1>{{ t('DEFECTS.PAGE_TITLE') }}</h1>
     <DefectList @select-defect="selectDefect" />
     <DefectDetails v-if="selectedDefect" :defect="selectedDefect" />
   </div>
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import DefectList from '../components/DefectList.vue'
 import DefectDetails from '../components/DefectDetails.vue'
 
@@ -15,6 +16,10 @@ export default {
   components: {
     DefectList,
     DefectDetails
+  },
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
   data() {
     return {

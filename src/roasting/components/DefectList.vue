@@ -6,28 +6,28 @@
     <!-- Breadcrumb -->
     <div class="breadcrumb-container">
       <div class="breadcrumb">
-        {{ $t('breadcrumb.home') }} > <strong>{{ $t('breadcrumb.libraryDefects') }}</strong>
+        {{ t('breadcrumb.home') }} > <strong>{{ t('DEFECTS.LIBRARY_TITLE') }}</strong>
       </div>
     </div>
 
     <!-- Filtros de búsqueda modernos -->
     <div class="filters-row">
       <div class="filter-block">
-        <label class="filter-label">Tipo de Café</label>
+        <label class="filter-label">{{ t('DEFECTS.SEARCH_CAFE_TYPE') }}</label>
         <div class="filter-input-group">
-          <input type="text" v-model="searchCafe" placeholder="Buscar café..." class="search-bar" />
+          <input type="text" v-model="searchCafe" :placeholder="t('DEFECTS.SEARCH_CAFE_PLACEHOLDER')" class="search-bar" />
           <select v-model="selectedCafe" class="dropdown">
-            <option value="">Todos</option>
+            <option value="">{{ t('DEFECTS.SELECT_ALL') }}</option>
             <option v-for="cafe in uniqueCafes" :key="cafe" :value="cafe">{{ cafe }}</option>
           </select>
         </div>
       </div>
       <div class="filter-block">
-        <label class="filter-label">Tipo de Defecto</label>
+        <label class="filter-label">{{ t('DEFECTS.SEARCH_DEFECT_TYPE') }}</label>
         <div class="filter-input-group">
-          <input type="text" v-model="searchDefecto" placeholder="Buscar defecto..." class="search-bar" />
+          <input type="text" v-model="searchDefecto" :placeholder="t('DEFECTS.SEARCH_DEFECT_PLACEHOLDER')" class="search-bar" />
           <select v-model="selectedDefecto" class="dropdown">
-            <option value="">Todos</option>
+            <option value="">{{ t('DEFECTS.SELECT_ALL') }}</option>
             <option v-for="defecto in uniqueDefectos" :key="defecto" :value="defecto">{{ defecto }}</option>
           </select>
         </div>
@@ -39,11 +39,11 @@
       <table class="defect-table">
         <thead>
         <tr>
-          <th>Peso</th>
-          <th>Café</th>
-          <th>Defecto</th>
-          <th>Porcentaje</th>
-          <th>Acción</th>
+          <th>{{ t('DEFECTS.TABLE_HEADER_WEIGHT') }}</th>
+          <th>{{ t('DEFECTS.TABLE_HEADER_CAFE') }}</th>
+          <th>{{ t('DEFECTS.TABLE_HEADER_DEFECT') }}</th>
+          <th>{{ t('DEFECTS.TABLE_HEADER_PERCENTAGE') }}</th>
+          <th>{{ t('DEFECTS.TABLE_HEADER_ACTION') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -63,35 +63,35 @@
     </div>
 
     <!-- Botón para agregar un defecto -->
-    <button @click="showAddDefectModal = true" class="add-btn-modern">Agregar defecto</button>
+    <button @click="showAddDefectModal = true" class="add-btn-modern">{{ t('DEFECTS.ADD_DEFECT_BUTTON') }}</button>
 
     <!-- Modal para agregar defecto -->
     <div v-if="showAddDefectModal" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeAddDefectModal">&times;</span>
-        <h2>Agregar Defecto</h2>
+        <h2>{{ t('DEFECTS.ADD_MODAL_TITLE') }}</h2>
         <form @submit.prevent="addNewDefect">
           <div>
-            <label for="name" class="form-label">Nombre:</label>
+            <label for="name" class="form-label">{{ t('DEFECTS.FORM_LABEL_NAME') }}</label>
             <input type="text" id="name" v-model="newDefect.name" required />
           </div>
           <div>
-            <label for="description" class="form-label">Descripción:</label>
+            <label for="description" class="form-label">{{ t('DEFECTS.FORM_LABEL_DESCRIPTION') }}</label>
             <input type="text" id="description" v-model="newDefect.description" required />
           </div>
           <div>
-            <label for="severity" class="form-label">Severidad:</label>
+            <label for="severity" class="form-label">{{ t('DEFECTS.FORM_LABEL_SEVERITY') }}</label>
             <input type="text" id="severity" v-model="newDefect.severity" required />
           </div>
           <div>
-            <label for="category" class="form-label">Categoría:</label>
+            <label for="category" class="form-label">{{ t('DEFECTS.FORM_LABEL_CATEGORY') }}</label>
             <input type="text" id="category" v-model="newDefect.category" required />
           </div>
           <div>
-            <label for="solution" class="form-label">Solución:</label>
+            <label for="solution" class="form-label">{{ t('DEFECTS.FORM_LABEL_SOLUTION') }}</label>
             <input type="text" id="solution" v-model="newDefect.solution" required />
           </div>
-          <button type="submit" class="add-submit-btn">Agregar</button>
+          <button type="submit" class="add-submit-btn">{{ t('DEFECTS.FORM_SUBMIT_BUTTON') }}</button>
         </form>
       </div>
     </div>
@@ -100,15 +100,15 @@
     <div v-if="showModal" class="modal">
       <div class="modal-content defect-modal-content">
         <span class="close" @click="closeModal">&times;</span>
-        <h2>Ficha de defecto</h2>
+        <h2>{{ t('DEFECTS.DETAILS_MODAL_TITLE') }}</h2>
         <div class="defect-info">
           <div class="causes-block">
-            <span class="block-title">Causas probables</span>
-            <div class="block-content">{{ selectedDefect?.causas || 'No disponible' }}</div>
+            <span class="block-title">{{ t('DEFECTS.DETAILS_PROBABLE_CAUSES') }}</span>
+            <div class="block-content">{{ selectedDefect?.causas || t('DEFECTS.NOT_AVAILABLE') }}</div>
           </div>
           <div class="solutions-block">
-            <span class="block-title">Soluciones recomendadas</span>
-            <div class="block-content">{{ selectedDefect?.soluciones || 'No disponible' }}</div>
+            <span class="block-title">{{ t('DEFECTS.DETAILS_RECOMMENDED_SOLUTIONS') }}</span>
+            <div class="block-content">{{ selectedDefect?.soluciones || t('DEFECTS.NOT_AVAILABLE') }}</div>
           </div>
         </div>
       </div>
@@ -124,6 +124,7 @@
 import HeaderBar from '../../public/components/headerBar.vue'
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { getAllDefects, createDefect } from '../service';
 
 export default {
@@ -131,6 +132,7 @@ export default {
     HeaderBar, // Registra HeaderBar (CuppingHeader.vue)
   },
   setup() {
+    const { t } = useI18n();
     const router = useRouter(); // Instanciamos el enrutador
     const defects = ref([]);
     const showModal = ref(false);
@@ -164,7 +166,7 @@ export default {
         errorMsg.value = '';
       } catch (error) {
         console.error('Error al cargar defectos:', error);
-        errorMsg.value = 'No se pudieron cargar los defectos.';
+        errorMsg.value = t('DEFECTS.ERROR_LOAD');
       }
     };
 
@@ -178,7 +180,7 @@ export default {
         errorMsg.value = '';
       } catch (error) {
         console.error('Error al agregar defecto:', error);
-        errorMsg.value = 'No se pudo agregar el defecto.';
+        errorMsg.value = t('DEFECTS.ERROR_ADD');
       }
     };
 
@@ -200,6 +202,7 @@ export default {
     });
 
     return {
+      t,
       defects,
       showModal,
       showAddDefectModal,
