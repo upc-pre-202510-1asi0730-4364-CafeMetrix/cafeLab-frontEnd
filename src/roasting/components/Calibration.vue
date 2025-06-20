@@ -247,7 +247,10 @@
 
 <script>
 import axios from 'axios';
-import { getCalibrations } from '../service';
+import { getAllCalibrations, saveCalibration } from '../service';
+import HeaderBar from '../../public/components/headerBar.vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default {
   data() {
@@ -286,7 +289,7 @@ export default {
   },
   methods: {
     loadCalibrations() {
-      getCalibrations()
+      getAllCalibrations()
         .then(response => {
           this.calibrationRecords = response.data;
         })

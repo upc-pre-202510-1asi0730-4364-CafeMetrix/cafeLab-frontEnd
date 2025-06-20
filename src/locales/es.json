@@ -368,5 +368,33 @@
   },
   "ERRORS": {
     "LOAD_LOTS": "Lotes no encontrados"
+  },
+  "ROAST_FLAVOR_CORRELATION": {
+    "BREADCRUMB_BASE": "Patrones de relación Tostado - Cata",
+    "BREADCRUMB_LIBRARY": "Biblioteca de Relación Tostado - Cata",
+    "HOME": "Inicio",
+    "VIEW_TITLE_PATTERNS": "Patrones de relación Tostado - Cata",
+    "SESSIONS_TITLE": "Selecciones las sesiones de cata a comparar",
+    "TABLE_HEADER_NAME": "Nombre",
+    "TABLE_HEADER_DATE": "Fecha",
+    "LIBRARY_BUTTON": "Biblioteca de Relación",
+    "CHART_TITLE": "Puntos de coincidencia",
+    "CHART_SUBTITLE": "Concentración de los tuestes exitosos (en morado) en términos de temperatura y tiempo.",
+    "CHART_INFO": "La agrupación de puntos entre 208-215°C y 11.5-12.3 minutos indica el \"núcleo de consistencia\" donde se logran perfiles sensoriales similares y exitosos.",
+    "VIEW_TITLE_LIBRARY": "Biblioteca de Relación Tostado - Cata",
+    "TEMPERATURE_CARD_TITLE": "Temperatura de tostado",
+    "PROFILE_CARD_TITLE": "Curva de temperatura (perfil de tueste)",
+    "TIME_CARD_TITLE": "Tiempo de tostado",
+    "SPEED_CARD_TITLE": "Velocidad de desarrollo",
+    "SCATTER_CHART_LABEL_INSIDE": "Núcleo de consistencia",
+    "SCATTER_CHART_LABEL_OUTSIDE": "Fuera de núcleo de coincidencia",
+    "CHART_AXIS_TIME": "Tiempo (min)",
+    "CHART_AXIS_TEMP": "Temperatura (°C)",
+    "LINE_CHART_ACIDITY_FAST": "Acidez (Tueste Rápido)",
+    "LINE_CHART_COMPLEXITY_FAST": "Complejidad (Tueste Rápido)",
+    "LINE_CHART_ACIDITY_SLOW": "Acidez (Tueste Lento)",
+    "LINE_CHART_COMPLEXITY_SLOW": "Complejidad (Tueste Lento)",
+    "LINE_CHART_AXIS_INTENSITY": "Intensidad (0 - 100)",
+    "LINE_CHART_AXIS_TIME": "Tiempo de Tostado (min)"
   }
 }
