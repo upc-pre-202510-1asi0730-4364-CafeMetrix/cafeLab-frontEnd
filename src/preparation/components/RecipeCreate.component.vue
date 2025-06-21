@@ -248,110 +248,82 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.component.vue';
-import { RecipeManager } from '../stores/recipeManager';
-import { PortfolioManager } from '../stores/portfolioManager';
+import { RecipeService } from '../services/recipe.service';
+import { PortfolioService } from '../services/portfolio.service';
 import HeaderBar from "../../public/components/headerBar.vue";
+
 const router = useRouter();
 
-// Tipo de receta (extracción o espresso)
-const recipeType = ref('extraction');
+// Servicios
+const recipeService = new RecipeService();
+const portfolioService = new PortfolioService();
 
-// Estado para la nueva receta
+// Estados
+const recipeType = ref('extraction');
 const newRecipe = ref({
   name: '',
-  image: 'https://via.placeholder.com/400x300?text=Café',
+  type: 'extraction',
+  image: '',
+  preparationTime: '',
   lotId: '',
+  roastProfileId: '',
   extractionMethod: 'french-press',
   grindSize: 'fino',
-  roastProfileId: '',
-  ratio: '1:12',
+  ratio: '',
   cuppingSessionId: '',
   portfolioId: '',
   waterAmount: '',
   waterUnit: 'ml',
   coffeeAmount: '',
   coffeeUnit: 'gr',
-  ingredientType: 'leche-entera',
+  ingredientType: '',
   ingredientAmount: '',
-  ingredientUnit: 'gr',
-  preparationTime: '',
-  steps: '',
+  ingredientUnit: 'ml',
+  steps: [],
   tips: ''
 });
 
 // Estados computados
-const portfolios = computed(() => PortfolioManager.getPortfolios());
-const isLoading = computed(() => RecipeManager.getIsLoading());
+const isLoading = computed(() => recipeService.getIsLoading().value);
+const error = computed(() => recipeService.getError().value);
+const portfolios = computed(() => portfolioService.getPortfolios().value);
 
 // Datos para el breadcrumb
-const breadcrumbItems = [
+const breadcrumbItems = computed(() => [
   { label: 'Inicio', path: '/dashboard' },
-  { label: 'Bebidas', path: '/recetas' },
-  { label: 'Nueva Receta de Bebida', path: '/recetas/nueva' }
-];
+  { label: 'Recetas', path: '/recetas' },
+  { label: 'Nueva Receta', path: '/recetas/crear' }
+]);
 
-// Cargar datos necesarios
+// Cargar datos iniciales
 const loadData = async () => {
-  await PortfolioManager.fetchPortfolios();
+  await portfolioService.getAllPortfolios();
 };
 
-// Navegación para cancelar
-const cancel = () => {
-  router.push('/recetas');
-};
-
-// Guardar receta
-const saveRecipe = async () => {
+// Crear receta
+const createRecipe = async () => {
   try {
-    // Adaptamos la estructura de la receta según el tipo antes de guardar
-    const recipeToSave = {
+    const recipeData = {
       ...newRecipe.value,
       type: recipeType.value,
-      ingredients: []
+      created: new Date().toISOString()
     };
     
-    // Añadir ingredientes según el tipo de receta
-    if (recipeType.value === 'extraction') {
-      if (newRecipe.value.waterAmount) {
-        recipeToSave.ingredients.push({
-          name: 'Agua',
-          quantity: newRecipe.value.waterAmount,
-          unit: newRecipe.value.waterUnit
-        });
-      }
-      
-      if (newRecipe.value.coffeeAmount) {
-        recipeToSave.ingredients.push({
-          name: 'Café',
-          quantity: newRecipe.value.coffeeAmount,
-          unit: newRecipe.value.coffeeUnit
-        });
-      }
-    } else {
-      if (newRecipe.value.ingredientAmount) {
-        recipeToSave.ingredients.push({
-          name: newRecipe.value.ingredientType.replace('-', ' '),
-          quantity: newRecipe.value.ingredientAmount,
-          unit: newRecipe.value.ingredientUnit
-        });
-      }
-    }
-    
-    // Convertir los pasos de texto a array
-    if (recipeToSave.steps) {
-      recipeToSave.steps = recipeToSave.steps
-        .split('\n')
-        .map(step => step.trim())
-        .filter(step => step !== '');
-    } else {
-      recipeToSave.steps = [];
-    }
-    
-    const createdRecipe = await RecipeManager.createRecipe(recipeToSave);
-    router.push(`/recetas/detalle/${createdRecipe.id}`);
+    await recipeService.createRecipe(recipeData);
+    router.push('/recetas');
   } catch (error) {
     console.error('Error al crear la receta:', error);
   }
+};
+
+// Añadir paso
+const addStep = () => {
+  newRecipe.value.steps.push('');
+};
+
+// Eliminar paso
+const removeStep = (index) => {
+  newRecipe.value.steps.splice(index, 1);
 };
 
 // Cargar datos al montar el componente

@@ -344,11 +344,16 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.component.vue';
-import { RecipeManager } from '../stores/recipeManager';
-import { PortfolioManager } from '../stores/portfolioManager';
+import { RecipeService } from '../services/recipe.service';
+import { PortfolioService } from '../services/portfolio.service';
 import HeaderBar from "../../public/components/headerBar.vue";
+
 const router = useRouter();
 const route = useRoute();
+
+// Servicios
+const recipeService = new RecipeService();
+const portfolioService = new PortfolioService();
 
 // Estados
 const editMode = ref(false);
@@ -366,10 +371,10 @@ const editedRecipe = ref({
 const recipeId = computed(() => parseInt(route.params.id));
 
 // Estados computados
-const recipe = computed(() => RecipeManager.getCurrentRecipe());
-const isLoading = computed(() => RecipeManager.getIsLoading());
-const error = computed(() => RecipeManager.getError());
-const portfolios = computed(() => PortfolioManager.getPortfolios());
+const recipe = computed(() => recipeService.getCurrentRecipe().value);
+const isLoading = computed(() => recipeService.getIsLoading().value);
+const error = computed(() => recipeService.getError().value);
+const portfolios = computed(() => portfolioService.getPortfolios().value);
 const portfolioName = computed(() => {
   if (!recipe.value?.portfolioId) return '';
   const portfolio = portfolios.value.find(p => p.id === recipe.value.portfolioId);
@@ -386,8 +391,8 @@ const breadcrumbItems = computed(() => [
 // Cargar datos
 const loadData = async () => {
   if (recipeId.value) {
-    await RecipeManager.fetchRecipeById(recipeId.value);
-    await PortfolioManager.fetchPortfolios();
+    await recipeService.getRecipeById(recipeId.value);
+    await portfolioService.getAllPortfolios();
     
     if (recipe.value) {
       // Clonar para evitar modificar directamente el estado
@@ -430,7 +435,7 @@ const cancelEdit = () => {
 // Guardar receta
 const saveRecipe = async () => {
   try {
-    await RecipeManager.updateRecipe(recipeId.value, editedRecipe.value);
+    await recipeService.updateRecipe(recipeId.value, editedRecipe.value);
     editMode.value = false;
   } catch (error) {
     console.error('Error al guardar la receta:', error);
@@ -445,7 +450,7 @@ const confirmDelete = () => {
 // Eliminar receta
 const deleteRecipe = async () => {
   try {
-    await RecipeManager.deleteRecipe(recipeId.value);
+    await recipeService.deleteRecipe(recipeId.value);
     // Cerrar el diálogo primero
     showDeleteConfirmation.value = false;
     

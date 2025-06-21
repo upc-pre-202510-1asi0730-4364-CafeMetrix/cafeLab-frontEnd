@@ -1,27 +1,47 @@
 import { Recipe } from '../model/recipe.entity';
-import { ApiService } from './api.service';
-import { API_ENDPOINTS } from '../../config/api.config';
+import BaseService from '../../shared/services/base.service';
+import { ref } from 'vue';
+
+// Estado reactivo
+const recipes = ref([]);
+const recipesWithoutPortfolio = ref([]);
+const isLoading = ref(false);
+const error = ref(null);
+const currentRecipe = ref(null);
 
 /**
  * Servicio para gestionar las recetas
  */
-export class RecipeService {
+export class RecipeService extends BaseService {
   constructor() {
-    this.apiService = new ApiService();
-    this.endpoint = API_ENDPOINTS.recipes;
+    super('recipes');
   }
+
+  // Getters de estado
+  getRecipes() { return recipes; }
+  getRecipesWithoutPortfolio() { return recipesWithoutPortfolio; }
+  getCurrentRecipe() { return currentRecipe; }
+  getIsLoading() { return isLoading; }
+  getError() { return error; }
   
   /**
    * Obtiene todas las recetas
    * @returns {Promise<Recipe[]>} Lista de recetas
    */
   async getAllRecipes() {
+    isLoading.value = true;
+    error.value = null;
+    
     try {
-      const recipes = await this.apiService.get(this.endpoint);
-      return recipes.map(recipe => new Recipe(recipe));
-    } catch (error) {
-      console.error('Error al obtener recetas:', error);
-      throw error;
+      const result = await this.getAll();
+      recipes.value = result.map(recipe => new Recipe(recipe));
+      return recipes.value;
+    } catch (err) {
+      error.value = err.message;
+      console.error('Error al obtener recetas:', err);
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -30,17 +50,24 @@ export class RecipeService {
    * @returns {Promise<Recipe[]>} Lista de recetas sin portafolio
    */
   async getRecipesWithoutPortfolio() {
+    isLoading.value = true;
+    error.value = null;
+    
     try {
       console.log('Buscando recetas sin portafolio...');
       
-      // MockAPI permite filtrar por portfolioId=null directamente
-      const recipesWithoutPortfolio = await this.apiService.get(`${this.endpoint}?portfolioId=null`);
-      console.log(`Recetas sin portafolio obtenidas: ${recipesWithoutPortfolio.length}`);
+      const allRecipes = await this.getAll();
+      const filteredRecipes = allRecipes.filter(recipe => !recipe.portfolioId);
+      recipesWithoutPortfolio.value = filteredRecipes.map(recipe => new Recipe(recipe));
       
-      return recipesWithoutPortfolio.map(recipe => new Recipe(recipe));
-    } catch (error) {
-      console.error('Error al obtener recetas sin portafolio:', error);
-      throw error;
+      console.log(`Recetas sin portafolio obtenidas: ${recipesWithoutPortfolio.value.length}`);
+      return recipesWithoutPortfolio.value;
+    } catch (err) {
+      error.value = err.message;
+      console.error('Error al obtener recetas sin portafolio:', err);
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -50,12 +77,19 @@ export class RecipeService {
    * @returns {Promise<Recipe>} La receta encontrada
    */
   async getRecipeById(id) {
+    isLoading.value = true;
+    error.value = null;
+    
     try {
-      const recipe = await this.apiService.get(`${this.endpoint}/${id}`);
-      return new Recipe(recipe);
-    } catch (error) {
-      console.error(`Error al obtener la receta ${id}:`, error);
-      throw error;
+      const recipe = await this.getById(id);
+      currentRecipe.value = new Recipe(recipe);
+      return currentRecipe.value;
+    } catch (err) {
+      error.value = err.message;
+      console.error(`Error al obtener la receta ${id}:`, err);
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -65,12 +99,20 @@ export class RecipeService {
    * @returns {Promise<Recipe[]>} Lista de recetas del portafolio
    */
   async getRecipesByPortfolioId(portfolioId) {
+    isLoading.value = true;
+    error.value = null;
+    
     try {
-      const recipes = await this.apiService.get(`${this.endpoint}?portfolioId=${portfolioId}`);
-      return recipes.map(recipe => new Recipe(recipe));
-    } catch (error) {
-      console.error(`Error al obtener recetas del portafolio ${portfolioId}:`, error);
-      throw error;
+      const allRecipes = await this.getAll();
+      const filteredRecipes = allRecipes.filter(recipe => recipe.portfolioId === portfolioId);
+      recipes.value = filteredRecipes.map(recipe => new Recipe(recipe));
+      return recipes.value;
+    } catch (err) {
+      error.value = err.message;
+      console.error(`Error al obtener recetas del portafolio ${portfolioId}:`, err);
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -80,6 +122,9 @@ export class RecipeService {
    * @returns {Promise<Recipe>} La receta creada
    */
   async createRecipe(recipeData) {
+    isLoading.value = true;
+    error.value = null;
+    
     try {
       // Preparar los datos de la receta
       const newRecipe = {
@@ -89,11 +134,23 @@ export class RecipeService {
       };
       
       // Crear la receta a través de la API
-      const createdRecipe = await this.apiService.post(this.endpoint, newRecipe);
-      return new Recipe(createdRecipe);
-    } catch (error) {
-      console.error('Error al crear la receta:', error);
-      throw error;
+      const createdRecipe = await this.create(newRecipe);
+      const recipe = new Recipe(createdRecipe);
+      
+      // Agregar la nueva receta a la lista correspondiente
+      if (recipe.portfolioId === null) {
+        recipesWithoutPortfolio.value.push(recipe);
+      } else {
+        recipes.value.push(recipe);
+      }
+      
+      return recipe;
+    } catch (err) {
+      error.value = err.message;
+      console.error('Error al crear la receta:', err);
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -104,6 +161,9 @@ export class RecipeService {
    * @returns {Promise<Recipe>} La receta actualizada
    */
   async updateRecipe(id, recipeData) {
+    isLoading.value = true;
+    error.value = null;
+    
     try {
       // Añadir timestamp de actualización
       const updateData = {
@@ -112,11 +172,36 @@ export class RecipeService {
       };
       
       // Actualizar la receta a través de la API
-      const updatedRecipe = await this.apiService.put(`${this.endpoint}/${id}`, updateData);
-      return new Recipe(updatedRecipe);
-    } catch (error) {
-      console.error(`Error al actualizar la receta ${id}:`, error);
-      throw error;
+      const updatedRecipe = await this.update(id, updateData);
+      const recipe = new Recipe(updatedRecipe);
+      
+      // Actualizar la receta en la lista correspondiente
+      const indexInRecipes = recipes.value.findIndex(r => r.id === id);
+      if (indexInRecipes !== -1) {
+        recipes.value[indexInRecipes] = recipe;
+      }
+      
+      const indexInWithoutPortfolio = recipesWithoutPortfolio.value.findIndex(r => r.id === id);
+      if (indexInWithoutPortfolio !== -1) {
+        // Si la receta ahora tiene un portafolio, eliminarla de la lista sin portafolio
+        if (recipe.portfolioId !== null) {
+          recipesWithoutPortfolio.value.splice(indexInWithoutPortfolio, 1);
+        } else {
+          recipesWithoutPortfolio.value[indexInWithoutPortfolio] = recipe;
+        }
+      }
+      
+      if (currentRecipe.value?.id === id) {
+        currentRecipe.value = recipe;
+      }
+      
+      return recipe;
+    } catch (err) {
+      error.value = err.message;
+      console.error(`Error al actualizar la receta ${id}:`, err);
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -126,11 +211,27 @@ export class RecipeService {
    * @returns {Promise<boolean>} True si se eliminó correctamente
    */
   async deleteRecipe(id) {
+    isLoading.value = true;
+    error.value = null;
+    
     try {
-      return await this.apiService.delete(`${this.endpoint}/${id}`);
-    } catch (error) {
-      console.error(`Error al eliminar la receta ${id}:`, error);
-      throw error;
+      await this.delete(id);
+      
+      // Eliminar la receta de las listas
+      recipes.value = recipes.value.filter(r => r.id !== id);
+      recipesWithoutPortfolio.value = recipesWithoutPortfolio.value.filter(r => r.id !== id);
+      
+      if (currentRecipe.value?.id === id) {
+        currentRecipe.value = null;
+      }
+      
+      return true;
+    } catch (err) {
+      error.value = err.message;
+      console.error(`Error al eliminar la receta ${id}:`, err);
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -141,6 +242,9 @@ export class RecipeService {
    * @returns {Promise<Recipe>} La receta actualizada
    */
   async assignToPortfolio(recipeId, portfolioId) {
+    isLoading.value = true;
+    error.value = null;
+    
     try {
       // Convertir IDs a números para asegurar consistencia
       const numRecipeId = Number(recipeId);
@@ -149,18 +253,37 @@ export class RecipeService {
       console.log(`Asignando receta ${numRecipeId} al portafolio ${numPortfolioId}`);
       
       // Obtener la receta actual
-      const recipe = await this.apiService.get(`${this.endpoint}/${numRecipeId}`);
+      const recipe = await this.getById(numRecipeId);
       
       // Actualizar el campo portfolioId
       recipe.portfolioId = numPortfolioId;
       
       // Enviar la actualización
-      const updatedRecipe = await this.apiService.put(`${this.endpoint}/${numRecipeId}`, recipe);
+      const updatedRecipe = await this.update(numRecipeId, recipe);
+      const recipeInstance = new Recipe(updatedRecipe);
       
-      return new Recipe(updatedRecipe);
-    } catch (error) {
-      console.error(`Error al asignar la receta ${recipeId} al portafolio ${portfolioId}:`, error);
-      throw error;
+      // Actualizar la receta en las listas
+      const indexInRecipes = recipes.value.findIndex(r => r.id === numRecipeId);
+      if (indexInRecipes !== -1) {
+        recipes.value[indexInRecipes] = recipeInstance;
+      }
+      
+      // Remover de la lista sin portafolio si ahora tiene un portafolio
+      if (numPortfolioId !== null) {
+        recipesWithoutPortfolio.value = recipesWithoutPortfolio.value.filter(r => r.id !== numRecipeId);
+      }
+      
+      if (currentRecipe.value?.id === numRecipeId) {
+        currentRecipe.value = recipeInstance;
+      }
+      
+      return recipeInstance;
+    } catch (err) {
+      error.value = err.message;
+      console.error(`Error al asignar la receta ${recipeId} al portafolio ${portfolioId}:`, err);
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -173,9 +296,10 @@ export class RecipeService {
     try {
       // Asignar a portfolioId null es equivalente a remover del portafolio
       return await this.assignToPortfolio(recipeId, null);
-    } catch (error) {
-      console.error(`Error al remover la receta ${recipeId} del portafolio:`, error);
-      throw error;
+    } catch (err) {
+      error.value = err.message;
+      console.error(`Error al remover la receta ${recipeId} del portafolio:`, err);
+      throw err;
     }
   }
 
