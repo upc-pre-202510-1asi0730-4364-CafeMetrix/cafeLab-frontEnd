@@ -1,6 +1,10 @@
 <template>
+
   <div class="session-detail">
-    <CuppingHeader />
+    <header class="headerBar">
+      <headerBar />
+    </header>
+
     <div class="breadcrumb">
       {{ $t('breadcrumb.home') }} > {{ $t('cupping.sessions') }} > <strong>{{ session?.name || $t('cupping.cupping') }}</strong>
     </div>
@@ -35,6 +39,7 @@ import Slider from 'primevue/slider'
 import Button from 'primevue/button'
 import CuppingHeader from '../../shared/components/CuppingHeader.component.vue'
 import api from '../../shared/services/api'
+import HeaderBar from "../../public/components/headerBar.vue";
 
 const route = useRoute()
 const sessionId = route.params.id

@@ -1,4 +1,8 @@
 <template>
+  <header class="headerBar">
+    <headerBar />
+  </header>
+
   <div class="calibration">
     <!-- Breadcrumb -->
     <div class="breadcrumb-container">

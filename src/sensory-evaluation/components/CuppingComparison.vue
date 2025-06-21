@@ -1,6 +1,12 @@
 <template>
+
+
   <div class="comparison-view">
-    <CuppingHeader />
+
+    <header class="headerBar">
+      <headerBar />
+    </header>
+
     <div class="breadcrumb">
       {{ $t('breadcrumb.home') }} > {{ $t('cupping.sessions') }} > <strong>{{ $t('cupping.comparison') }}</strong>
     </div>
@@ -28,6 +34,7 @@ import { onMounted, ref, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import CuppingHeader from '../../shared/components/CuppingHeader.component.vue'
+import HeaderBar from '../../public/components/headerBar.vue'
 import api from '../../shared/services/api'
 
 const route = useRoute()

@@ -84,6 +84,8 @@ export class RoastProfileService {
                 user_id: userId
             };
 
+            console.log('[DEBUG] Payload FINAL enviado al backend:', roastProfileWithUser);
+
             const { data } = await httpInstance.post(this.resourceEndpoint, roastProfileWithUser);
             return data;
         } catch (error) {

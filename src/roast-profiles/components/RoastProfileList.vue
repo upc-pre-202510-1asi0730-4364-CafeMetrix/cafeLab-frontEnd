@@ -263,6 +263,7 @@ import { ref, reactive, onMounted, nextTick, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { roastProfileService } from '../service/RoastProfileService.js';
+import { useAuthService } from '../../auth/services/authService.js';
 
 export default {
   name: 'RoastProfileList',
@@ -307,6 +308,8 @@ export default {
     // New reactive data
     const selectedProfiles = ref([]);
     const sortOrder = ref('desc');
+
+    const auth = useAuthService();
 
     // Methods
     const loadProfiles = async () => {
@@ -425,8 +428,24 @@ export default {
     };
 
     const registerProfile = async () => {
+      // Obtener user_id usando useAuthService
+      const user_id = Number(auth.getCurrentUserId());
+      // Completar campos faltantes y asegurar tipos correctos
+      const payload = {
+        profile_name: newProfile.profile_name,
+        roast_type: newProfile.roast_type,
+        duration: Number(newProfile.duration) || 0,
+        coffee_lot_id: Number(newProfile.coffee_lot_id),
+        temp_start: Number(newProfile.temp_start) || 0,
+        temp_end: Number(newProfile.temp_end) || 0,
+        is_favorite: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        user_id // <-- Ahora como número
+      };
+      console.log('[DEBUG] Payload a enviar para crear perfil de tueste (con user_id numérico):', payload);
       try {
-        const result = await roastProfileService.createRoastProfile(newProfile);
+        const result = await roastProfileService.createRoastProfile(payload);
         if (result) {
           profiles.value.unshift(result);
           closeRegisterModal();

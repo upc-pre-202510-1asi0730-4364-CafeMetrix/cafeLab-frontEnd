@@ -19,6 +19,9 @@ import CalibrationPage from '../roasting/pages/CalibrationPage.vue'
 // Importar componentes de roast-profiles
 import RoastProfilePage from '../roast-profiles/page/RoastProfilePage.vue';
 import RoastProfileComparison from '../roast-profiles/components/RoastProfileComparison.vue';
+import CuppingSessionList from '../sensory-evaluation/components/CuppingSessionList.vue';
+import CuppingSessionDetail from '../sensory-evaluation/components/CuppingSessionDetail.vue';
+
 
 const LoginPage = () => import('../auth/pages/login-page.component.vue');
 const LoginSuccessPage = () => import('../auth/pages/login-success-page.component.vue');
@@ -54,6 +57,11 @@ const routes = [
     { path: '/roasting/defects', component: DefectPage },
     { path: '/roasting/calibrations', component: CalibrationPage },
 
+
+    { path: '/cata', name: 'CuppingSessions', component: CuppingSessionList, meta: { title: 'Sesiones de Cata' } },
+    { path: '/cata/:id', name: 'CuppingSessionDetail', component: CuppingSessionDetail, props: true, meta: { title: 'Detalle de Cata' } },
+    { path: '/comparar-catas/:ids', name: 'cupping-comparison', component: () => import('../sensory-evaluation/components/CuppingComparison.vue'), props: true, meta: { title: 'Comparar Catas' } },
+
     // Rutas para roast-profiles
     { path: '/roast-profiles', name: 'roastProfiles', component: RoastProfilePage, meta: { title: 'Perfiles de Tostado' } },
     { path: '/roast-profiles/compare', name: 'roastProfileComparison', component: RoastProfileComparison, meta: { title: 'Comparar Perfiles' } },
@@ -70,7 +78,6 @@ const routes = [
     { path: '/recetas/portfolio/:id', name: 'PortfolioDetail', component: () => import('../preparation/components/PortfolioDetail.component.vue') },
     { path: '/recetas/nueva', name: 'NewRecipe', component: () => import('../preparation/components/RecipeCreate.component.vue') },
     { path: '/recetas/detalle/:id', name: 'RecipeDetail', component: () => import('../preparation/components/RecipeDetail.component.vue') },
-    { path: '/recetas/gestion', name: 'RecipeManagement', component: () => import('../preparation/components/PortfolioAndRecipesManagement.component.vue') },
     // Rutas para los demás módulos (pueden estar pendientes de implementación)
 
     { path: '/:pathMatch(.*)*',         name: 'notFound',            component: PageNotFound,            meta: { title: 'Page Not Found' } }

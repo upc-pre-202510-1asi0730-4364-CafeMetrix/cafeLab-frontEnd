@@ -1,6 +1,8 @@
 <template>
   <div class="cupping-view">
-    <CuppingHeader />
+    <header class="headerBar">
+      <headerBar />
+    </header>
 
     <div class="breadcrumb">
       {{ $t('breadcrumb.home') }} &gt; <strong>{{ $t('cupping.sessions') }}</strong>
@@ -56,6 +58,7 @@ import CuppingHeader from '../../shared/components/CuppingHeader.component.vue'
 import CuppingFilterModal from '../../shared/components/CuppingFilterModal.vue'
 import NewCuppingButton from './NewCuppingButton.vue'
 import api from '../../shared/services/api'
+import HeaderBar from "../../public/components/headerBar.vue";
 
 const router = useRouter()
 const filterModalVisible = ref(false)
