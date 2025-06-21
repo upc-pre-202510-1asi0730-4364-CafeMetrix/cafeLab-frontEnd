@@ -52,6 +52,7 @@
             <button 
               class="remove-btn" 
               @click.stop="confirmRemoveRecipe(recipe.id)"
+              :data-tooltip="$t('recipes.removeFromPortfolio')"
             >
               <i class="pi pi-times"></i>
             </button>
@@ -248,6 +249,7 @@ const breadcrumbItems = computed(() => [
 const loadData = async () => {
   if (portfolioId.value) {
     await portfolioService.getPortfolioById(portfolioId.value);
+    await recipeService.getRecipesWithoutPortfolio();
     if (portfolio.value) {
       editedName.value = portfolio.value.name;
     }
@@ -290,7 +292,7 @@ const deletePortfolio = async () => {
   try {
     await portfolioService.deletePortfolio(portfolioId.value);
     showDeleteConfirmation.value = false;
-    router.push('/recetas');
+      router.push('/recetas');
   } catch (error) {
     console.error('Error al eliminar el portafolio:', error);
   }
@@ -304,7 +306,7 @@ const confirmRemoveRecipe = (recipeId) => {
 
 const removeRecipe = async () => {
   if (recipeToRemove.value) {
-    try {
+  try {
       await portfolioService.removeRecipeFromPortfolio(portfolioId.value, recipeToRemove.value);
       showRemoveRecipeConfirmation.value = false;
       recipeToRemove.value = null;
@@ -338,10 +340,17 @@ onMounted(() => {
 
 <style scoped>
 .portfolio-detail {
-  padding: 20px;
-  padding-top: 100px; /* Espacio para el header */
-  max-width: 1200px;
-  margin: 0 auto;
+  min-height: calc(100vh - 70px);
+  background-color: #F8F7F2;
+  padding: 2rem;
+  margin-top: 70px;
+}
+
+.content-container {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .loading-container, .error-container {
@@ -492,18 +501,42 @@ onMounted(() => {
   right: 8px;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.9);
   border: none;
+  border-radius: 50%;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .remove-btn:hover {
-  background-color: white;
+  background-color: #d32f2f;
+  color: white;
+  transform: scale(1.1);
+}
+
+.remove-btn::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.remove-btn:hover::before {
+  visibility: visible;
+  opacity: 1;
 }
 
 .recipe-info {

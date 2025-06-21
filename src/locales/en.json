@@ -236,15 +236,23 @@
     "LINE_CHART_AXIS_INTENSITY": "Intensity (0 - 100)",
     "LINE_CHART_AXIS_TIME": "Roast Time (min)"
   },
-  "COMMON": {
-    "LOADING": "Loading...",
-    "ACTIONS": "Actions",
-    "SAVE": "Save",
-    "CANCEL": "Cancel",
-    "SELECT": "Select an option",
-    "EDIT": "Edit",
-    "CLOSE": "Close",
-    "BACK": "Back"
+  "common": {
+    "loading": "Loading...",
+    "actions": "Actions",
+    "save": "Save",
+    "cancel": "Cancel",
+    "select": "Select an option",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "delete": "Delete",
+    "retry": "Retry",
+    "confirmDelete": "Confirm deletion",
+    "confirmRemove": "Confirm Remove",
+    "thisCannotBeUndone": "This action cannot be undone",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
   },
   "costs": {
     "registerTitle": "Batch cost registration",

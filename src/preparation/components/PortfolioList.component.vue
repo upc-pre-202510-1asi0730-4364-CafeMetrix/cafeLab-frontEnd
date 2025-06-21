@@ -418,11 +418,17 @@ const getPortfolioName = (portfolioId) => {
 </script>
 
 <style scoped>
+.portfolio-list {
+  padding: 1rem;
+  background-color: #F8F7F2;
+  min-height: calc(100vh - 60px); /* Altura total menos el header */
+}
+
 .portfolio-page {
-  padding: 20px;
-  padding-top: 100px; /* Espacio para el header */
-  max-width: 1200px;
-  margin: 0 auto;
+  min-height: calc(100vh - 70px);
+  background-color: #F8F7F2;
+  padding: 2rem;
+  margin-top: 70px;
 }
 
 .search-container {

@@ -209,15 +209,23 @@
     "ORIGIN": "Origen",
     "CERTIFICATIONS": "Certificaciones"
   },
-  "COMMON": {
-    "LOADING": "Cargando...",
-    "ACTIONS": "Acciones",
-    "SAVE": "Guardar",
-    "CANCEL": "Cancelar",
-    "SELECT": "Selecciona una opción",
-    "EDIT": "Editar",
-    "CLOSE": "Cerrar",
-    "BACK": "Atrás"
+  "common": {
+    "loading": "Cargando...",
+    "actions": "Acciones",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "select": "Selecciona una opción",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "delete": "Eliminar",
+    "retry": "Reintentar",
+    "confirmDelete": "Confirmar eliminación",
+    "confirmRemove": "Confirmar eliminación",
+    "thisCannotBeUndone": "Esta acción no se puede deshacer",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No"
   },
   "costs": {
     "registerTitle": "Registro de costos por lote",
@@ -364,7 +372,8 @@
     "ratio": "Ratio",
     "cuppingSession": "Sesión de Cata",
     "tips": "Consejos",
-    "tipsPlaceholder": "Escribe consejos útiles para esta receta..."
+    "tipsPlaceholder": "Escribe consejos útiles para esta receta...",
+    "removeFromPortfolio": "Quitar del portafolio"
   },
   "ERRORS": {
     "LOAD_LOTS": "Lotes no encontrados"

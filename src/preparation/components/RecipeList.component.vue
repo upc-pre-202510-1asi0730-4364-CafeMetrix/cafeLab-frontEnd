@@ -1,5 +1,8 @@
 <template>
   <div class="recipe-list">
+    <HeaderBar />
+    <BreadcrumbNavigation :items="breadcrumbItems" />
+    
     <div class="header">
       <h2>Recetas</h2>
       <pv-button icon="pi pi-plus" label="Nueva Receta" @click="navigateToCreate" />
@@ -87,10 +90,18 @@ import { useRouter } from 'vue-router';
 import { RecipeService } from '../services/recipe.service';
 import { PortfolioService } from '../services/portfolio.service';
 import { Recipe } from '../model/recipe.entity';
+import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.component.vue';
+import HeaderBar from "../../public/components/headerBar.vue";
 
 const router = useRouter();
 const recipeService = new RecipeService();
 const portfolioService = new PortfolioService();
+
+// Datos para el breadcrumb
+const breadcrumbItems = [
+  { label: 'Inicio', path: '/dashboard' },
+  { label: 'Recetas', path: '/recetas' }
+];
 
 // Estados
 const recipes = ref([]);
@@ -202,33 +213,69 @@ onMounted(() => {
 
 <style scoped>
 .recipe-list {
-  padding: 1rem;
+  min-height: calc(100vh - 70px);
+  background-color: #F8F7F2;
+  padding: 2rem;
+  margin-top: 70px;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .header h2 {
   margin: 0;
-  color: #5D4037;
+  color: #333;
 }
 
 .confirmation-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  margin: 1rem 0;
 }
 
-.p-dialog .p-dialog-content {
-  padding: 2rem;
+.confirmation-content i {
+  margin-right: 1rem;
+  color: #ff4444;
 }
 
-.p-column-filter {
-  width: 100%;
+:deep(.p-datatable) {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+:deep(.p-datatable .p-datatable-header) {
+  background-color: white;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+:deep(.p-datatable .p-datatable-thead > tr > th) {
+  background-color: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr) {
+  background-color: white;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr:nth-child(even)) {
+  background-color: #f8f9fa;
+}
+
+:deep(.p-button) {
+  margin: 0 0.2rem;
+}
+
+:deep(.p-dialog .p-dialog-header),
+:deep(.p-dialog .p-dialog-content),
+:deep(.p-dialog .p-dialog-footer) {
+  background-color: white;
 }
 </style> 

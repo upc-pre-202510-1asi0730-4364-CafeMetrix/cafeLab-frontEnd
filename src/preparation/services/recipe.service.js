@@ -127,8 +127,15 @@ export class RecipeService extends BaseService {
     
     try {
       // Preparar los datos de la receta
+      const steps = Array.isArray(recipeData.steps) 
+        ? recipeData.steps 
+        : typeof recipeData.steps === 'string'
+          ? recipeData.steps.split('\n').map(step => step.trim()).filter(step => step.length > 0)
+          : [];
+
       const newRecipe = {
         ...recipeData,
+        steps,
         portfolioId: recipeData.portfolioId || null,
         created: new Date().toISOString()
       };
@@ -165,9 +172,17 @@ export class RecipeService extends BaseService {
     error.value = null;
     
     try {
+      // Procesar los pasos
+      const steps = Array.isArray(recipeData.steps) 
+        ? recipeData.steps 
+        : typeof recipeData.steps === 'string'
+          ? recipeData.steps.split('\n').map(step => step.trim()).filter(step => step.length > 0)
+          : [];
+
       // Añadir timestamp de actualización
       const updateData = {
         ...recipeData,
+        steps,
         updated: new Date().toISOString()
       };
       
