@@ -16,7 +16,9 @@ import RoastingPage from '../roasting/pages/RoastingPage.vue'
 import DefectPage from '../roasting/pages/DefectPage.vue'
 import CalibrationPage from '../roasting/pages/CalibrationPage.vue'
 
-
+// Sensory Evaluation imports
+import CuppingSessionList from '../sensory-evaluation/components/CuppingSessionList.vue';
+import CuppingSessionDetail from '../sensory-evaluation/components/CuppingSessionDetail.vue';
 
 const LoginPage = () => import('../auth/pages/login-page.component.vue');
 const LoginSuccessPage = () => import('../auth/pages/login-success-page.component.vue');
@@ -52,9 +54,10 @@ const routes = [
     { path: '/roasting/defects', component: DefectPage },
     { path: '/roasting/calibrations', component: CalibrationPage },
 
-
-
-
+    // Sensory Evaluation routes
+    { path: '/cata', name: 'CuppingSessions', component: CuppingSessionList, meta: { title: 'Sesiones de Cata' } },
+    { path: '/cata/:id', name: 'CuppingSessionDetail', component: CuppingSessionDetail, props: true, meta: { title: 'Detalle de Cata' } },
+    { path: '/comparar-catas/:ids', name: 'cupping-comparison', component: () => import('../sensory-evaluation/components/CuppingComparison.vue'), props: true, meta: { title: 'Comparar Catas' } },
 
     { path: '/dashboard/owner',         name: 'ownerDashboard',      component: OwnerDashboard,          meta: { title: 'Owner Dashboard' } },
     { path: '/suppliers',name: 'suppliers', component: SupplierPage },
