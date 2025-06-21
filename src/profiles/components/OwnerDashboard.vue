@@ -58,7 +58,7 @@ const { t } = useI18n();
 const routeMap = {
   suppliers: '/suppliers',
   lots: '/lots',
-  roasting: '/roasting',
+  roasting: '/roast-profiles',
   inventory: '/inventario',
   costs: '/costos-lote'
 };

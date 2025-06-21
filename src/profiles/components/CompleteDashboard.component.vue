@@ -93,7 +93,7 @@ const router = useRouter();
 const routeMap = {
   suppliers: '/suppliers',
   lots: '/lots',
-  perfiles: '/perfiles',
+  perfiles: '/roast-profiles',
   cata: '/cata',
   defects: '/defects',
   roasting: '/roasting',

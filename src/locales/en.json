@@ -460,5 +460,103 @@
     "METHOD_FILTER": "Filter",
     "EQUIPMENT_ESPRESSO": "Espresso Machine",
     "EQUIPMENT_FILTER": "Filter Machine"
+  },
+  "roastProfiles": {
+    "title": "Roast Profiles",
+    "search_placeholder": "Search roast profiles...",
+    "loading": "Loading profiles...",
+    "no_profiles": "No roast profiles found",
+    "registerButton": "Register roast profile",
+    "register_title": "New Roast Profile",
+    "edit_title": "Edit Roast Profile",
+    "save_button": "Save Changes",
+    "compare_button": "Compare Profiles",
+    "details": {
+      "title": "Roast Profile Details"
+    },
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "duration": "Duration",
+      "lot": "Lot",
+      "temperature": "Temperature",
+      "favorite": "Favorite",
+      "temperatureStart": "Start Temperature",
+      "temperatureEnd": "End Temperature"
+    },
+    "filters": {
+      "favorites": "Only favorites",
+      "sort_recent": "Most recent",
+      "sort_old": "Oldest"
+    },
+    "form": {
+      "name": "Profile Name",
+      "type": "Roast Type",
+      "duration": "Duration (minutes)",
+      "lot": "Coffee Lot",
+      "temp_start": "Start Temperature (°C)",
+      "temp_end": "End Temperature (°C)"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "favorite": "Favorite",
+      "unfavorite": "Unfavorite"
+    },
+    "messages": {
+      "delete_confirm": "Are you sure you want to delete this profile?",
+      "error_loading": "Error loading roast profiles. Please try again.",
+      "error_saving": "Error saving profile. Please try again.",
+      "error_deleting": "Error deleting profile. Please try again.",
+      "error_favorite": "Error updating favorite. Please try again.",
+      "error_comparing": "You must select between 2 and 4 profiles to compare."
+    },
+    "comparison": {
+      "title": "Roast Profile Comparison",
+      "back": "Back",
+      "select_profile": "Select profile",
+      "data_title": "Comparison Data",
+      "chart_title": "Compared Roast Curves",
+      "analysis_title": "Differences Analysis",
+      "no_selection": "Select two profiles to start the comparison",
+      "characteristic": "Characteristic",
+      "type": "Type",
+      "duration": "Duration",
+      "lot": "Lot",
+      "temp_start": "Start Temperature",
+      "temp_end": "End Temperature",
+      "temp_range": "Temperature Range",
+      "heating_rate": "Heating Rate",
+      "created_at": "Creation Date",
+      "duration_diff": {
+        "longer": "Profile {profile} is longer by {diff} min",
+        "shorter": "Profile {profile} is shorter by {diff} min",
+        "same": "Both profiles have the same duration"
+      },
+      "temp_diff": {
+        "hotter": "Profile {profile} has a higher temperature range by {diff}°C",
+        "colder": "Profile {profile} has a lower temperature range by {diff}°C",
+        "same": "Both profiles have the same temperature range"
+      },
+      "heating_rate_diff": {
+        "faster": "Profile {profile} heats up faster by {diff}°C/min",
+        "slower": "Profile {profile} heats up slower by {diff}°C/min",
+        "same": "Both profiles have the same heating rate"
+      },
+      "recommendation": "Recommendation",
+      "recommendation_text": {
+        "duration": "The profiles have significantly different durations. Consider the impact on the final flavor.",
+        "temp": "The temperature ranges are very different. This will affect bean development.",
+        "rate": "The heating rates are very different. This may result in distinct flavor profiles.",
+        "similar": "The profiles are relatively similar. Minor differences may be subtle in the final result."
+      },
+      "loading": "Loading comparison..."
+    },
+    "registerModalTitle": "Register roast profile",
+    "selectType": "Coffee Type",
+    "minutes": "min",
+    "selectLot": "Select lot"
   }
 }

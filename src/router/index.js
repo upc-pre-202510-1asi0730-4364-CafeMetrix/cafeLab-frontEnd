@@ -16,7 +16,9 @@ import RoastingPage from '../roasting/pages/RoastingPage.vue'
 import DefectPage from '../roasting/pages/DefectPage.vue'
 import CalibrationPage from '../roasting/pages/CalibrationPage.vue'
 
-
+// Importar componentes de roast-profiles
+import RoastProfilePage from '../roast-profiles/page/RoastProfilePage.vue';
+import RoastProfileComparison from '../roast-profiles/components/RoastProfileComparison.vue';
 
 const LoginPage = () => import('../auth/pages/login-page.component.vue');
 const LoginSuccessPage = () => import('../auth/pages/login-success-page.component.vue');
@@ -52,9 +54,9 @@ const routes = [
     { path: '/roasting/defects', component: DefectPage },
     { path: '/roasting/calibrations', component: CalibrationPage },
 
-
-
-
+    // Rutas para roast-profiles
+    { path: '/roast-profiles', name: 'roastProfiles', component: RoastProfilePage, meta: { title: 'Perfiles de Tostado' } },
+    { path: '/roast-profiles/compare', name: 'roastProfileComparison', component: RoastProfileComparison, meta: { title: 'Comparar Perfiles' } },
 
     { path: '/dashboard/owner',         name: 'ownerDashboard',      component: OwnerDashboard,          meta: { title: 'Owner Dashboard' } },
     { path: '/suppliers',name: 'suppliers', component: SupplierPage },

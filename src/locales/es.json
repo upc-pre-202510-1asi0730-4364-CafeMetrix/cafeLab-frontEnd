@@ -291,7 +291,7 @@
   "navbar": {
     "features": "Funcionalidades",
     "profile": "Perfil",
-    "contact": "Contact Us",
+    "contact": "Contactanos",
     "logout": "Cerrar sesión",
     "logoutConfirm": "¿Estás seguro de que deseas cerrar sesión?",
     "home": "Home"
@@ -460,5 +460,104 @@
     "METHOD_FILTER": "Filtrado",
     "EQUIPMENT_ESPRESSO": "Maquina Espresso",
     "EQUIPMENT_FILTER": "Maquina Filtrado"
+  },
+  "roastProfiles": {
+    "title": "Perfiles de Tueste",
+    "search_placeholder": "Buscar perfiles de tueste...",
+    "loading": "Cargando perfiles...",
+    "no_profiles": "No se encontraron perfiles de tueste",
+    "registerButton": "Registrar perfil de tueste",
+    "register_title": "Registrar perfil de tueste",
+    "edit_title": "Editar Perfil de Tueste",
+    "save_button": "Guardar Cambios",
+    "compare_button": "Comparar Perfiles",
+    "details": {
+      "title": "Detalles del Perfil de Tueste"
+    },
+    "columns": {
+      "name": "Nombre",
+      "type": "Tipo",
+      "duration": "Duración",
+      "lot": "Lote",
+      "temperature": "Temperatura",
+      "favorite": "Favorito",
+      "temperatureStart": "Temperatura inicial",
+      "temperatureEnd": "Temperatura final"
+    },
+    "filters": {
+      "favorites": "Solo favoritos",
+      "sort_recent": "Más recientes",
+      "sort_old": "Más antiguos"
+    },
+    "form": {
+      "name": "Nombre del Perfil",
+      "type": "Tipo de Tueste",
+      "duration": "Duración (minutos)",
+      "lot": "Lote de Café",
+      "temp_start": "Temperatura inicial (°C)",
+      "temp_end": "Temperatura final (°C)"
+    },
+    "actions": {
+      "view": "Ver",
+      "edit": "Editar",
+      "duplicate": "Duplicar",
+      "delete": "Eliminar",
+      "favorite": "Favorito",
+      "unfavorite": "Quitar Favorito"
+    },
+    "messages": {
+      "delete_confirm": "¿Está seguro de que desea eliminar este perfil?",
+      "error_loading": "Error al cargar los perfiles de tueste. Por favor intente nuevamente.",
+      "error_saving": "Error al guardar el perfil. Por favor intente nuevamente.",
+      "error_deleting": "Error al eliminar el perfil. Por favor intente nuevamente.",
+      "error_favorite": "Error al actualizar favorito. Por favor intente nuevamente.",
+      "error_comparing": "Debe seleccionar entre 2 y 4 perfiles para comparar."
+    },
+    "comparison": {
+      "title": "Comparación de Perfiles de Tueste",
+      "back": "Volver",
+      "select_profile": "Seleccionar perfil",
+      "data_title": "Datos de Comparación",
+      "chart_title": "Curvas de Tostado Comparadas",
+      "analysis_title": "Análisis de Diferencias",
+      "no_selection": "Selecciona dos perfiles para comenzar la comparación",
+      "characteristic": "Característica",
+      "type": "Tipo",
+      "duration": "Duración",
+      "lot": "Lote",
+      "temp_start": "Temperatura inicial",
+      "temp_end": "Temperatura final",
+      "temp_range": "Rango de temperatura",
+      "heating_rate": "Velocidad de calentamiento",
+      "created_at": "Fecha de creación",
+      "duration_diff": {
+        "longer": "El perfil {profile} es más largo por {diff} min",
+        "shorter": "El perfil {profile} es más corto por {diff} min",
+        "same": "Ambos perfiles tienen la misma duración"
+      },
+      "temp_diff": {
+        "hotter": "El perfil {profile} tiene un rango de temperatura mayor por {diff}°C",
+        "colder": "El perfil {profile} tiene un rango de temperatura menor por {diff}°C",
+        "same": "Ambos perfiles tienen el mismo rango de temperatura"
+      },
+      "heating_rate_diff": {
+        "faster": "El perfil {profile} calienta más rápido por {diff}°C/min",
+        "slower": "El perfil {profile} calienta más lento por {diff}°C/min",
+        "same": "Ambos perfiles tienen la misma velocidad de calentamiento"
+      },
+      "recommendation": "Recomendación",
+      "recommendation_text": {
+        "duration": "Los perfiles tienen duraciones significativamente diferentes. Considera el impacto en el sabor final.",
+        "temp": "Los rangos de temperatura son muy diferentes. Esto afectará el desarrollo del grano.",
+        "rate": "Las velocidades de calentamiento son muy diferentes. Esto puede resultar en perfiles de sabor distintos.",
+        "similar": "Los perfiles son relativamente similares. Las diferencias menores pueden ser sutiles en el resultado final."
+      },
+      "loading": "Cargando comparación..."
+    },
+    "registerModalTitle": "Registrar perfil de tueste",
+    "registerButton": "Registrar perfil de tueste",
+    "selectType": "Tipo de Café",
+    "minutes": "min",
+    "selectLot": "Seleccionar lote"
   }
 }

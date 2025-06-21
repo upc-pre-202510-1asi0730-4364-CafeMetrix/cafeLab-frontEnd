@@ -5,7 +5,7 @@ const supplierService = new SupplierService();
 
 export class CoffeeLotService {
     /** @type {string} The API endpoint for coffee lots */
-    resourceEndpoint = import.meta.env.VITE_COFFEELOT_ENDPOINT_PATH;
+    resourceEndpoint = import.meta.env.VITE_COFFEELOT_ENDPOINT_PATH || '/coffee-lots';
 
     /**
      * Helper to get current user ID from localStorage or throw an error.

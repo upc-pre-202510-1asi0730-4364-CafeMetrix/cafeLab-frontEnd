@@ -352,7 +352,7 @@ function getEmptyLot() {
 async function loadSuppliers() {
   const userId = AuthService.getCurrentUserId();
   try {
-    const res = await axios.get(`${import.meta.env.VITE_MOCKAPI_URL_3}/suppliers`);
+    const res = await axios.get('https://6824c1b40f0188d7e72aabca.mockapi.io/api/v1/suppliers');
     suppliers.value = res.data.filter(s => s.user_id === userId);
   } catch (err) {
     console.error('Error loading suppliers', err);
