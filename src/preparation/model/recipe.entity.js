@@ -12,7 +12,7 @@ export class Recipe {
    * @param {number|null} data.portfolioId - ID del portafolio al que pertenece (o null)
    * @param {string} data.preparationTime - Tiempo de preparación
    * @param {Array} data.ingredients - Ingredientes de la receta
-   * @param {Array} data.steps - Pasos de preparación
+   * @param {Array<string>} data.steps - Pasos de preparación
    */
   constructor(data) {
     this.id = data.id;
@@ -21,7 +21,15 @@ export class Recipe {
     this.portfolioId = data.portfolioId;
     this.preparationTime = data.preparationTime || '';
     this.ingredients = data.ingredients || [];
-    this.steps = data.steps || [];
+    
+    // Procesar los pasos de preparación
+    if (Array.isArray(data.steps)) {
+      this.steps = data.steps;
+    } else if (typeof data.steps === 'string') {
+      this.steps = data.steps.split('\n').map(step => step.trim()).filter(step => step.length > 0);
+    } else {
+      this.steps = [];
+    }
   }
 
   /**
@@ -49,7 +57,7 @@ export class Recipe {
       portfolioId: this.portfolioId,
       preparationTime: this.preparationTime,
       ingredients: this.ingredients,
-      steps: this.steps
+      steps: Array.isArray(this.steps) ? this.steps : []
     };
   }
 
@@ -91,6 +99,8 @@ export class Recipe {
    * @param {string} step - Instrucción del paso
    */
   addStep(step) {
-    this.steps.push(step);
+    if (typeof step === 'string' && step.trim().length > 0) {
+      this.steps.push(step.trim());
+    }
   }
 } 

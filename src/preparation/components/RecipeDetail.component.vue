@@ -265,7 +265,7 @@
         
         <div class="form-section">
           <div class="section-header">
-            <label>{{ $t('recipes.preparation') }}</label>
+            <label for="preparationSteps">{{ $t('recipes.preparation') }}</label>
             <button type="button" class="add-btn" @click="addStep">
               <i class="pi pi-plus"></i>
               {{ $t('recipes.addStep') }}
@@ -385,7 +385,7 @@ const portfolioName = computed(() => {
 const breadcrumbItems = computed(() => [
   { label: 'Inicio', path: '/dashboard' },
   { label: 'Recetas', path: '/recetas' },
-  { label: recipe.value?.name || 'Receta', path: `/recetas/detalle/${recipeId.value}` }
+  { label: recipe.value?.name || 'Detalle de Receta', path: route.path }
 ]);
 
 // Cargar datos
@@ -424,6 +424,11 @@ const navigateToPortfolio = (portfolioId) => {
 // Habilitar modo de edición
 const enableEditMode = () => {
   editMode.value = true;
+  editedRecipe.value = { ...recipe.value };
+  // Convertir los pasos a texto para el textarea
+  if (Array.isArray(editedRecipe.value.steps)) {
+    editedRecipe.value.steps = editedRecipe.value.steps.join('\n');
+  }
 };
 
 // Cancelar edición
@@ -435,10 +440,22 @@ const cancelEdit = () => {
 // Guardar receta
 const saveRecipe = async () => {
   try {
-    await recipeService.updateRecipe(recipeId.value, editedRecipe.value);
+    // Procesar los pasos de preparación
+    const stepsArray = editedRecipe.value.steps
+      .split('\n')
+      .map(step => step.trim())
+      .filter(step => step.length > 0);
+    
+    const recipeData = {
+      ...editedRecipe.value,
+      steps: stepsArray
+    };
+    
+    await recipeService.updateRecipe(recipeId.value, recipeData);
+    await loadData();
     editMode.value = false;
   } catch (error) {
-    console.error('Error al guardar la receta:', error);
+    console.error('Error al actualizar la receta:', error);
   }
 };
 
@@ -495,6 +512,20 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.recipe-detail {
+  min-height: calc(100vh - 70px);
+  background-color: #F8F7F2;
+  padding: 2rem;
+  margin-top: 70px;
+}
+
+.content-container {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 /* Input fields with better contrast */
 input[type="text"],
 select,
@@ -506,52 +537,6 @@ textarea {
   font-size: 16px;
   color: #333 !important;
   background-color: #fff !important;
-}
-
-.recipe-detail {
-  padding: 20px;
-  padding-top: 100px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.loading-container, .error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 50px 0;
-  text-align: center;
-  background-color: #f8d7da;
-  border: 2px solid #d32f2f;
-  border-radius: 8px;
-  padding: 20px;
-}
-
-.loading-container i, .error-container i {
-  font-size: 48px;
-  margin-bottom: 16px;
-  color: #3C4B3A;
-}
-
-.error-container i {
-  color: #d32f2f;
-}
-
-.error-container p {
-  color: #333;
-  font-weight: 500;
-  font-size: 16px;
-}
-
-.error-container button {
-  margin-top: 16px;
-  padding: 8px 16px;
-  background-color: #3C4B3A;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
 }
 
 .recipe-header {

@@ -31,8 +31,9 @@ export default {
 
 <style scoped>
 .breadcrumb {
-  padding: 8px 0;
+  padding: 1rem 2rem;
   background-color: transparent;
+  margin-bottom: 1rem;
 }
 
 .breadcrumb ul {
@@ -52,6 +53,7 @@ export default {
   color: #3C4B3A;
   text-decoration: none;
   transition: color 0.3s;
+  font-weight: 500;
 }
 
 .breadcrumb a:hover {
@@ -61,11 +63,12 @@ export default {
 
 .breadcrumb .current {
   color: #666;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .separator {
   margin: 0 8px;
   color: #999;
+  font-weight: 500;
 }
 </style> 
