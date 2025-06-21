@@ -1,66 +1,43 @@
 <template>
-  <div class="defect-details">
-    <!-- Agregar HeaderBar (CuppingHeader.vue) -->
-    <HeaderBar />
-
+  <div class="defect-details-modal">
     <div class="defect-card">
-      <h2>Ficha de defecto</h2>
+      <h2>{{ t('DEFECTS.DETAILS_MODAL_TITLE') }}</h2>
       <div class="defect-info">
         <div class="causes-block">
-          <span class="block-title">Causas probables</span>
-          <div class="block-content">{{ defect.causas || defect.description || 'No disponible' }}</div>
+          <span class="block-title">{{ t('DEFECTS.DETAILS_PROBABLE_CAUSES') }}</span>
+          <div class="block-content">{{ defect.causas || t('DEFECTS.NOT_AVAILABLE') }}</div>
         </div>
         <div class="solutions-block">
-          <span class="block-title">Soluciones recomendadas</span>
-          <div class="block-content">{{ defect.soluciones || defect.solution || 'No disponible' }}</div>
+          <span class="block-title">{{ t('DEFECTS.DETAILS_RECOMMENDED_SOLUTIONS') }}</span>
+          <div class="block-content">{{ defect.soluciones || t('DEFECTS.NOT_AVAILABLE') }}</div>
         </div>
       </div>
-      <button @click="closeDetails" class="close-btn">Cerrar</button>
+      <button @click="$emit('close')" class="close-btn">{{ t('DEFECTS.CLOSE_BUTTON') }}</button>
     </div>
   </div>
 </template>
 
-<script>
-// Importa HeaderBar (CuppingHeader.vue)
-import HeaderBar from '../../public/components/headerBar.vue'
-import { getDefectById } from '../service';
+<script setup>
+import { defineProps, defineEmits } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-export default {
-  components: {
-    HeaderBar, // Registra el componente HeaderBar
+const { t } = useI18n();
+
+defineProps({
+  defect: {
+    type: Object,
+    required: true,
   },
-  data() {
-    return {
-      defect: {}, // Contendrá los detalles del defecto
-    };
-  },
-  async created() {
-    // Obtener el ID del defecto desde la URL
-    const defectId = this.$route.params.defectId;
-    if (defectId) {
-      try {
-        const response = await getDefectById(defectId);
-        this.defect = response.data;
-      } catch (error) {
-        console.error('Error al cargar el defecto:', error);
-      }
-    }
-  },
-  methods: {
-    closeDetails() {
-      // Redirigir a la página anterior o de defectos
-      this.$router.push('/defects');
-    },
-  },
-};
+});
+
+defineEmits(['close']);
 </script>
 
 <style scoped>
-.defect-details {
-  padding: 20px;
+.defect-details-modal {
+  padding: 1rem;
   background-color: #F8F7F2;
   border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   color: #414535;
 }
 
@@ -77,18 +54,19 @@ export default {
   align-items: stretch;
   margin-top: 30px;
   margin-bottom: 30px;
+  gap: 20px;
 }
 
 .causes-block, .solutions-block {
   flex: 1;
   background: #f5f5f5;
   border-radius: 20px;
-  margin: 0 20px;
   padding: 40px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 180px;
+  text-align: center;
 }
 
 .block-title {
@@ -100,7 +78,6 @@ export default {
 .block-content {
   font-size: 1.1em;
   color: #414535;
-  text-align: center;
 }
 
 .close-btn {

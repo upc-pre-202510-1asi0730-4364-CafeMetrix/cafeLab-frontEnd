@@ -1,13 +1,14 @@
 <template>
-  <div>
-    <h1>Roasting</h1>
-    <!-- Aquí puedes agregar recursos generales de roasting si existen -->
-    <p>Bienvenido a la sección de Roasting.</p>
-  </div>
+  <RoastFlavorCorrelation />
 </template>
 
 <script>
+import RoastFlavorCorrelation from '../components/RoastFlavorCorrelation.vue';
+
 export default {
-  name: 'RoastingPage'
+  name: 'RoastingPage',
+  components: {
+    RoastFlavorCorrelation
+  }
 }
 </script> 

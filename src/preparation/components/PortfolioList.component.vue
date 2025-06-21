@@ -210,7 +210,7 @@ const recipeService = new RecipeService();
 
 // Debug info
 const debug = ref(false);
-const apiBaseUrl = 'https://6824c85c0f0188d7e72ac99e.mockapi.io/api/v1';
+const apiBaseUrl = import.meta.env.VITE_MOCKAPI_URL_4 || 'https://6824c85c0f0188d7e72ac99e.mockapi.io/api/v1';
 
 // Datos para el breadcrumb
 const breadcrumbItems = [

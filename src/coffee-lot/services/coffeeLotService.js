@@ -1,26 +1,28 @@
 import httpInstance from '../../shared/services/http.instance.js';
-import { useAuthService } from '../../auth/services/authService';
-import { SupplierService} from "../../supply/service/SupplierService.js";
+import { SupplierService } from "../../supply/service/SupplierService.js";
 
-const { getCurrentUserId } = useAuthService();
 const supplierService = new SupplierService();
-
-
-const userId = getCurrentUserId();
-if (!userId) throw new Error('Usuario no autenticado');
 
 export class CoffeeLotService {
     /** @type {string} The API endpoint for coffee lots */
     resourceEndpoint = import.meta.env.VITE_COFFEELOT_ENDPOINT_PATH;
 
+    /**
+     * Helper to get current user ID from localStorage or throw an error.
+     * @private
+     */
+    getCurrentUserIdOrThrow() {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser?.id) {
+            throw new Error('Usuario no autenticado o sin ID');
+        }
+        return currentUser.id;
+    }
+
     async getLots() {
         try {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser?.id) {
-                throw new Error('Usuario no autenticado o sin ID');
-            }
-
-            const { data } = await httpInstance.get(`${this.resourceEndpoint}?user_id=${currentUser.id}`);
+            const userId = this.getCurrentUserIdOrThrow();
+            const { data } = await httpInstance.get(`${this.resourceEndpoint}?user_id=${userId}`);
             return data;
         } catch (error) {
             this.handleError(error);
@@ -38,12 +40,8 @@ export class CoffeeLotService {
 
     async addLot(lot) {
         try {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser?.id) {
-                throw new Error('Usuario no autenticado o sin ID');
-            }
+            const userId = this.getCurrentUserIdOrThrow();
 
-            // Validar que haya un supplier_id
             if (!lot.supplier_id) {
                 throw new Error('Debe seleccionar un proveedor');
             }
@@ -56,7 +54,7 @@ export class CoffeeLotService {
 
             const lotWithUser = {
                 ...lot,
-                user_id: currentUser.id
+                user_id: userId
             };
 
             const { data } = await httpInstance.post(this.resourceEndpoint, lotWithUser);
@@ -65,7 +63,6 @@ export class CoffeeLotService {
             this.handleError(error);
         }
     }
-
 
     /**
      * Update an existing coffee lot
@@ -103,12 +100,8 @@ export class CoffeeLotService {
      */
     async searchLots(query) {
         try {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser?.id) {
-                throw new Error('Usuario no autenticado o sin ID');
-            }
-
-            const { data } = await httpInstance.get(`${this.resourceEndpoint}?lot_name=${encodeURIComponent(query)}&user_id=${currentUser.id}`);
+            const userId = this.getCurrentUserIdOrThrow();
+            const { data } = await httpInstance.get(`${this.resourceEndpoint}?lot_name=${encodeURIComponent(query)}&user_id=${userId}`);
             return data;
         } catch (error) {
             this.handleError(error);

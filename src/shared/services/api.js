@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://6824c1b40f0188d7e72aabca.mockapi.io/api/v1/'
+  baseURL: import.meta.env.VITE_MOCKAPI_URL_3 || 'https://6824c1b40f0188d7e72aabca.mockapi.io/api/v1/'
 });
 
 export const cuppingSessions = {
