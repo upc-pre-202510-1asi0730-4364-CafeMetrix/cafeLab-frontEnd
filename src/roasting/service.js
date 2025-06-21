@@ -1,8 +1,12 @@
 import axios from 'axios';
 import { Calibration, Defect } from './model';
 
-const API_URL_DEFECTS = 'https://6855de841789e182b37c8aca.mockapi.io/api/v1/defects';
-const API_URL_CALIBRATIONS = 'https://6855de841789e182b37c8aca.mockapi.io/api/v1/calibrations';
+const API_BASE_URL = import.meta.env.VITE_MOCKAPI_URL_2 || 'https://6855de841789e182b37c8aca.mockapi.io/api/v1';
+
+const API_URL_DEFECTS = `${API_BASE_URL}/defects`;
+const API_URL_CALIBRATIONS = `${API_BASE_URL}/calibrations`;
+
+console.log('DEBUG: Conectando a la API de Defectos en:', API_URL_DEFECTS);
 
 // Calibrations
 export const getAllCalibrations = () => axios.get(API_URL_CALIBRATIONS);

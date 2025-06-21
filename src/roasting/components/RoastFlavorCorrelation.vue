@@ -208,7 +208,7 @@ const allRoastProfiles = ref([]);
 
 
 const fetchData = async () => {
-  const MOCK_API_URL = 'https://6855d41d1789e182b37c6b19.mockapi.io/api/v1';
+  const MOCK_API_URL = import.meta.env.VITE_MOCKAPI_URL || 'https://6855d41d1789e182b37c6b19.mockapi.io/api/v1';
   try {
     const [correlationRes, profilesRes] = await Promise.all([
       axios.get(`${MOCK_API_URL}/correlationPage`),

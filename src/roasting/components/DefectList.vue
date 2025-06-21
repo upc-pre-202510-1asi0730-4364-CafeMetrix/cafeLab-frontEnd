@@ -72,24 +72,28 @@
         <h2>{{ t('DEFECTS.ADD_MODAL_TITLE') }}</h2>
         <form @submit.prevent="addNewDefect">
           <div>
-            <label for="name" class="form-label">{{ t('DEFECTS.FORM_LABEL_NAME') }}</label>
-            <input type="text" id="name" v-model="newDefect.name" required />
+            <label for="cafe" class="form-label">{{ t('DEFECTS.TABLE_HEADER_CAFE') }}</label>
+            <input type="text" id="cafe" v-model="newDefect.cafe" required />
           </div>
           <div>
-            <label for="description" class="form-label">{{ t('DEFECTS.FORM_LABEL_DESCRIPTION') }}</label>
-            <input type="text" id="description" v-model="newDefect.description" required />
+            <label for="defecto" class="form-label">{{ t('DEFECTS.TABLE_HEADER_DEFECT') }}</label>
+            <input type="text" id="defecto" v-model="newDefect.defecto" required />
           </div>
           <div>
-            <label for="severity" class="form-label">{{ t('DEFECTS.FORM_LABEL_SEVERITY') }}</label>
-            <input type="text" id="severity" v-model="newDefect.severity" required />
+            <label for="peso" class="form-label">{{ t('DEFECTS.TABLE_HEADER_WEIGHT') }}</label>
+            <input type="number" step="0.1" id="peso" v-model="newDefect.peso" required />
           </div>
           <div>
-            <label for="category" class="form-label">{{ t('DEFECTS.FORM_LABEL_CATEGORY') }}</label>
-            <input type="text" id="category" v-model="newDefect.category" required />
+            <label for="porcentaje" class="form-label">{{ t('DEFECTS.TABLE_HEADER_PERCENTAGE') }}</label>
+            <input type="number" step="0.1" id="porcentaje" v-model="newDefect.porcentaje" required />
           </div>
           <div>
-            <label for="solution" class="form-label">{{ t('DEFECTS.FORM_LABEL_SOLUTION') }}</label>
-            <input type="text" id="solution" v-model="newDefect.solution" required />
+            <label for="causas" class="form-label">{{ t('DEFECTS.DETAILS_PROBABLE_CAUSES') }}</label>
+            <input type="text" id="causas" v-model="newDefect.causas" />
+          </div>
+          <div>
+            <label for="soluciones" class="form-label">{{ t('DEFECTS.DETAILS_RECOMMENDED_SOLUTIONS') }}</label>
+            <input type="text" id="soluciones" v-model="newDefect.soluciones" />
           </div>
           <button type="submit" class="add-submit-btn">{{ t('DEFECTS.FORM_SUBMIT_BUTTON') }}</button>
         </form>
@@ -138,7 +142,7 @@ export default {
     const showModal = ref(false);
     const showAddDefectModal = ref(false);
     const selectedDefect = ref(null);
-    const newDefect = ref({ name: '', description: '', severity: '', category: '', solution: '' });
+    const newDefect = ref({ peso: null, cafe: '', defecto: '', porcentaje: null, causas: '', soluciones: '' });
     const searchCafe = ref('');
     const searchDefecto = ref('');
     const selectedCafe = ref('');
@@ -162,7 +166,12 @@ export default {
       try {
         const response = await getAllDefects();
         console.log('Defectos recibidos:', response.data);
-        defects.value = response.data;
+        if (Array.isArray(response.data)) {
+          defects.value = response.data;
+        } else {
+          console.error('Error: La respuesta de la API no es un array válido.', response.data);
+          throw new Error('Formato de datos incorrecto recibido de la API.');
+        }
         errorMsg.value = '';
       } catch (error) {
         console.error('Error al cargar defectos:', error);
@@ -176,7 +185,7 @@ export default {
         await createDefect(newDefect.value);
         await loadDefects();
         showAddDefectModal.value = false;
-        newDefect.value = { name: '', description: '', severity: '', category: '', solution: '' };
+        newDefect.value = { peso: null, cafe: '', defecto: '', porcentaje: null, causas: '', soluciones: '' };
         errorMsg.value = '';
       } catch (error) {
         console.error('Error al agregar defecto:', error);

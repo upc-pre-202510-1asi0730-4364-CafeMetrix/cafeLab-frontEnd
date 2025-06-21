@@ -4,7 +4,7 @@
  */
 
 // URL base de la API (reemplazar XXXX con el ID de tu proyecto en MockAPI)
-export const API_BASE_URL = 'https://6824c1b40f0188d7e72aabca.mockapi.io/api/v1';
+export const API_BASE_URL = import.meta.env.VITE_MOCKAPI_URL_3 || 'https://6824c1b40f0188d7e72aabca.mockapi.io/api/v1';
 
 // Endpoints de la API
 export const API_ENDPOINTS = {
