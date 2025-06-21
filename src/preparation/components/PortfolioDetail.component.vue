@@ -208,29 +208,34 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.component.vue';
-import { PortfolioManager } from '../stores/portfolioManager';
-import { RecipeManager } from '../stores/recipeManager';
+import { RecipeService } from '../services/recipe.service';
+import { PortfolioService } from '../services/portfolio.service';
 import HeaderBar from "../../public/components/headerBar.vue";
+
 const router = useRouter();
 const route = useRoute();
 
+// Servicios
+const recipeService = new RecipeService();
+const portfolioService = new PortfolioService();
+
 // Estados
 const showEditModal = ref(false);
-const showAddRecipeModal = ref(false);
 const showDeleteConfirmation = ref(false);
+const showAddRecipeModal = ref(false);
 const showRemoveRecipeConfirmation = ref(false);
 const editedName = ref('');
-const selectedRecipeId = ref(null);
-const isLoadingRecipes = ref(false);
-const availableRecipes = ref([]);
+const recipeToRemove = ref(null);
 
 // Obtener el ID del portafolio de la ruta
 const portfolioId = computed(() => parseInt(route.params.id));
 
 // Estados computados
-const portfolio = computed(() => PortfolioManager.getCurrentPortfolio());
-const isLoading = computed(() => PortfolioManager.getIsLoading());
-const error = computed(() => PortfolioManager.getError());
+const portfolio = computed(() => portfolioService.getCurrentPortfolio().value);
+const isLoading = computed(() => portfolioService.getIsLoading().value);
+const error = computed(() => portfolioService.getError().value);
+const availableRecipes = computed(() => recipeService.getRecipesWithoutPortfolio().value);
+const isLoadingRecipes = computed(() => recipeService.getIsLoading().value);
 
 // Datos para el breadcrumb
 const breadcrumbItems = computed(() => [
@@ -239,114 +244,95 @@ const breadcrumbItems = computed(() => [
   { label: portfolio.value?.name || 'Portafolio', path: `/recetas/portfolio/${portfolioId.value}` }
 ]);
 
-// Cargar datos del portafolio
+// Cargar datos
 const loadData = async () => {
   if (portfolioId.value) {
-    await PortfolioManager.fetchPortfolioById(portfolioId.value);
-    
+    await portfolioService.getPortfolioById(portfolioId.value);
     if (portfolio.value) {
       editedName.value = portfolio.value.name;
     }
   }
 };
 
-// Cargar recetas disponibles para añadir
+// Cargar recetas disponibles
 const loadAvailableRecipes = async () => {
-  isLoadingRecipes.value = true;
-  try {
-    await RecipeManager.fetchRecipesWithoutPortfolio();
-    availableRecipes.value = RecipeManager.getRecipesWithoutPortfolio();
-  } catch (error) {
-    console.error('Error al cargar recetas disponibles:', error);
-  } finally {
-    isLoadingRecipes.value = false;
-  }
+  await recipeService.getRecipesWithoutPortfolio();
 };
 
-// Navegación a detalles de receta
+// Navegación
 const navigateToRecipeDetail = (recipeId) => {
   router.push(`/recetas/detalle/${recipeId}`);
 };
 
-// Navegación para crear nueva receta
 const navigateToNewRecipe = () => {
-  router.push('/recetas/nueva');
+  router.push('/recetas/crear');
 };
 
-// Guardar cambios en el portafolio
+// Edición de portafolio
 const savePortfolio = async () => {
-  if (editedName.value.trim() === '') return;
-  
   try {
-    await PortfolioManager.updatePortfolio(portfolioId.value, { name: editedName.value });
+    await portfolioService.updatePortfolio(portfolioId.value, {
+      ...portfolio.value,
+      name: editedName.value
+    });
     showEditModal.value = false;
   } catch (error) {
     console.error('Error al actualizar el portafolio:', error);
   }
 };
 
-// Confirmar eliminación de portafolio
+// Eliminación de portafolio
 const confirmDelete = () => {
   showDeleteConfirmation.value = true;
 };
 
-// Eliminar portafolio
 const deletePortfolio = async () => {
   try {
-    await PortfolioManager.deletePortfolio(portfolioId.value);
-    // Cerrar el diálogo primero
+    await portfolioService.deletePortfolio(portfolioId.value);
     showDeleteConfirmation.value = false;
-    
-    // Pequeño retraso para asegurar que el diálogo se cierra visualmente antes de redirigir
-    setTimeout(() => {
-      router.push('/recetas');
-    }, 100);
+    router.push('/recetas');
   } catch (error) {
     console.error('Error al eliminar el portafolio:', error);
-    showDeleteConfirmation.value = false;
   }
 };
 
-// Seleccionar receta para añadir al portafolio
-const selectRecipe = async (recipeId) => {
-  try {
-    await RecipeManager.assignToPortfolio(recipeId, portfolioId.value);
-    await PortfolioManager.fetchPortfolioById(portfolioId.value);
-    showAddRecipeModal.value = false;
-  } catch (error) {
-    console.error('Error al asignar la receta al portafolio:', error);
-  }
-};
-
-// Confirmar eliminación de receta del portafolio
+// Gestión de recetas
 const confirmRemoveRecipe = (recipeId) => {
-  selectedRecipeId.value = recipeId;
+  recipeToRemove.value = recipeId;
   showRemoveRecipeConfirmation.value = true;
 };
 
-// Quitar receta del portafolio
 const removeRecipe = async () => {
-  if (!selectedRecipeId.value) return;
-  
-  try {
-    await RecipeManager.removeFromPortfolio(selectedRecipeId.value);
-    await PortfolioManager.fetchPortfolioById(portfolioId.value);
-    showRemoveRecipeConfirmation.value = false;
-  } catch (error) {
-    console.error('Error al quitar la receta del portafolio:', error);
+  if (recipeToRemove.value) {
+    try {
+      await portfolioService.removeRecipeFromPortfolio(portfolioId.value, recipeToRemove.value);
+      showRemoveRecipeConfirmation.value = false;
+      recipeToRemove.value = null;
+    } catch (error) {
+      console.error('Error al remover la receta:', error);
+    }
   }
 };
 
-// Cargar datos al montar el componente
-onMounted(() => {
-  loadData();
-});
+const selectRecipe = async (recipeId) => {
+  try {
+    await portfolioService.addRecipeToPortfolio(portfolioId.value, recipeId);
+    showAddRecipeModal.value = false;
+  } catch (error) {
+    console.error('Error al añadir la receta:', error);
+  }
+};
 
-// Observar cambios en la modal para cargar recetas cuando se muestra
+// Watch para cargar recetas cuando se abre el modal
 watch(showAddRecipeModal, (newValue) => {
   if (newValue) {
     loadAvailableRecipes();
   }
+});
+
+// Cargar datos al montar el componente
+onMounted(() => {
+  loadData();
 });
 </script>
 
