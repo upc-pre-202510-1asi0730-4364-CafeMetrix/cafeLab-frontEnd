@@ -300,8 +300,8 @@
     "features": "Funcionalidades",
     "profile": "Perfil",
     "contact": "Contactanos",
-    "logout": "Cerrar sesión",
-    "logoutConfirm": "¿Estás seguro de que deseas cerrar sesión?",
+    "logout": "Cerrar Sesión",
+    "logoutConfirm": "¿Estás seguro de que quieres cerrar sesión?",
     "home": "Home"
   },
   "breadcrumb": {
@@ -568,5 +568,58 @@
     "selectType": "Tipo de Café",
     "minutes": "min",
     "selectLot": "Seleccionar lote"
+  },
+  "contact": {
+    "title": "¿Tienes preguntas, sugerencias o necesitas ayuda? En Cafelab estamos para apoyarte a ti y tu cafetería. ¡Escríbenos!",
+    "formTitle": "Contáctanos",
+    "nameLabel": "Nombre *",
+    "namePlaceholder": "Ingresa tu nombre completo",
+    "emailLabel": "Correo electrónico *",
+    "emailPlaceholder": "tu@email.com",
+    "subjectLabel": "Asunto *",
+    "subjectPlaceholder": "Título de tu consulta",
+    "messageLabel": "Mensaje *",
+    "messagePlaceholder": "Describe tu consulta, sugerencia o solicitud de ayuda...",
+    "attachLabel": "Adjuntar archivos",
+    "attachButton": "Elegir archivos",
+    "sendButton": "Enviar",
+    "faqTitle": "Preguntas Frecuentes",
+    "faq": [
+      {
+        "q": "¿Cómo puedo registrarme en la plataforma?",
+        "a": "Para registrarte, haz clic en el botón 'Registrarse' en la parte superior de la página. Completa el formulario con tu información personal y empresarial. Una vez enviado, recibirás un correo de confirmación para activar tu cuenta."
+      },
+      {
+        "q": "¿Qué funcionalidades incluye mi cuenta gratuita?",
+        "a": "La cuenta gratuita incluye acceso básico al registro de lotes de café, gestión básica de proveedores y consulta de defectos en el café. Para funciones avanzadas como análisis detallados y reportes personalizados, puedes actualizar a un plan premium."
+      },
+      {
+        "q": "¿Cómo puedo recuperar mi contraseña?",
+        "a": "En la página de inicio de sesión, haz clic en '¿Olvidaste tu contraseña?'. Ingresa tu correo electrónico registrado y te enviaremos un enlace para restablecer tu contraseña. Sigue las instrucciones del correo para crear una nueva contraseña."
+      },
+      {
+        "q": "¿Puedo cambiar mi plan de suscripción en cualquier momento?",
+        "a": "Sí, puedes actualizar o cambiar tu plan de suscripción en cualquier momento desde la configuración de tu cuenta. Los cambios se aplicarán inmediatamente y se prorrateará la facturación según corresponda."
+      },
+      {
+        "q": "¿Cómo puedo contactar al soporte técnico?",
+        "a": "Puedes contactarnos a través de este formulario, enviando un correo a contacto@cafelab.com, por WhatsApp al +51 912 345 678, o a través de nuestro perfil de LinkedIn. Nuestro horario de atención es de lunes a viernes de 9:00 a.m. a 6:00 p.m."
+      }
+    ],
+    "contactInfo": {
+      "email": "Correo electrónico",
+      "emailAddress": "contacto@cafelab.com",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "linkedinText": "Síguenos en LinkedIn",
+      "location": "Ubicación",
+      "locationText": "Ver nuestra ubicación",
+      "schedule": "Horario de atención: Lunes a Viernes de 9:00 a.m. a 6:00 p.m. (hora local)"
+    },
+    "validation": {
+      "required": "Por favor, completa todos los campos obligatorios.",
+      "invalidEmail": "Por favor, introduce una dirección de correo electrónico válida.",
+      "success": "Formulario enviado con éxito."
+    }
   }
 }

@@ -34,6 +34,8 @@ const BaristaDashboard = () => import('../profiles/components/BaristaDashboard.v
 const OwnerDashboard = () => import('../profiles/components/OwnerDashboard.vue');
 const CompleteDashboard = () => import('../profiles/components/CompleteDashboard.component.vue');
 const PageNotFound = () => import('../public/pages/page-not-found.component.vue');
+const ContactUsPage = () => import('../public/pages/ContactUsPage.vue');
+
 
 
 const routes = [
@@ -44,6 +46,7 @@ const routes = [
     { path: '/logup/barista/success',   name: 'logupBaristaSuccess', component: LogupBaristaSuccessPage, meta: { title: 'Barista Registration Success' } },
     { path: '/register/owner',          name: 'registerOwner',       component: LogupOwnerPage,          meta: { title: 'Register Owner' } },
     { path: '/logup/owner/success',     name: 'logupOwnerSuccess',   component: LogupOwnerSuccessPage,   meta: { title: 'Owner Registration Success' } },
+    { path: '/contact',                 name: 'contactUs',           component: ContactUsPage,           meta: { title: 'Contact Us' } },
     { path: '/edit-profile',            name: 'editProfile',         component: EditProfilePage,         meta: { title: 'Edit Profile' } },
     { path: '/select-plan', name: 'select-plan', component: SelectPlan },
     { path: '/confirm-plan', name: 'confirm-plan', component: ConfirmPlan },

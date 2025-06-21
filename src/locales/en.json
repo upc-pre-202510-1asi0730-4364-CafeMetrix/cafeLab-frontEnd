@@ -330,7 +330,6 @@
     "logout": "Logout",
     "logoutConfirm": "Are you sure you want to log out?",
     "home": "Home"
-
   },
   "breadcrumb": {
     "home": "Home",
@@ -566,5 +565,58 @@
     "selectType": "Coffee Type",
     "minutes": "min",
     "selectLot": "Select lot"
+  },
+  "contact": {
+    "title": "Do you have questions, suggestions, or need help? At Cafelab, we are here to support you and your coffee shop. Write to us!",
+    "formTitle": "Contact Us",
+    "nameLabel": "Name *",
+    "namePlaceholder": "Enter your full name",
+    "emailLabel": "Email *",
+    "emailPlaceholder": "your@email.com",
+    "subjectLabel": "Subject *",
+    "subjectPlaceholder": "Title of your inquiry",
+    "messageLabel": "Message *",
+    "messagePlaceholder": "Describe your inquiry, suggestion or help request...",
+    "attachLabel": "Attach files",
+    "attachButton": "Choose files",
+    "sendButton": "Send",
+    "faqTitle": "Frequently Asked Questions",
+    "faq": [
+      {
+        "q": "How can I register on the platform?",
+        "a": "To register, click the 'Sign Up' button at the top of the page. Complete the form with your personal and business information. Once submitted, you will receive a confirmation email to activate your account."
+      },
+      {
+        "q": "What features does my free account include?",
+        "a": "The free account includes basic access to coffee lot registration, basic supplier management, and viewing coffee defects. For advanced features like detailed analysis and custom reports, you can upgrade to a premium plan."
+      },
+      {
+        "q": "How can I recover my password?",
+        "a": "On the login page, click 'Forgot your password?'. Enter your registered email address, and we will send you a link to reset your password. Follow the instructions in the email to create a new password."
+      },
+      {
+        "q": "Can I change my subscription plan at any time?",
+        "a": "Yes, you can upgrade or change your subscription plan at any time from your account settings. The changes will be applied immediately, and billing will be prorated accordingly."
+      },
+      {
+        "q": "How can I contact technical support?",
+        "a": "You can contact us through this form, by sending an email to contact@cafelab.com, on WhatsApp at +51 912 345 678, or through our LinkedIn profile. Our support hours are Monday to Friday from 9:00 a.m. to 6:00 p.m."
+      }
+    ],
+    "contactInfo": {
+      "email": "Email",
+      "emailAddress": "contact@cafelab.com",
+      "whatsapp": "WhatsApp",
+      "linkedin": "LinkedIn",
+      "linkedinText": "Follow us on LinkedIn",
+      "location": "Location",
+      "locationText": "View our location",
+      "schedule": "Support hours: Monday to Friday from 9:00 a.m. to 6:00 p.m. (local time)"
+    },
+    "validation": {
+      "required": "Please fill in all required fields.",
+      "invalidEmail": "Please enter a valid email address.",
+      "success": "Form submitted successfully."
+    }
   }
 }
