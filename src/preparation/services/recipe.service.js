@@ -1,14 +1,12 @@
 import { Recipe } from '../model/recipe.entity';
-import { ApiService } from './api.service';
-import { API_ENDPOINTS } from '../../config/api.config';
+import BaseService from '../../shared/services/base.service';
 
 /**
  * Servicio para gestionar las recetas
  */
-export class RecipeService {
+export class RecipeService extends BaseService {
   constructor() {
-    this.apiService = new ApiService();
-    this.endpoint = API_ENDPOINTS.recipes;
+    super('recipes');
   }
   
   /**
@@ -17,7 +15,7 @@ export class RecipeService {
    */
   async getAllRecipes() {
     try {
-      const recipes = await this.apiService.get(this.endpoint);
+      const recipes = await this.getAll();
       return recipes.map(recipe => new Recipe(recipe));
     } catch (error) {
       console.error('Error al obtener recetas:', error);
@@ -34,10 +32,11 @@ export class RecipeService {
       console.log('Buscando recetas sin portafolio...');
       
       // MockAPI permite filtrar por portfolioId=null directamente
-      const recipesWithoutPortfolio = await this.apiService.get(`${this.endpoint}?portfolioId=null`);
-      console.log(`Recetas sin portafolio obtenidas: ${recipesWithoutPortfolio.length}`);
+      const recipesWithoutPortfolio = await this.getAll();
+      const filteredRecipes = recipesWithoutPortfolio.filter(recipe => !recipe.portfolioId);
+      console.log(`Recetas sin portafolio obtenidas: ${filteredRecipes.length}`);
       
-      return recipesWithoutPortfolio.map(recipe => new Recipe(recipe));
+      return filteredRecipes.map(recipe => new Recipe(recipe));
     } catch (error) {
       console.error('Error al obtener recetas sin portafolio:', error);
       throw error;
@@ -51,7 +50,7 @@ export class RecipeService {
    */
   async getRecipeById(id) {
     try {
-      const recipe = await this.apiService.get(`${this.endpoint}/${id}`);
+      const recipe = await this.getById(id);
       return new Recipe(recipe);
     } catch (error) {
       console.error(`Error al obtener la receta ${id}:`, error);
@@ -66,8 +65,9 @@ export class RecipeService {
    */
   async getRecipesByPortfolioId(portfolioId) {
     try {
-      const recipes = await this.apiService.get(`${this.endpoint}?portfolioId=${portfolioId}`);
-      return recipes.map(recipe => new Recipe(recipe));
+      const recipes = await this.getAll();
+      const filteredRecipes = recipes.filter(recipe => recipe.portfolioId === portfolioId);
+      return filteredRecipes.map(recipe => new Recipe(recipe));
     } catch (error) {
       console.error(`Error al obtener recetas del portafolio ${portfolioId}:`, error);
       throw error;
@@ -89,7 +89,7 @@ export class RecipeService {
       };
       
       // Crear la receta a través de la API
-      const createdRecipe = await this.apiService.post(this.endpoint, newRecipe);
+      const createdRecipe = await this.create(newRecipe);
       return new Recipe(createdRecipe);
     } catch (error) {
       console.error('Error al crear la receta:', error);
@@ -112,7 +112,7 @@ export class RecipeService {
       };
       
       // Actualizar la receta a través de la API
-      const updatedRecipe = await this.apiService.put(`${this.endpoint}/${id}`, updateData);
+      const updatedRecipe = await this.update(id, updateData);
       return new Recipe(updatedRecipe);
     } catch (error) {
       console.error(`Error al actualizar la receta ${id}:`, error);
@@ -127,7 +127,8 @@ export class RecipeService {
    */
   async deleteRecipe(id) {
     try {
-      return await this.apiService.delete(`${this.endpoint}/${id}`);
+      await this.delete(id);
+      return true;
     } catch (error) {
       console.error(`Error al eliminar la receta ${id}:`, error);
       throw error;
@@ -149,13 +150,13 @@ export class RecipeService {
       console.log(`Asignando receta ${numRecipeId} al portafolio ${numPortfolioId}`);
       
       // Obtener la receta actual
-      const recipe = await this.apiService.get(`${this.endpoint}/${numRecipeId}`);
+      const recipe = await this.getById(numRecipeId);
       
       // Actualizar el campo portfolioId
       recipe.portfolioId = numPortfolioId;
       
       // Enviar la actualización
-      const updatedRecipe = await this.apiService.put(`${this.endpoint}/${numRecipeId}`, recipe);
+      const updatedRecipe = await this.update(numRecipeId, recipe);
       
       return new Recipe(updatedRecipe);
     } catch (error) {

@@ -1,15 +1,13 @@
 import { Portfolio } from '../model/portfolio.entity';
-import { ApiService } from './api.service';
-import { API_ENDPOINTS } from '../../config/api.config';
+import BaseService from '../../shared/services/base.service';
 
 /**
  * Servicio para gestionar los portafolios
  */
-export class PortfolioService {
+export class PortfolioService extends BaseService {
   constructor() {
-    this.apiService = new ApiService();
-    this.endpoint = API_ENDPOINTS.portfolios;
-    this.recipeEndpoint = API_ENDPOINTS.recipes;
+    super(import.meta.env.VITE_PORTFOLIOS_ENDPOINT_PATH?.replace('/', '') || 'portfolios');
+    this.recipeService = new BaseService('recipes');
   }
   
   /**
@@ -18,7 +16,7 @@ export class PortfolioService {
    */
   async getAllPortfolios() {
     try {
-      const portfolios = await this.apiService.get(this.endpoint);
+      const portfolios = await this.getAll();
       return portfolios.map(portfolio => new Portfolio(portfolio));
     } catch (error) {
       console.error('Error al obtener portafolios:', error);
@@ -34,10 +32,11 @@ export class PortfolioService {
   async getPortfolioById(id) {
     try {
       // Obtener los datos del portafolio
-      const portfolioData = await this.apiService.get(`${this.endpoint}/${id}`);
+      const portfolioData = await this.getById(id);
       
       // Obtener las recetas asociadas a este portafolio
-      const recipes = await this.apiService.get(`${this.recipeEndpoint}?portfolioId=${id}`);
+      const allRecipes = await this.recipeService.getAll();
+      const recipes = allRecipes.filter(recipe => recipe.portfolioId === id);
       
       // Crear el objeto Portfolio y añadir las recetas
       const portfolio = new Portfolio(portfolioData);
@@ -66,7 +65,7 @@ export class PortfolioService {
       };
       
       // Crear el portafolio a través de la API
-      const createdPortfolio = await this.apiService.post(this.endpoint, newPortfolio);
+      const createdPortfolio = await this.create(newPortfolio);
       return new Portfolio(createdPortfolio);
     } catch (error) {
       console.error('Error al crear el portafolio:', error);
@@ -89,7 +88,7 @@ export class PortfolioService {
       };
       
       // Actualizar el portafolio a través de la API
-      const updatedPortfolio = await this.apiService.put(`${this.endpoint}/${id}`, updateData);
+      const updatedPortfolio = await this.update(id, updateData);
       return new Portfolio(updatedPortfolio);
     } catch (error) {
       console.error(`Error al actualizar el portafolio ${id}:`, error);
@@ -104,7 +103,8 @@ export class PortfolioService {
    */
   async deletePortfolio(id) {
     try {
-      return await this.apiService.delete(`${this.endpoint}/${id}`);
+      await this.delete(id);
+      return true;
     } catch (error) {
       console.error(`Error al eliminar el portafolio ${id}:`, error);
       throw error;
@@ -126,7 +126,7 @@ export class PortfolioService {
       console.log(`Añadiendo receta ${numRecipeId} al portafolio ${numPortfolioId}`);
       
       // Primero, obtener el portafolio actual
-      const portfolio = await this.apiService.get(`${this.endpoint}/${numPortfolioId}`);
+      const portfolio = await this.getById(numPortfolioId);
       
       // Asegurarse de que recipeIds exista y sea un array
       if (!portfolio.recipeIds) {
@@ -141,12 +141,12 @@ export class PortfolioService {
         console.log(`RecipeIds actualizados: ${JSON.stringify(portfolio.recipeIds)}`);
         
         // Actualizar el portafolio
-        const updatedPortfolio = await this.apiService.put(`${this.endpoint}/${numPortfolioId}`, portfolio);
+        const updatedPortfolio = await this.update(numPortfolioId, portfolio);
         
         // Actualizar la receta para referenciar al portafolio
-        const recipe = await this.apiService.get(`${this.recipeEndpoint}/${numRecipeId}`);
+        const recipe = await this.recipeService.getById(numRecipeId);
         recipe.portfolioId = numPortfolioId;
-        await this.apiService.put(`${this.recipeEndpoint}/${numRecipeId}`, recipe);
+        await this.recipeService.update(numRecipeId, recipe);
         
         console.log('Portafolio actualizado:', updatedPortfolio);
         
@@ -175,7 +175,7 @@ export class PortfolioService {
       console.log(`Eliminando receta ${numRecipeId} del portafolio ${numPortfolioId}`);
       
       // Primero, obtener el portafolio actual
-      const portfolio = await this.apiService.get(`${this.endpoint}/${numPortfolioId}`);
+      const portfolio = await this.getById(numPortfolioId);
       
       // Asegurarse de que recipeIds exista y sea un array
       if (!portfolio.recipeIds) {
@@ -189,12 +189,12 @@ export class PortfolioService {
       console.log(`RecipeIds actualizados: ${JSON.stringify(portfolio.recipeIds)}`);
       
       // Actualizar el portafolio
-      const updatedPortfolio = await this.apiService.put(`${this.endpoint}/${numPortfolioId}`, portfolio);
+      const updatedPortfolio = await this.update(numPortfolioId, portfolio);
       
       // Actualizar la receta para quitar la referencia al portafolio
-      const recipe = await this.apiService.get(`${this.recipeEndpoint}/${numRecipeId}`);
+      const recipe = await this.recipeService.getById(numRecipeId);
       recipe.portfolioId = null;
-      await this.apiService.put(`${this.recipeEndpoint}/${numRecipeId}`, recipe);
+      await this.recipeService.update(numRecipeId, recipe);
       
       console.log('Portafolio actualizado después de eliminar receta:', updatedPortfolio);
       
