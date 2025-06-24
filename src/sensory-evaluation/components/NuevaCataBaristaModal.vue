@@ -15,22 +15,17 @@
         <Dropdown v-model="selectedProfile" :options="profiles" option-label="label" option-value="value" id="profile" />
         <label for="profile">Perfil de tueste</label>
       </span>
-      <div v-if="linkedLot">
-        <small>Lote vinculado: <strong>{{ linkedLot.lot_name }}</strong> (Origen: {{ linkedLot.origin }})</small>
-      </div>
       <Button label="Crear nueva sesión de cata" class="start-btn" @click="createSession" />
     </div>
   </Dialog>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref } from 'vue'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
-import { roastProfileService } from '../../roast-profiles/service/RoastProfileService.js'
-import { coffeeLotService } from '../../coffee-lot/services/coffeeLotService.js'
 
 defineProps({
   visible: Boolean
@@ -39,40 +34,20 @@ defineProps({
 const emit = defineEmits(['update:visible', 'create'])
 
 const sessionName = ref('')
-const selectedProfile = ref(null)
-const profiles = ref([])
-const lotsById = ref({})
-
-onMounted(async () => {
-  // Obtener perfiles de tueste y lotes
-  const [roastProfiles, lots] = await Promise.all([
-    roastProfileService.getRoastProfiles(),
-    coffeeLotService.getLots()
-  ])
-  // Indexar lotes por id para acceso rápido
-  lotsById.value = Object.fromEntries((lots || []).map(lot => [String(lot.id), lot]))
-  // Mapear perfiles para el select
-  profiles.value = (roastProfiles || []).map(profile => ({
-    label: profile.profile_name,
-    value: profile
-  }))
-})
-
-const linkedLot = computed(() => {
-  if (!selectedProfile.value) return null
-  return lotsById.value[String(selectedProfile.value.coffee_lot_id)] || null
-})
+const selectedProfile = ref('')
+const profiles = [
+  { label: 'Café ABC', value: 'Café ABC' },
+  { label: 'Café XYZ', value: 'Café XYZ' },
+  { label: 'Café 123', value: 'Café 123' },
+  { label: 'Café DEF', value: 'Café DEF' }
+]
 
 const createSession = () => {
   if (!sessionName.value || !selectedProfile.value) return
 
   emit('create', {
     name: sessionName.value,
-    profile: selectedProfile.value.profile_name,
-    lot: linkedLot.value ? linkedLot.value.lot_name : 'N/A',
-    origin: linkedLot.value ? linkedLot.value.origin : 'N/A',
-    roast_profile_id: selectedProfile.value.id,
-    coffee_lot_id: selectedProfile.value.coffee_lot_id
+    profile: selectedProfile.value
   })
 
   // Cerrar el modal después de crear
@@ -80,7 +55,7 @@ const createSession = () => {
 
   // Limpiar campos (opcional)
   sessionName.value = ''
-  selectedProfile.value = null
+  selectedProfile.value = ''
 }
 </script>
 
@@ -103,4 +78,4 @@ const createSession = () => {
   font-weight: 500;
   margin-top: 10px;
 }
-</style>
+</style> 

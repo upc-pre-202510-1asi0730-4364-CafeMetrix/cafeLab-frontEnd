@@ -4,6 +4,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { Radar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -25,7 +26,7 @@ const props = defineProps({
   }
 })
 
-const chartData = {
+const chartData = computed(() => ({
   labels: Object.keys(props.ratings).map(attr => attr.toUpperCase()),
   datasets: [
     {
@@ -36,21 +37,54 @@ const chartData = {
       data: Object.values(props.ratings)
     }
   ]
-}
+}))
 
-const chartOptions = {
+const chartOptions = computed(() => ({
   responsive: true,
   scales: {
     r: {
       min: 0,
       max: 10,
-      ticks: { stepSize: 1 },
+      ticks: {
+        stepSize: 1,
+        color: '#fff',
+        font: {
+          size: 12,
+          weight: 'bold',
+        },
+        backdropColor: 'rgba(0,0,0,0)',
+        z: 1,
+        showLabelBackdrop: false,
+        padding: 2
+      },
       pointLabels: {
+        color: '#fff',
+        font: {
+          size: 18,
+          weight: 'bold',
+        },
+        padding: 8,
+        backdropColor: 'rgba(0,0,0,0)',
+        shadowColor: '#000',
+        shadowBlur: 4
+      },
+      grid: {
+        color: 'rgba(255,255,255,0.15)'
+      },
+      angleLines: {
+        color: 'rgba(255,255,255,0.2)'
+      }
+    }
+  },
+  plugins: {
+    legend: {
+      labels: {
+        color: '#fff',
         font: {
           size: 14
         }
       }
     }
   }
-}
+}))
 </script>
