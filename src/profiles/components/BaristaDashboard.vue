@@ -37,7 +37,7 @@ import { onMounted, onUnmounted } from 'vue'
 const router = useRouter()
 
 const goToCupping = () => {
-  router.push('/cata') // Ajusta si es necesario
+  router.push('/cata-barista') // Ahora apunta a la nueva página de barista
 }
 const goToDefects = () => {
   router.push('/defects') // Ajusta si es necesario

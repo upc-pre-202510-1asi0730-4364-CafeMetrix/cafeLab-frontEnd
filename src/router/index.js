@@ -21,6 +21,7 @@ import RoastProfilePage from '../roast-profiles/page/RoastProfilePage.vue';
 import RoastProfileComparison from '../roast-profiles/components/RoastProfileComparison.vue';
 import CuppingSessionList from '../sensory-evaluation/components/CuppingSessionList.vue';
 import CuppingSessionDetail from '../sensory-evaluation/components/CuppingSessionDetail.vue';
+import BaristaCuppingSessions from '../sensory-evaluation/BaristaCuppingSessions.vue';
 
 
 const LoginPage = () => import('../auth/pages/login-page.component.vue');
@@ -82,6 +83,8 @@ const routes = [
     { path: '/recetas/nueva', name: 'NewRecipe', component: () => import('../preparation/components/RecipeCreate.component.vue') },
     { path: '/recetas/detalle/:id', name: 'RecipeDetail', component: () => import('../preparation/components/RecipeDetail.component.vue') },
     // Rutas para los demás módulos (pueden estar pendientes de implementación)
+
+    { path: '/cata-barista', name: 'BaristaCuppingSessions', component: BaristaCuppingSessions, meta: { title: 'Sesiones de Cata Barista' } },
 
     { path: '/:pathMatch(.*)*',         name: 'notFound',            component: PageNotFound,            meta: { title: 'Page Not Found' } }
 ];

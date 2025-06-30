@@ -103,17 +103,22 @@ const handleNewCuppingCreated = async (newSession) => {
 
     const lot = newSession.lot && newSession.lot.trim() !== "" ? newSession.lot : "N/A";
     const profile = newSession.profile && newSession.profile.trim() !== "" ? newSession.profile : "N/A";
+    const origin = newSession.origin && newSession.origin.trim() !== "" ? newSession.origin : "N/A";
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const userId = currentUser?.id || 'N/A';
 
     const response = await api.post('/cuppingSessions', {
       id: newId,
       name: newSession.name,
       date: new Date().toISOString().split('T')[0],
-      origin: lot,
+      origin: origin,
       variety: profile,
       process: 'N/A',
       lot,
       profile,
-      ratings: { ...defaultRatings, ...(newSession.ratings || {}) }
+      ratings: { ...defaultRatings, ...(newSession.ratings || {}) },
+      user_id: userId
     });
     cuppingSessions.value.push(response.data);
     router.push(`/cata/${Number(response.data.id)}`);
@@ -136,6 +141,16 @@ const compareSessions = () => {
   }
 }
 
+const deleteCuppingSession = async (sessionId) => {
+  if (!confirm('¿Seguro que quieres borrar esta cata?')) return;
+  try {
+    await api.delete(`/cuppingSessions/${sessionId}`);
+    cuppingSessions.value = cuppingSessions.value.filter(s => s.id != sessionId);
+  } catch (error) {
+    alert('Error al borrar la cata');
+  }
+}
+
 const actionTemplate = (session) => {
   return h('div', { class: 'flex gap-2 justify-center' }, [
     h(Button, {
@@ -148,6 +163,12 @@ const actionTemplate = (session) => {
       class: 'p-button-text p-button-sm',
       title: 'Ver detalles',
       onClick: () => router.push({ name: 'cupping-detail', params: { id: session.id } })
+    }),
+    h(Button, {
+      label: 'Borrar',
+      class: 'p-button-danger p-button-sm',
+      title: 'Borrar cata',
+      onClick: () => deleteCuppingSession(session.id)
     })
   ])
 }

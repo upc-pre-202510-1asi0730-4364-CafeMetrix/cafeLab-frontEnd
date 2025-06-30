@@ -36,5 +36,8 @@ app
     .component('pv-image',          Image)
     .component('pv-input-text',     InputText)
     .component('pv-password',       Password)
+    .component('Button', Button)
+    .component('DataTable', DataTable)
+    .component('Column', Column)
     .use(router)
     .mount('#app')

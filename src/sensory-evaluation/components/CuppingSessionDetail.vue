@@ -21,7 +21,7 @@
       </div>
 
       <div class="info-panel">
-        <p><strong>{{ $t('cupping.linkedLot') }}:</strong><br />{{ session?.lot || 'N/A' }}</p>
+        <p><strong>{{ $t('cupping.linkedLot') }}:</strong><br />{{ lotName }}</p>
         <p><strong>{{ $t('cupping.linkedProfile') }}:</strong><br />{{ session?.profile || 'N/A' }}</p>
         <div class="actions">
           <Button :label="$t('cupping.defectLibrary')" class="action-btn" />
@@ -40,6 +40,7 @@ import Button from 'primevue/button'
 import CuppingHeader from '../../shared/components/CuppingHeader.component.vue'
 import api from '../../shared/services/api'
 import HeaderBar from "../../public/components/headerBar.vue";
+import { coffeeLotService } from '../../coffee-lot/services/coffeeLotService.js'
 
 const route = useRoute()
 const sessionId = route.params.id
@@ -56,6 +57,7 @@ const ratings = ref({
 })
 
 const radarCanvas = ref(null)
+const lotName = ref('N/A')
 
 const defaultRatings = {
   fragancia: 5,
@@ -70,6 +72,20 @@ onMounted(async () => {
   const response = await api.get(`/cuppingSessions/${sessionId}`);
   session.value = response.data;
   console.log('Detalle de cata cargado:', session.value);
+
+  const coffeeLotId = session.value.coffee_lot_id;
+
+  if (coffeeLotId) {
+    try {
+      const lot = await coffeeLotService.getLotById(coffeeLotId);
+      lotName.value = lot.lot_name || 'N/A';
+    } catch {
+      lotName.value = 'N/A';
+    }
+  } else {
+    lotName.value = session.value.lot || 'N/A';
+  }
+
   if (response.data.ratings) {
     ratings.value = { ...response.data.ratings };
   }
