@@ -17,7 +17,20 @@
       <h2>{{ $t(`costs.stepTitle${step}`) }}</h2>
       <template v-if="step === 1">
         <div v-if="!loteSeleccionado">
-          <input class="input-lote" v-model="lote" :placeholder="$t('costs.lotPlaceholder')" />
+          <div v-if="lotesCargando">
+            <span>Cargando lotes...</span>
+          </div>
+          <div v-else-if="lotesUsuario.length === 0">
+            <span>No hay lotes disponibles.</span>
+          </div>
+          <div v-else>
+            <select v-model="lote" class="input-lote">
+              <option value="" disabled>Selecciona un lote...</option>
+              <option v-for="lot in lotesUsuario" :key="lot.id" :value="lot.lot_name">
+                {{ lot.lot_name }}
+              </option>
+            </select>
+          </div>
         </div>
         <div v-else>
           <div class="selected-lot-row">
@@ -281,12 +294,18 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import HeaderBar from "../../public/components/headerBar.vue";
 import api from '../../shared/services/api'
+import { coffeeLotService } from '../../coffee-lot/services/coffeeLotService.js'
 
 const step = ref(1)
 const lote = ref('')
 const loteSeleccionado = ref(false)
 const showSuccess = ref(false)
 const registroCodigo = ref('')
+
+// NUEVO: Lotes del usuario
+const lotesUsuario = ref([])
+const lotesCargando = ref(true)
+const lotesError = ref('')
 
 // Paso 2: Costos directos
 const costoKgCafeVerde = ref('')
@@ -547,8 +566,20 @@ function imprimirReporte() {
   window.print();
 }
 
-onMounted(() => {
+onMounted(async () => {
   document.body.classList.add('cupping-mode')
+  // Cargar lotes del usuario
+  lotesCargando.value = true
+  lotesError.value = ''
+  try {
+    const lotes = await coffeeLotService.getLots()
+    lotesUsuario.value = Array.isArray(lotes) ? lotes : []
+  } catch (e) {
+    lotesError.value = 'Error al cargar los lotes.'
+    lotesUsuario.value = []
+  } finally {
+    lotesCargando.value = false
+  }
 })
 onUnmounted(() => {
   document.body.classList.remove('cupping-mode')

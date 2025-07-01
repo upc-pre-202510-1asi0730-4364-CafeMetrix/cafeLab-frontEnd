@@ -6,7 +6,7 @@
         <label>Fecha:</label>
         <InputText v-model="form.fecha" type="date" />
         <label>Lote:</label>
-        <Dropdown v-model="form.lote" :options="lotes" placeholder="Selecciona lote" />
+        <Dropdown v-model="form.lote" :options="lotes" optionLabel="lot_name" optionValue="id" placeholder="Selecciona lote" />
         <label>Producto Final:</label>
         <InputText v-model="form.producto" placeholder="Ej: Espresso" />
         <label>Cantidad Usada (kg):</label>
@@ -159,5 +159,26 @@ input, .p-inputtext, .p-dropdown, .p-dropdown-label {
   background: #fff !important;
   color: #333 !important;
   border-radius: 8px !important;
+}
+:deep(.p-dropdown) {
+  color: #222 !important;
+  background: #fff !important;
+}
+:deep(.p-dropdown-label) {
+  color: #222 !important;
+  background: #fff !important;
+  font-weight: 500 !important;
+}
+:deep(.p-dropdown:not(.p-disabled).p-focus .p-dropdown-label) {
+  color: #222 !important;
+  background: #fff !important;
+}
+:deep(.p-dropdown .p-dropdown-items .p-dropdown-item) {
+  color: #222 !important;
+  background: #fff !important;
+}
+:deep(.p-dropdown .p-dropdown-items .p-dropdown-item.p-highlight) {
+  color: #fff !important;
+  background: #414733 !important;
 }
 </style> 

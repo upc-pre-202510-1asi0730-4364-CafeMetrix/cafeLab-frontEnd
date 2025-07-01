@@ -175,7 +175,9 @@ const actionTemplate = (session) => {
 
 onMounted(async () => {
   document.body.classList.add('cupping-mode')
-  const response = await api.get('/cuppingSessions');
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const userId = currentUser?.id;
+  const response = await api.get(`/cuppingSessions?user_id=${userId}`);
   cuppingSessions.value = response.data;
 })
 

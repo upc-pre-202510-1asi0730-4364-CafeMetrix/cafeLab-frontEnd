@@ -8,24 +8,30 @@
     <div class="stock-panels">
       <div class="stock-card">
         <h2>{{ $t('inventory.greenCoffee') }}</h2>
-        <div class="dropdown">{{ $t('inventory.typica') }}</div>
+        <select v-model="tipoCafeVerdeSeleccionado" class="dropdown">
+          <option value="" disabled>Selecciona tipo de café</option>
+          <option v-for="tipo in tiposCafeVerde" :key="tipo" :value="tipo">{{ tipo }}</option>
+        </select>
         <div class="details">
-          <p>{{ $t('inventory.total') }}: <strong>10kg</strong> <span class="low-stock">({{ $t('inventory.lowStock') }})</span></p>
-          <p>{{ $t('inventory.activeLots') }}: <strong>5</strong></p>
-          <p>{{ $t('inventory.suppliers') }}: <strong>3</strong></p>
+          <p>{{ $t('inventory.total') }}: <strong>{{ totalKgVerde }}kg</strong> <span class="low-stock" v-if="totalKgVerde < 15">({{ $t('inventory.lowStock') }})</span><span class="ok-stock" v-else>({{ $t('inventory.okStock') }})</span></p>
+          <p>{{ $t('inventory.activeLots') }}: <strong>{{ activeLotsVerde }}</strong></p>
+          <p>{{ $t('inventory.suppliers') }}: <strong>{{ uniqueSuppliersVerde }}</strong></p>
         </div>
-        <Button class="consume-btn" :label="$t('inventory.registerConsumption')" @click="openModal('verde')" />
+        <Button class="consume-btn" :label="$t('inventory.registerConsumption')" @click="openModal('verde')" :disabled="!tipoCafeVerdeSeleccionado" />
       </div>
 
       <div class="stock-card">
         <h2>{{ $t('inventory.roastedCoffee') }}</h2>
-        <div class="dropdown">{{ $t('inventory.typica') }}</div>
+        <select v-model="tipoCafeTostadoSeleccionado" class="dropdown">
+          <option value="" disabled>Selecciona tipo de café</option>
+          <option v-for="tipo in tiposCafeTostado" :key="tipo" :value="tipo">{{ tipo }}</option>
+        </select>
         <div class="details">
-          <p>{{ $t('inventory.total') }}: <strong>25kg</strong> <span class="ok-stock">({{ $t('inventory.okStock') }})</span></p>
-          <p>{{ $t('inventory.types') }}: <strong>Espresso, Filtro</strong></p>
-          <p>{{ $t('inventory.suppliers') }}: <strong>4</strong></p>
+          <p>{{ $t('inventory.total') }}: <strong>{{ totalKgTostado }}kg</strong> <span class="low-stock" v-if="totalKgTostado < 15">({{ $t('inventory.lowStock') }})</span><span class="ok-stock" v-else>({{ $t('inventory.okStock') }})</span></p>
+          <p>{{ $t('inventory.activeLots') }}: <strong>{{ activeLotsTostado }}</strong></p>
+          <p>{{ $t('inventory.suppliers') }}: <strong>{{ uniqueSuppliersTostado }}</strong></p>
         </div>
-        <Button class="consume-btn" :label="$t('inventory.registerConsumption')" @click="openModal('tostado')" />
+        <Button class="consume-btn" :label="$t('inventory.registerConsumption')" @click="openModal('tostado')" :disabled="!tipoCafeTostadoSeleccionado" />
       </div>
     </div>
 
@@ -47,41 +53,144 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import HeaderBar from "../../public/components/headerBar.vue";
 import RegisterConsumptionModal from '../components/RegisterConsumptionModal.vue'
 import api from '../../shared/services/api'
+import { useAuthService } from '../../auth/services/authService.js'
+import { coffeeLotService } from '../../coffee-lot/services/coffeeLotService.js'
+
+const { getCurrentUserId } = useAuthService();
 
 const movimientos = ref([])
 const modalVisible = ref(false)
 const modalTipo = ref('verde')
-const lotes = ref(['Lote A', 'Lote B', 'Lote C'])
+const lotes = ref([])
+const lotesUsuario = ref([])
+const tipoCafeVerdeSeleccionado = ref('')
+const tipoCafeTostadoSeleccionado = ref('')
+
+const tiposCafeVerde = computed(() => {
+  const tipos = lotesUsuario.value
+    .filter(l => l.processing_method && l.coffee_type && l.processing_method.trim().toLowerCase().includes('verde'))
+    .map(l => l.coffee_type)
+    .filter(Boolean)
+  return [...new Set(tipos)]
+})
+const tiposCafeTostado = computed(() => {
+  const tipos = lotesUsuario.value
+    .filter(l => l.processing_method && l.coffee_type && l.processing_method.trim().toLowerCase() === 'tostado')
+    .map(l => l.coffee_type)
+    .filter(Boolean)
+  return [...new Set(tipos)]
+})
+
+const lotesVerdeFiltrados = computed(() => {
+  return lotesUsuario.value.filter(
+    l => l.processing_method && l.coffee_type &&
+    l.processing_method.trim().toLowerCase().includes('verde') &&
+    l.coffee_type === tipoCafeVerdeSeleccionado.value
+  )
+})
+const lotesTostadoFiltrados = computed(() => {
+  return lotesUsuario.value.filter(l => l.processing_method && l.coffee_type && l.processing_method.trim().toLowerCase() === 'tostado' && l.coffee_type === tipoCafeTostadoSeleccionado.value)
+})
+
+const totalKgVerde = computed(() => {
+  return lotesVerdeFiltrados.value.reduce((sum, l) => sum + (parseFloat(l.weight) || 0), 0)
+})
+const totalKgTostado = computed(() => {
+  return lotesTostadoFiltrados.value.reduce((sum, l) => sum + (parseFloat(l.weight) || 0), 0)
+})
+
+const activeLotsVerde = computed(() => lotesVerdeFiltrados.value.length)
+const activeLotsTostado = computed(() => lotesTostadoFiltrados.value.length)
+
+const uniqueSuppliersVerde = computed(() => {
+  const suppliers = lotesVerdeFiltrados.value.map(l => l.supplier_id).filter(Boolean)
+  return [...new Set(suppliers)].length
+})
+const uniqueSuppliersTostado = computed(() => {
+  const suppliers = lotesTostadoFiltrados.value.map(l => l.supplier_id).filter(Boolean)
+  return [...new Set(suppliers)].length
+})
 
 function openModal(tipo) {
+  if (tipo === 'verde') {
+    lotes.value = lotesVerdeFiltrados.value
+  } else {
+    lotes.value = lotesTostadoFiltrados.value
+  }
   modalTipo.value = tipo
   modalVisible.value = true
 }
 
 async function cargarMovimientos() {
-  const response = await api.get('/movimientosInventario');
+  const userId = getCurrentUserId();
+  const response = await api.get(`/movimientosInventario?user_id=${userId}`);
   movimientos.value = response.data;
 }
 
+async function cargarLotesUsuario() {
+  lotesUsuario.value = await coffeeLotService.getLots() || []
+}
+
 async function registrarMovimiento(data) {
+  const loteId = data.lote; // id del lote seleccionado
+  const cantidadConsumida = parseFloat(data.cantidad);
+
+  // 1. Obtener el lote actual
+  const lote = lotesUsuario.value.find(l => l.id == loteId);
+  if (!lote) return;
+
+  // 2. Detectar el campo de stock
+  let stockField = 'weight';
+  if (lote.stock_kg !== undefined) stockField = 'stock_kg';
+
+  // 3. Calcular el nuevo stock
+  const nuevoStock = (parseFloat(lote[stockField]) || 0) - cantidadConsumida;
+
+  // 4. Detectar el endpoint de lotes
+  // Si el endpoint es /lots/, /coffee-lots/ o /lotes/, prueba en orden
+  let updateResp = null;
+  let updateError = null;
+  const endpoints = [`/lots/${loteId}`, `/coffee-lots/${loteId}`, `/lotes/${loteId}`];
+  for (const endpoint of endpoints) {
+    try {
+      updateResp = await api.put(endpoint, { ...lote, [stockField]: nuevoStock });
+      if (updateResp && updateResp.data) break;
+    } catch (err) {
+      updateError = err;
+    }
+  }
+  if (!updateResp || !updateResp.data) {
+    alert('No se pudo actualizar el stock del lote. Verifica el endpoint y el campo de stock.');
+    if (updateError) console.error(updateError);
+    return;
+  }
+
+  // 5. Registrar el movimiento como ya lo haces
   const nuevoMovimiento = {
     id: Date.now(),
-    ...data
+    ...data,
+    user_id: getCurrentUserId()
   };
   await api.post('/movimientosInventario', nuevoMovimiento);
+
+  // 6. Recargar los lotes y movimientos
   await cargarMovimientos();
+  await cargarLotesUsuario();
 }
 
 onMounted(() => {
   document.body.classList.add('cupping-mode')
   cargarMovimientos()
+  cargarLotesUsuario().then(() => {
+    console.log('Lotes cargados:', lotesUsuario.value)
+  })
 })
 onUnmounted(() => {
   document.body.classList.remove('cupping-mode')
