@@ -333,7 +333,12 @@
   },
   "breadcrumb": {
     "home": "Home",
-    "inventory": "Inventory"
+    "inventory": "Inventory",
+    "recipes": "Recipes",
+    "recipeDetail": "Recipe Detail",
+    "createRecipe": "Create Recipe",
+    "editRecipe": "Edit Recipe",
+    "portfolios": "Portfolios"
   },
   "cupping": {
     "sessions": "Cupping Sessions",
@@ -352,7 +357,19 @@
     "origin": "Origin",
     "variety": "Variety",
     "cupping": "Cupping",
-    "searchByName": "Search by name..."
+    "searchByName": "Search by name...",
+    "tips": "Tips",
+    "tipsPlaceholder": "Write useful tips for this recipe...",
+    "removeFromPortfolio": "Remove from portfolio",
+    "cuppingPlaceholder": "Write cupping notes for this recipe...",
+    "steps": "Preparation Steps",
+    "stepsPlaceholder": "Write the preparation steps...",
+    "minutes": "minutes",
+    "editRecipe": "Edit Recipe",
+    "createRecipe": "Create Recipe",
+    "recipeDetail": "Recipe Detail",
+    "preparationSteps": "Preparation Steps",
+    "cuppingNotes": "Cupping Notes"
   },
   "recipes": {
     "portfolios": "Portfolios",
@@ -399,7 +416,28 @@
     "ratio": "Ratio",
     "cuppingSession": "Cupping Session",
     "tips": "Tips",
-    "tipsPlaceholder": "Write useful tips for this recipe..."
+    "tipsPlaceholder": "Write useful tips for this recipe...",
+    "removeFromPortfolio": "Remove from portfolio",
+    "cupping": "Cupping Notes",
+    "cuppingPlaceholder": "Write cupping notes for this recipe...",
+    "steps": "Preparation Steps",
+    "stepsPlaceholder": "Write the preparation steps...",
+    "minutes": "minutes",
+    "editRecipe": "Edit Recipe",
+    "createRecipe": "Create Recipe",
+    "recipeDetail": "Recipe Detail",
+    "preparationSteps": "Preparation Steps",
+    "cuppingNotes": "Cupping Notes",
+    "extractionType": "Coffee Extraction",
+    "espressoType": "Espresso Method",
+    "grindFine": "Fine",
+    "grindMedium": "Medium",
+    "grindCoarse": "Coarse",
+    "selectCupping": "Select a cupping session",
+    "cuppingSessionX": "Cupping Session X",
+    "cuppingSessionZ": "Cupping Session Z",
+    "unitPiece": "piece",
+    "image": "Image"
   },
   "ERRORS": {
     "LOAD_LOTS": "Lots no found"

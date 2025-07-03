@@ -81,31 +81,21 @@
       <div v-if="filteredBeverages.length === 0" class="empty-message">
         <p>No hay recetas sin portafolio</p>
       </div>
-      <div 
-        v-for="beverage in filteredBeverages" 
-        :key="beverage.id" 
-        class="beverage-card"
-      >
-        <img :src="beverage.image || '/placeholder-coffee.jpg'" :alt="beverage.name" />
-        <div class="beverage-content">
-          <h4>{{ beverage.name }}</h4>
-          <p>{{ beverage.preparationTime }}</p>
-        </div>
-        <div v-if="getPortfolioName(beverage.portfolioId)" class="recipe-portfolio-badge">
-          <i class="pi pi-folder"></i> {{ getPortfolioName(beverage.portfolioId) }}
-        </div>
-        <div class="beverage-actions">
-          <button @click.stop="navigateToRecipeDetail(beverage.id)" class="action-btn view-btn">
-            <i class="pi pi-eye"></i>
-          </button>
-          <button @click.stop="openAssignPortfolioModal(beverage)" class="action-btn assign-btn">
-            <i class="pi pi-link"></i>
-          </button>
-          <button @click.stop="confirmDeleteRecipe(beverage)" class="action-btn delete-btn">
-            <i class="pi pi-trash"></i>
-          </button>
-        </div>
-      </div>
+      <RecipeCard
+        v-for="beverage in filteredBeverages"
+        :key="beverage.id"
+        :recipe="beverage"
+        :portfolioName="getPortfolioName(beverage.portfolioId)"
+        :showActions="true"
+        :showView="true"
+        :showAssign="true"
+        :showDelete="true"
+        :showRemove="false"
+        @click="navigateToRecipeDetail(beverage.id)"
+        @view="navigateToRecipeDetail"
+        @assign="openAssignPortfolioModal"
+        @delete="confirmDeleteRecipe"
+      />
     </div>
 
     <!-- Modal para crear nuevo portafolio -->
@@ -197,6 +187,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.component.vue';
 import HeaderBar from "../../public/components/headerBar.vue";
+import RecipeCard from './RecipeCard.component.vue';
 import { PortfolioService } from '../services/portfolio.service';
 import { RecipeService } from '../services/recipe.service';
 import { Portfolio } from '../model/portfolio.entity';
@@ -526,8 +517,9 @@ const getPortfolioName = (portfolioId) => {
 
 .beverages-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
+  padding: 20px;
 }
 
 .beverage-card {

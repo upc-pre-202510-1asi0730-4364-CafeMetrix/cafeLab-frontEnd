@@ -10,41 +10,32 @@
             :class="['type-button', { active: recipeType === 'extraction' }]" 
             @click="recipeType = 'extraction'"
           >
-            Extracción de café
+            {{ $t('recipes.extractionType') }}
           </button>
           <button 
             :class="['type-button', { active: recipeType === 'espresso' }]" 
             @click="recipeType = 'espresso'"
           >
-            Método de Espresso
+            {{ $t('recipes.espressoType') }}
           </button>
         </div>
         
         <div class="recipe-form">
           <div class="form-row">
             <div class="form-section">
-              <label for="recipeName">Nombre de Receta</label>
+              <label for="recipeName">{{ $t('recipes.name') }}</label>
               <input 
                 id="recipeName"
                 type="text"
                 v-model="newRecipe.name"
-                placeholder="Latte"
+                :placeholder="$t('recipes.namePlaceholder')"
               />
             </div>
           </div>
           
-          <div class="form-row two-columns">
-            <div class="form-section">
-              <label for="lotSelector">Lote Vinculado</label>
-              <select id="lotSelector" v-model="newRecipe.lotId">
-                <option value="">Lote ABC</option>
-                <option value="lote-b">Lote B</option>
-                <option value="lote-c">Lote C</option>
-              </select>
-            </div>
-            
+          <div class="form-row">
             <div class="form-section" v-if="recipeType === 'extraction'">
-              <label for="extractionMethod">Método de extracción (French press, Cold Brew, etc.)</label>
+              <label for="extractionMethod">{{ $t('recipes.extractionMethod') }}</label>
               <select id="extractionMethod" v-model="newRecipe.extractionMethod">
                 <option value="french-press">French Press</option>
                 <option value="cold-brew">Cold Brew</option>
@@ -55,59 +46,49 @@
             </div>
             
             <div class="form-section" v-if="recipeType === 'espresso'">
-              <label for="grindSize">Molienda (muy fino, medio, etc.)</label>
+              <label for="grindSize">{{ $t('recipes.grindSize') }}</label>
               <select id="grindSize" v-model="newRecipe.grindSize">
-                <option value="fino">Fino</option>
-                <option value="medio">Medio</option>
-                <option value="grueso">Grueso</option>
+                <option value="fino">{{ $t('recipes.grindFine') }}</option>
+                <option value="medio">{{ $t('recipes.grindMedium') }}</option>
+                <option value="grueso">{{ $t('recipes.grindCoarse') }}</option>
               </select>
             </div>
           </div>
           
-          <div class="form-row two-columns">
+          <div class="form-row">
             <div class="form-section">
-              <label for="roastProfile">Tueste Vinculado</label>
-              <select id="roastProfile" v-model="newRecipe.roastProfileId">
-                <option value="perfil-a">Perfil Cafe A</option>
-                <option value="perfil-f">Perfil Cafe F</option>
-              </select>
-            </div>
-            
-            <div class="form-section" v-if="recipeType === 'extraction'">
-              <label for="ratio">Ratio (1:12, 1:14, etc.)</label>
+              <label for="ratio">{{ $t('recipes.ratio') }}</label>
               <select id="ratio" v-model="newRecipe.ratio">
-                <option value="1:12">1:12</option>
-                <option value="1:14">1:14</option>
-                <option value="1:16">1:16</option>
-                <option value="1:18">1:18</option>
-              </select>
-            </div>
-            
-            <div class="form-section" v-if="recipeType === 'espresso'">
-              <label for="ratioEspresso">Ratio (1:12, 1:14, etc.)</label>
-              <select id="ratioEspresso" v-model="newRecipe.ratio">
-                <option value="1:1">1:1</option>
-                <option value="1:2">1:2</option>
-                <option value="1:3">1:3</option>
-                <option value="1:4">1:4</option>
+                <template v-if="recipeType === 'extraction'">
+                  <option value="1:12">1:12</option>
+                  <option value="1:14">1:14</option>
+                  <option value="1:16">1:16</option>
+                  <option value="1:18">1:18</option>
+                </template>
+                <template v-else>
+                  <option value="1:1">1:1</option>
+                  <option value="1:2">1:2</option>
+                  <option value="1:3">1:3</option>
+                  <option value="1:4">1:4</option>
+                </template>
               </select>
             </div>
           </div>
           
           <div class="form-row two-columns">
             <div class="form-section">
-              <label for="cuppingSession">Cata Vinculada</label>
+              <label for="cuppingSession">{{ $t('recipes.cuppingSession') }}</label>
               <select id="cuppingSession" v-model="newRecipe.cuppingSessionId">
-                <option value="">Selecciona una cata</option>
-                <option value="sesion-x">Sesión Cata X</option>
-                <option value="sesion-z">Sesión Cata Z</option>
+                <option value="">{{ $t('recipes.selectCupping') }}</option>
+                <option value="sesion-x">{{ $t('recipes.cuppingSessionX') }}</option>
+                <option value="sesion-z">{{ $t('recipes.cuppingSessionZ') }}</option>
               </select>
             </div>
             
             <div class="form-section">
-              <label for="portfolio">Portafolio</label>
+              <label for="portfolio">{{ $t('recipes.portfolio') }}</label>
               <select id="portfolio" v-model="newRecipe.portfolioId">
-                <option value="">Sin portafolio</option>
+                <option value="">{{ $t('recipes.noPortfolio') }}</option>
                 <option 
                   v-for="portfolio in portfolios" 
                   :key="portfolio.id" 
@@ -119,67 +100,60 @@
             </div>
           </div>
           
-          <div class="form-row" v-if="recipeType === 'extraction'">
-            <div class="form-section ingredient-section">
-              <label>Agua</label>
-              <div class="ingredient-input-group">
+          <div class="form-row">
+            <div class="form-section">
+              <div class="section-header">
+                <label>{{ $t('recipes.ingredients') }}</label>
+                <button 
+                  v-if="recipeType === 'espresso'" 
+                  type="button" 
+                  class="add-btn" 
+                  @click="addIngredient"
+                >
+                  <i class="pi pi-plus"></i>
+                  {{ $t('recipes.addIngredient') }}
+                </button>
+              </div>
+              
+              <div 
+                v-for="(ingredient, index) in newRecipe.ingredients" 
+                :key="index"
+                class="ingredient-row"
+              >
+                <input 
+                  type="text"
+                  v-model="ingredient.name"
+                  :placeholder="$t('recipes.ingredientName')"
+                  class="ingredient-name-input"
+                  :disabled="recipeType === 'extraction'"
+                />
                 <input 
                   type="number"
-                  v-model="newRecipe.waterAmount"
-                  placeholder="250"
-                  class="quantity-input"
+                  v-model="ingredient.amount"
+                  :placeholder="$t('recipes.quantity')"
+                  class="ingredient-amount-input"
                 />
-                <select v-model="newRecipe.waterUnit" class="unit-select">
+                <select v-model="ingredient.unit" class="ingredient-unit-select">
+                  <option value="gr">gr</option>
                   <option value="ml">ml</option>
                   <option value="oz">oz</option>
+                  <option value="unidad">{{ $t('recipes.unitPiece') }}</option>
                 </select>
-              </div>
-            </div>
-            
-            <div class="form-section ingredient-section">
-              <label>Café</label>
-              <div class="ingredient-input-group">
-                <input 
-                  type="number"
-                  v-model="newRecipe.coffeeAmount"
-                  placeholder="20"
-                  class="quantity-input"
-                />
-                <select v-model="newRecipe.coffeeUnit" class="unit-select">
-                  <option value="gr">gr</option>
-                  <option value="oz">oz</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          
-          <div class="form-row" v-if="recipeType === 'espresso'">
-            <div class="form-section ingredient-section">
-              <label>Ingrediente</label>
-              <div class="ingredient-input-group">
-                <select v-model="newRecipe.ingredientType" class="ingredient-select">
-                  <option value="leche-entera">Leche Entera</option>
-                  <option value="leche-descremada">Leche Descremada</option>
-                  <option value="leche-almendra">Leche de Almendra</option>
-                </select>
-                <input 
-                  type="number"
-                  v-model="newRecipe.ingredientAmount"
-                  placeholder="14"
-                  class="quantity-input"
-                />
-                <select v-model="newRecipe.ingredientUnit" class="unit-select">
-                  <option value="gr">gr</option>
-                  <option value="oz">oz</option>
-                  <option value="ml">ml</option>
-                </select>
+                <button 
+                  v-if="recipeType === 'espresso'"
+                  type="button" 
+                  class="remove-btn" 
+                  @click="removeIngredient(index)"
+                >
+                  <i class="pi pi-times"></i>
+                </button>
               </div>
             </div>
           </div>
           
           <div class="form-row">
             <div class="form-section">
-              <label for="preparationTime">Tiempo</label>
+              <label for="preparationTime">{{ $t('recipes.preparationTime') }}</label>
               <div class="time-input-group">
                 <input 
                   id="preparationTime"
@@ -187,24 +161,24 @@
                   v-model="newRecipe.preparationTime"
                   placeholder="20"
                 />
-                <span class="time-unit">min</span>
+                <span class="time-unit">{{ $t('recipes.minutes') }}</span>
               </div>
             </div>
           </div>
           
           <div class="form-section">
-            <label for="recipeImage">Imagen</label>
+            <label for="recipeImage">{{ $t('recipes.image') }}</label>
             <div class="image-upload-container">
               <img 
-                :src="newRecipe.image || 'https://via.placeholder.com/300x200?text=Café'"
+                :src="newRecipe.imageUrl || 'https://via.placeholder.com/300x200?text=Café'"
                 alt="Preview"
                 class="image-preview"
               />
               <input 
                 id="recipeImage"
                 type="text"
-                v-model="newRecipe.image"
-                placeholder="URL de la imagen"
+                v-model="newRecipe.imageUrl"
+                :placeholder="$t('recipes.imageUrlPlaceholder')"
                 class="image-url-input"
               />
             </div>
@@ -212,21 +186,21 @@
           
           <div class="recipe-sections-container">
             <div class="form-section">
-              <label for="preparationSteps">Pasos de preparación</label>
+              <label for="preparationSteps">{{ $t('recipes.preparationSteps') }}</label>
               <textarea
                 id="preparationSteps"
                 v-model="newRecipe.steps"
-                placeholder="1. Calentar agua a 90°C&#10;2. Moler café a ajuste medio&#10;3. Añadir café molido al filtro&#10;4. Verter agua lentamente en forma circular"
+                :placeholder="$t('recipes.stepsPlaceholder')"
                 rows="8"
               ></textarea>
             </div>
             
             <div class="form-section">
-              <label for="tips">Consejos</label>
+              <label for="tips">{{ $t('recipes.tips') }}</label>
               <textarea
                 id="tips"
                 v-model="newRecipe.tips"
-                placeholder="- Utilizar agua filtrada mejora el sabor&#10;- La temperatura ideal está entre 90°C y 95°C&#10;- Dejar reposar por 30 segundos después del bloom"
+                :placeholder="$t('recipes.tipsPlaceholder')"
                 rows="8"
               ></textarea>
             </div>
@@ -234,10 +208,10 @@
           
           <div class="form-actions">
             <button type="button" class="cancel-btn" @click="cancel">
-              Cancelar
+              {{ $t('common.cancel') }}
             </button>
             <button type="button" class="save-btn" @click="saveRecipe">
-              Agregar receta
+              {{ isEditing ? $t('common.save') : $t('recipes.addRecipe') }}
             </button>
           </div>
         </div>
@@ -247,14 +221,17 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.component.vue';
 import { RecipeService } from '../services/recipe.service';
 import { PortfolioService } from '../services/portfolio.service';
 import HeaderBar from "../../public/components/headerBar.vue";
 
 const router = useRouter();
+const route = useRoute();
+const { t } = useI18n();
 
 // Servicios
 const recipeService = new RecipeService();
@@ -262,27 +239,22 @@ const portfolioService = new PortfolioService();
 
 // Estados
 const recipeType = ref('extraction');
+const isEditing = ref(false);
 const newRecipe = ref({
+  id: '',
   name: '',
   type: 'extraction',
-  image: '',
+  imageUrl: '',
   preparationTime: '',
-  lotId: '',
-  roastProfileId: '',
   extractionMethod: 'french-press',
-  grindSize: 'fino',
+  grindSize: null,
   ratio: '',
   cuppingSessionId: '',
   portfolioId: '',
-  waterAmount: '',
-  waterUnit: 'ml',
-  coffeeAmount: '',
-  coffeeUnit: 'gr',
-  ingredientType: '',
-  ingredientAmount: '',
-  ingredientUnit: 'ml',
-  steps: [],
-  tips: ''
+  steps: '',
+  tips: '',
+  cupping: '',
+  ingredients: []
 });
 
 // Estados computados
@@ -291,41 +263,78 @@ const error = computed(() => recipeService.getError().value);
 const portfolios = computed(() => portfolioService.getPortfolios().value);
 
 // Datos para el breadcrumb
-const breadcrumbItems = [
+const breadcrumbItems = computed(() => [
   { label: 'Inicio', path: '/dashboard' },
   { label: 'Recetas', path: '/recetas' },
-  { label: 'Nueva Receta', path: '/recetas/crear' }
-];
+  { label: isEditing.value ? 'Editar Receta' : 'Nueva Receta', path: '#' }
+]);
+
+// Observar cambios en el tipo de receta
+watch(recipeType, (newType) => {
+  // Actualizar tipo y campos específicos
+  newRecipe.value.type = newType;
+  
+  if (newType === 'extraction') {
+    // Para extracción de café
+    newRecipe.value.extractionMethod = 'french-press';
+    newRecipe.value.grindSize = null;
+    newRecipe.value.ingredients = [
+      { name: 'Café', amount: '', unit: 'gr' },
+      { name: 'Agua', amount: '', unit: 'ml' }
+    ];
+  } else {
+    // Para método espresso
+    newRecipe.value.extractionMethod = 'espresso';
+    newRecipe.value.grindSize = 'fino';
+    newRecipe.value.ingredients = [];
+  }
+  
+  // Reiniciar ratio según el tipo
+  newRecipe.value.ratio = '';
+});
+
+// Método para añadir ingrediente (solo disponible para espresso)
+const addIngredient = () => {
+  if (recipeType.value === 'espresso') {
+    newRecipe.value.ingredients.push({
+      name: '',
+      amount: '',
+      unit: ''
+    });
+  }
+};
+
+// Método para eliminar ingrediente (solo disponible para espresso)
+const removeIngredient = (index) => {
+  if (recipeType.value === 'espresso') {
+    newRecipe.value.ingredients.splice(index, 1);
+  }
+};
 
 // Cargar datos iniciales
 const loadData = async () => {
   await portfolioService.getAllPortfolios();
-};
-
-// Crear receta
-const createRecipe = async () => {
-  try {
-    const recipeData = {
-      ...newRecipe.value,
-      type: recipeType.value,
-      created: new Date().toISOString()
-    };
-    
-    await recipeService.createRecipe(recipeData);
-    router.push('/recetas');
-  } catch (error) {
-    console.error('Error al crear la receta:', error);
+  
+  // Si estamos en modo edición, cargar la receta
+  if (route.params.id) {
+    isEditing.value = true;
+    try {
+      const recipe = await recipeService.getRecipeById(route.params.id);
+      newRecipe.value = {
+        ...recipe,
+        ingredients: recipe.ingredients || []
+      };
+      recipeType.value = recipe.type || 'extraction';
+    } catch (error) {
+      console.error('Error al cargar la receta:', error);
+    }
+  } else {
+    // Si es una nueva receta, inicializar los ingredientes para extracción
+    newRecipe.value.ingredients = [
+      { name: 'Café', amount: '', unit: 'gr' },
+      { name: 'Agua', amount: '', unit: 'ml' }
+    ];
   }
-};
-
-// Añadir paso
-const addStep = () => {
-  newRecipe.value.steps.push('');
-};
-
-// Eliminar paso
-const removeStep = (index) => {
-  newRecipe.value.steps.splice(index, 1);
 };
 
 // Cargar datos al montar el componente
@@ -335,23 +344,26 @@ onMounted(() => {
 
 const saveRecipe = async () => {
   try {
-    // Procesar los pasos de preparación
-    const stepsArray = newRecipe.steps
-      .split('\n')
-      .map(step => step.trim())
-      .filter(step => step.length > 0);
-    
     const recipeData = {
-      ...newRecipe,
+      ...newRecipe.value,
       type: recipeType.value,
-      steps: stepsArray
+      userId: localStorage.getItem('userId')
     };
     
-    await recipeService.createRecipe(recipeData);
+    if (isEditing.value) {
+      await recipeService.updateRecipe(recipeData.id, recipeData);
+    } else {
+      await recipeService.createRecipe(recipeData);
+    }
+    
     router.push('/recetas');
   } catch (error) {
     console.error('Error al guardar la receta:', error);
   }
+};
+
+const cancel = () => {
+  router.push('/recetas');
 };
 </script>
 
@@ -581,5 +593,68 @@ const saveRecipe = async () => {
 
 .modal-header h2 {
   color: #333;
+}
+
+.ingredient-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.ingredient-name-input {
+  flex: 2;
+}
+
+.ingredient-amount-input {
+  flex: 1;
+  min-width: 80px;
+}
+
+.ingredient-unit-select {
+  width: 100px !important;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #3C4B3A;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-btn:hover {
+  background-color: #2a362a;
+}
+
+.remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background-color: #f44336;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.remove-btn:hover {
+  background-color: #d32f2f;
 }
 </style> 

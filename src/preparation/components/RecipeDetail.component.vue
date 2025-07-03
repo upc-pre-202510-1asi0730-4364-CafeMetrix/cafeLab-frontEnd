@@ -1,314 +1,77 @@
 <template>
-  <div class="recipe-detail">
+  <div>
     <HeaderBar />
-    <BreadcrumbNavigation :items="breadcrumbItems" />
-    
-    <div v-if="isLoading" class="loading-container">
-      <i class="pi pi-spinner pi-spin"></i>
-      <span>{{ $t('common.loading') }}</span>
+    <div class="toolbar">
+      <BreadcrumbNavigation :items="breadcrumbItems" />
     </div>
     
-    <div v-else-if="error" class="error-container">
-      <i class="pi pi-exclamation-triangle"></i>
-      <p>{{ error }}</p>
-      <button @click="loadData">{{ $t('common.retry') }}</button>
-    </div>
-    
-    <div v-else class="content-container">
-      <div class="recipe-header">
-        <div class="recipe-title">
-          <h1>{{ recipe?.name }}</h1>
-          <span v-if="recipe?.portfolioId" class="portfolio-badge" @click="navigateToPortfolio(recipe.portfolioId)">
-            {{ portfolioName }}
-          </span>
-        </div>
-        <div class="actions">
-          <button class="edit-btn" @click="enableEditMode">
-            <i class="pi pi-pencil"></i>
-            {{ $t('common.edit') }}
-          </button>
-          <button class="delete-btn" @click="confirmDelete">
-            <i class="pi pi-trash"></i>
-            {{ $t('common.delete') }}
-          </button>
-        </div>
-      </div>
-      
-      <!-- Vista de lectura -->
-      <div v-if="!editMode" class="recipe-view">
-        <div class="recipe-image-container">
-          <img :src="recipe?.image" :alt="recipe?.name" class="recipe-image" />
-          <div class="recipe-meta">
-            <p v-if="recipe?.preparationTime">
-              <i class="pi pi-clock"></i>
-              <span>{{ recipe.preparationTime }} min</span>
-            </p>
-            <p v-if="recipe?.type">
-              <i class="pi pi-tag"></i>
-              <span>{{ recipe.type === 'extraction' ? 'Extracción de café' : 'Método de Espresso' }}</span>
-            </p>
-            <p v-if="recipe?.lotId">
-              <i class="pi pi-box"></i>
-              <span>Lote: {{ recipe.lotId }}</span>
-            </p>
-            <p v-if="recipe?.roastProfileId">
-              <i class="pi pi-chart-line"></i>
-              <span>Perfil de tueste: {{ recipe.roastProfileId }}</span>
-            </p>
-            <p v-if="recipe?.extractionMethod && recipe.type === 'extraction'">
-              <i class="pi pi-sliders-h"></i>
-              <span>Método: {{ recipe.extractionMethod }}</span>
-            </p>
-            <p v-if="recipe?.grindSize && recipe.type === 'espresso'">
-              <i class="pi pi-sliders-h"></i>
-              <span>Molienda: {{ recipe.grindSize }}</span>
-            </p>
-            <p v-if="recipe?.ratio">
-              <i class="pi pi-percentage"></i>
-              <span>Ratio: {{ recipe.ratio }}</span>
-            </p>
-            <p v-if="recipe?.cuppingSessionId">
-              <i class="pi pi-star"></i>
-              <span>Sesión de cata: {{ recipe.cuppingSessionId }}</span>
-            </p>
-          </div>
-        </div>
-        
-        <div class="recipe-content">
-          <div class="ingredients-section">
-            <h2>{{ $t('recipes.ingredients') }}</h2>
-            <ul class="ingredients-list">
-              <li v-for="(ingredient, index) in recipe?.ingredients" :key="index">
-                <span class="ingredient-quantity">{{ ingredient.quantity }} {{ ingredient.unit }}</span>
-                <span class="ingredient-name">{{ ingredient.name }}</span>
-              </li>
-            </ul>
-          </div>
-          
-          <div class="steps-section">
-            <h2>{{ $t('recipes.preparation') }}</h2>
-            <ol class="steps-list">
-              <li v-for="(step, index) in recipe?.steps" :key="index">
-                {{ step }}
-              </li>
-            </ol>
-          </div>
-          
-          <div v-if="recipe?.tips" class="tips-section">
-            <h2>{{ $t('recipes.tips') || 'Consejos' }}</h2>
-            <div class="tips-content">
-              {{ recipe.tips }}
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Formulario de edición -->
-      <div v-else class="recipe-edit-form">
-        <div class="form-section">
-          <label for="recipeName">{{ $t('recipes.name') }}</label>
-          <input 
-            id="recipeName"
-            type="text"
-            v-model="editedRecipe.name"
-            :placeholder="$t('recipes.namePlaceholder')"
-          />
-        </div>
-        
-        <div class="form-section">
-          <label for="recipeImage">{{ $t('recipes.imageUrl') }}</label>
-          <input 
-            id="recipeImage"
-            type="text"
-            v-model="editedRecipe.image"
-            :placeholder="$t('recipes.imageUrlPlaceholder')"
-          />
-        </div>
-        
-        <div class="form-row two-columns">
-          <div class="form-section">
-            <label for="recipeType">{{ $t('recipes.type') || 'Tipo de receta' }}</label>
-            <select id="recipeType" v-model="editedRecipe.type">
-              <option value="extraction">Extracción de café</option>
-              <option value="espresso">Método de Espresso</option>
-            </select>
-          </div>
-          
-          <div class="form-section">
-            <label for="recipeTime">{{ $t('recipes.preparationTime') }}</label>
-            <input 
-              id="recipeTime"
-              type="text"
-              v-model="editedRecipe.preparationTime"
-              :placeholder="$t('recipes.preparationTimePlaceholder')"
-            />
-          </div>
-        </div>
-        
-        <div class="form-row two-columns">
-          <div class="form-section">
-            <label for="lotSelector">{{ $t('recipes.lot') || 'Lote Vinculado' }}</label>
-            <input 
-              id="lotSelector"
-              type="text"
-              v-model="editedRecipe.lotId"
-              placeholder="Identificador del lote"
-            />
-          </div>
-          
-          <div class="form-section">
-            <label for="roastProfile">{{ $t('recipes.roastProfile') || 'Perfil de Tueste' }}</label>
-            <input 
-              id="roastProfile"
-              type="text"
-              v-model="editedRecipe.roastProfileId"
-              placeholder="Identificador del perfil"
-            />
-          </div>
-        </div>
-        
-        <div class="form-row two-columns">
-          <div class="form-section" v-if="editedRecipe.type === 'extraction'">
-            <label for="extractionMethod">{{ $t('recipes.extractionMethod') || 'Método de extracción' }}</label>
-            <select id="extractionMethod" v-model="editedRecipe.extractionMethod">
-              <option value="french-press">French Press</option>
-              <option value="cold-brew">Cold Brew</option>
-              <option value="pour-over">Pour Over</option>
-              <option value="aeropress">Aeropress</option>
-              <option value="chemex">Chemex</option>
-            </select>
-          </div>
-          
-          <div class="form-section" v-if="editedRecipe.type === 'espresso'">
-            <label for="grindSize">{{ $t('recipes.grindSize') || 'Molienda' }}</label>
-            <select id="grindSize" v-model="editedRecipe.grindSize">
-              <option value="fino">Fino</option>
-              <option value="medio">Medio</option>
-              <option value="grueso">Grueso</option>
-            </select>
-          </div>
-          
-          <div class="form-section">
-            <label for="ratio">{{ $t('recipes.ratio') || 'Ratio' }}</label>
-            <input 
-              id="ratio"
-              type="text"
-              v-model="editedRecipe.ratio"
-              placeholder="1:12"
-            />
-          </div>
-        </div>
-        
-        <div class="form-section">
-          <label for="cuppingSession">{{ $t('recipes.cuppingSession') || 'Sesión de Cata' }}</label>
-          <input 
-            id="cuppingSession"
-            type="text"
-            v-model="editedRecipe.cuppingSessionId"
-            placeholder="Identificador de la sesión"
-          />
-        </div>
-        
-        <div class="form-section">
-          <label>{{ $t('recipes.portfolio') }}</label>
-          <div class="portfolio-selector">
-            <select v-model="editedRecipe.portfolioId">
-              <option :value="null">{{ $t('recipes.noPortfolio') }}</option>
-              <option 
-                v-for="portfolio in portfolios" 
-                :key="portfolio.id" 
-                :value="portfolio.id"
-              >
-                {{ portfolio.name }}
-              </option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="form-section">
-          <div class="section-header">
-            <label>{{ $t('recipes.ingredients') }}</label>
-            <button type="button" class="add-btn" @click="addIngredient">
-              <i class="pi pi-plus"></i>
-              {{ $t('recipes.addIngredient') }}
+    <div class="recipe-detail">
+      <div v-if="recipe" class="content-container">
+        <div class="recipe-header">
+          <h2>{{ recipe.name }}</h2>
+          <div class="actions" v-if="userCanEdit">
+            <button class="edit-btn" @click="editRecipe">
+              <i class="pi pi-pencil"></i>
+              {{ $t('common.edit') }}
             </button>
-          </div>
-          
-          <div 
-            v-for="(ingredient, index) in editedRecipe.ingredients" 
-            :key="`ingredient-${index}`"
-            class="ingredient-row"
-          >
-            <input 
-              type="text"
-              v-model="ingredient.quantity"
-              :placeholder="$t('recipes.quantity')"
-              class="quantity-input"
-            />
-            <input 
-              type="text"
-              v-model="ingredient.unit"
-              :placeholder="$t('recipes.unit')"
-              class="unit-input"
-            />
-            <input 
-              type="text"
-              v-model="ingredient.name"
-              :placeholder="$t('recipes.ingredientName')"
-              class="name-input"
-            />
-            <button type="button" class="remove-btn" @click="removeIngredient(index)">
-              <i class="pi pi-times"></i>
+            <button class="delete-btn" @click="confirmDelete">
+              <i class="pi pi-trash"></i>
+              {{ $t('common.delete') }}
             </button>
           </div>
         </div>
-        
-        <div class="form-section">
-          <div class="section-header">
-            <label for="preparationSteps">{{ $t('recipes.preparation') }}</label>
-            <button type="button" class="add-btn" @click="addStep">
-              <i class="pi pi-plus"></i>
-              {{ $t('recipes.addStep') }}
-            </button>
-          </div>
-          
-          <div 
-            v-for="(step, index) in editedRecipe.steps" 
-            :key="`step-${index}`"
-            class="step-row"
-          >
-            <span class="step-number">{{ index + 1 }}</span>
-            <textarea 
-              v-model="editedRecipe.steps[index]"
-              :placeholder="$t('recipes.stepDescription')"
-            ></textarea>
-            <button type="button" class="remove-btn" @click="removeStep(index)">
-              <i class="pi pi-times"></i>
-            </button>
-          </div>
+
+        <!-- Imagen de la receta -->
+        <div class="recipe-image-container" v-if="recipe.imageUrl">
+          <img :src="recipe.imageUrl" :alt="recipe.name" class="recipe-image"/>
         </div>
         
-        <div class="form-section">
-          <label for="tips">{{ $t('recipes.tips') || 'Consejos' }}</label>
-          <textarea 
-            id="tips"
-            v-model="editedRecipe.tips"
-            :placeholder="$t('recipes.tipsPlaceholder') || 'Escribe consejos útiles para esta receta...'"
-            rows="4"
-          ></textarea>
+        <!-- Información básica -->
+        <div class="recipe-info">
+          <div v-if="recipe.extractionMethod" class="detail-item">
+            <strong>{{ $t('recipes.extractionMethod') }}:</strong> {{ recipe.extractionMethod }}
+          </div>
+          <div v-if="recipe.ratio" class="detail-item">
+            <strong>{{ $t('recipes.ratio') }}:</strong> {{ recipe.ratio }}
+          </div>
+          <div v-if="recipe.preparationTime" class="detail-item">
+            <strong>{{ $t('recipes.preparationTime') }}:</strong> {{ recipe.preparationTime }} {{ $t('recipes.minutes') }}
+          </div>
+          <div v-if="recipe.grindSize" class="detail-item">
+            <strong>{{ $t('recipes.grindSize') }}:</strong> {{ recipe.grindSize }}
+          </div>
         </div>
-        
-        <div class="form-actions">
-          <button type="button" class="cancel-btn" @click="cancelEdit">
-            {{ $t('common.cancel') }}
-          </button>
-          <button type="button" class="save-btn" @click="saveRecipe">
-            {{ $t('common.save') }}
-          </button>
+
+        <!-- Ingredientes -->
+        <div class="recipe-ingredients">
+          <h3>{{ $t('recipes.ingredients') }}</h3>
+          <ul>
+            <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
+              {{ ingredient.name }} - {{ ingredient.amount }} {{ ingredient.unit }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Pasos de preparación -->
+        <div class="recipe-steps">
+          <h3>{{ $t('recipes.preparationSteps') }}</h3>
+          <div class="steps-content">{{ recipe.steps }}</div>
+        </div>
+
+        <!-- Tips -->
+        <div v-if="recipe.tips" class="recipe-tips">
+          <h3>{{ $t('recipes.tips') }}</h3>
+          <div class="tips-content">{{ recipe.tips }}</div>
+        </div>
+
+        <!-- Notas de cata -->
+        <div v-if="recipe.cupping" class="recipe-cupping">
+          <h3>{{ $t('recipes.cuppingNotes') }}</h3>
+          <div class="cupping-content">{{ recipe.cupping }}</div>
         </div>
       </div>
     </div>
-    
+
     <!-- Modal de confirmación de eliminación -->
     <div v-if="showDeleteConfirmation" class="modal-overlay">
       <div class="modal-container">
@@ -323,15 +86,15 @@
           <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #d32f2f;"></i>
             <p class="confirmation-message">{{ $t('recipes.deleteRecipeConfirmation') }}</p>
+            <p class="warning">{{ $t('common.thisCannotBeUndone') }}</p>
           </div>
-          <p class="warning">{{ $t('common.thisCannotBeUndone') }}</p>
         </div>
 
         <div class="modal-footer">
-          <button class="secondary-btn" @click="showDeleteConfirmation = false">
+          <button class="cancel-btn" @click="showDeleteConfirmation = false">
             {{ $t('common.cancel') }}
           </button>
-          <button class="delete-btn" @click="deleteRecipe">
+          <button class="delete-confirm-btn" @click="deleteRecipe">
             {{ $t('common.delete') }}
           </button>
         </div>
@@ -340,467 +103,223 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.component.vue';
-import { RecipeService } from '../services/recipe.service';
-import { PortfolioService } from '../services/portfolio.service';
+<script>
 import HeaderBar from "../../public/components/headerBar.vue";
+import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.component.vue';
+import { ref, onMounted, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { RecipeService } from '../services/recipe.service';
 
-const router = useRouter();
-const route = useRoute();
+export default {
+  name: 'RecipeDetail',
+  components: {
+    HeaderBar,
+    BreadcrumbNavigation
+  },
+  setup() {
+    const route = useRoute();
+    const router = useRouter();
+    const { t } = useI18n();
+    const recipe = ref(null);
+    const userId = localStorage.getItem('userId');
+    const recipeService = new RecipeService();
+    const showDeleteConfirmation = ref(false);
 
-// Servicios
-const recipeService = new RecipeService();
-const portfolioService = new PortfolioService();
+    const userCanEdit = computed(() => {
+      return recipe.value && recipe.value.userId === userId;
+    });
 
-// Estados
-const editMode = ref(false);
-const showDeleteConfirmation = ref(false);
-const editedRecipe = ref({
-  name: '',
-  image: '',
-  preparationTime: '',
-  portfolioId: null,
-  ingredients: [],
-  steps: []
-});
+    const breadcrumbItems = computed(() => [
+      { label: 'Inicio', path: '/dashboard' },
+      { label: 'Recetas', path: '/recetas' },
+      { label: recipe.value?.name || 'Detalle de Receta', path: '#' }
+    ]);
 
-// Obtener el ID de la receta de la ruta
-const recipeId = computed(() => parseInt(route.params.id));
-
-// Estados computados
-const recipe = computed(() => recipeService.getCurrentRecipe().value);
-const isLoading = computed(() => recipeService.getIsLoading().value);
-const error = computed(() => recipeService.getError().value);
-const portfolios = computed(() => portfolioService.getPortfolios().value);
-const portfolioName = computed(() => {
-  if (!recipe.value?.portfolioId) return '';
-  const portfolio = portfolios.value.find(p => p.id === recipe.value.portfolioId);
-  return portfolio ? portfolio.name : '';
-});
-
-// Datos para el breadcrumb
-const breadcrumbItems = computed(() => [
-  { label: 'Inicio', path: '/dashboard' },
-  { label: 'Recetas', path: '/recetas' },
-  { label: recipe.value?.name || 'Detalle de Receta', path: route.path }
-]);
-
-// Cargar datos
-const loadData = async () => {
-  if (recipeId.value) {
-    await recipeService.getRecipeById(recipeId.value);
-    await portfolioService.getAllPortfolios();
-    
-    if (recipe.value) {
-      // Clonar para evitar modificar directamente el estado
-      editedRecipe.value = JSON.parse(JSON.stringify({
-        name: recipe.value.name,
-        image: recipe.value.image,
-        preparationTime: recipe.value.preparationTime,
-        portfolioId: recipe.value.portfolioId,
-        ingredients: recipe.value.ingredients || [],
-        steps: recipe.value.steps || [],
-        type: recipe.value.type || 'extraction',
-        lotId: recipe.value.lotId || '',
-        roastProfileId: recipe.value.roastProfileId || '',
-        extractionMethod: recipe.value.extractionMethod || 'french-press',
-        grindSize: recipe.value.grindSize || 'fino',
-        ratio: recipe.value.ratio || '',
-        cuppingSessionId: recipe.value.cuppingSessionId || '',
-        tips: recipe.value.tips || ''
-      }));
-    }
-  }
-};
-
-// Navegación a detalles de portafolio
-const navigateToPortfolio = (portfolioId) => {
-  router.push(`/recetas/portfolio/${portfolioId}`);
-};
-
-// Habilitar modo de edición
-const enableEditMode = () => {
-  editMode.value = true;
-  editedRecipe.value = { ...recipe.value };
-  // Convertir los pasos a texto para el textarea
-  if (Array.isArray(editedRecipe.value.steps)) {
-    editedRecipe.value.steps = editedRecipe.value.steps.join('\n');
-  }
-};
-
-// Cancelar edición
-const cancelEdit = () => {
-  loadData(); // Recargar datos originales
-  editMode.value = false;
-};
-
-// Guardar receta
-const saveRecipe = async () => {
-  try {
-    // Procesar los pasos de preparación
-    const stepsArray = editedRecipe.value.steps
-      .split('\n')
-      .map(step => step.trim())
-      .filter(step => step.length > 0);
-    
-    const recipeData = {
-      ...editedRecipe.value,
-      steps: stepsArray
+    const loadRecipe = async () => {
+      try {
+        const recipeId = route.params.id;
+        const loadedRecipe = await recipeService.getRecipeById(recipeId);
+        recipe.value = loadedRecipe;
+      } catch (error) {
+        console.error('Error al cargar la receta:', error);
+      }
     };
-    
-    await recipeService.updateRecipe(recipeId.value, recipeData);
-    await loadData();
-    editMode.value = false;
-  } catch (error) {
-    console.error('Error al actualizar la receta:', error);
+
+    const editRecipe = () => {
+      router.push(`/recetas/editar/${recipe.value.id}`);
+    };
+
+    const confirmDelete = () => {
+      showDeleteConfirmation.value = true;
+    };
+
+    const deleteRecipe = async () => {
+      try {
+        await recipeService.deleteRecipe(recipe.value.id);
+        showDeleteConfirmation.value = false;
+        router.push('/recetas');
+      } catch (error) {
+        console.error('Error al eliminar la receta:', error);
+      }
+    };
+
+    onMounted(() => {
+      loadRecipe();
+    });
+
+    return {
+      recipe,
+      userCanEdit,
+      editRecipe,
+      confirmDelete,
+      deleteRecipe,
+      showDeleteConfirmation,
+      breadcrumbItems,
+      t
+    };
   }
 };
-
-// Confirmar eliminación
-const confirmDelete = () => {
-  showDeleteConfirmation.value = true;
-};
-
-// Eliminar receta
-const deleteRecipe = async () => {
-  try {
-    await recipeService.deleteRecipe(recipeId.value);
-    // Cerrar el diálogo primero
-    showDeleteConfirmation.value = false;
-    
-    // Pequeño retraso para asegurar que el diálogo se cierra visualmente antes de redirigir
-    setTimeout(() => {
-      router.push('/recetas');
-    }, 100);
-  } catch (error) {
-    console.error('Error al eliminar la receta:', error);
-    showDeleteConfirmation.value = false;
-  }
-};
-
-// Añadir ingrediente
-const addIngredient = () => {
-  editedRecipe.value.ingredients.push({ 
-    name: '', 
-    quantity: '', 
-    unit: '' 
-  });
-};
-
-// Eliminar ingrediente
-const removeIngredient = (index) => {
-  editedRecipe.value.ingredients.splice(index, 1);
-};
-
-// Añadir paso
-const addStep = () => {
-  editedRecipe.value.steps.push('');
-};
-
-// Eliminar paso
-const removeStep = (index) => {
-  editedRecipe.value.steps.splice(index, 1);
-};
-
-// Cargar datos al montar el componente
-onMounted(() => {
-  loadData();
-});
 </script>
 
 <style scoped>
+.toolbar {
+  background-color: #F8F7F2;
+  padding: 1rem 2rem;
+  margin-top: 70px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
 .recipe-detail {
   min-height: calc(100vh - 70px);
   background-color: #F8F7F2;
-  padding: 2rem;
-  margin-top: 70px;
 }
 
 .content-container {
-  background-color: white;
-  border-radius: 12px;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 2rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Input fields with better contrast */
-input[type="text"],
-select,
-textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  color: #333 !important;
-  background-color: #fff !important;
 }
 
 .recipe-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 30px 0;
+  margin-bottom: 2rem;
 }
 
-.recipe-title {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.recipe-title h1 {
+.recipe-header h2 {
+  color: #2C3E50;
   margin: 0;
-  color: #333;
-  font-size: 32px;
-}
-
-.portfolio-badge {
-  background-color: #A9C6C3;
-  color: #333;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.portfolio-badge:hover {
-  background-color: #8db1ad;
+  font-size: 2rem;
 }
 
 .actions {
   display: flex;
-  gap: 10px;
+  gap: 1rem;
 }
 
-.edit-btn, .delete-btn, .add-btn, .remove-btn, .save-btn, .cancel-btn, .secondary-btn {
+.edit-btn, .delete-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 1rem;
+  transition: background-color 0.3s;
 }
 
 .edit-btn {
-  background-color: #A9C6C3;
-  color: #333;
+  background-color: #42b983;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #3aa876;
 }
 
 .delete-btn {
-  background-color: #d32f2f;
+  background-color: #dc3545;
   color: white;
 }
 
-.add-btn {
-  background-color: #3C4B3A;
-  color: white;
-  padding: 4px 12px;
-  font-size: 12px;
-}
-
-.remove-btn {
-  background-color: #f44336;
-  color: white;
-  padding: 4px;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.save-btn {
-  background-color: #3C4B3A;
-  color: white;
-}
-
-.cancel-btn, .secondary-btn {
-  background-color: #e0e0e0;
-  color: #333;
-}
-
-/* Vista de lectura */
-.recipe-view {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-}
-
-@media (max-width: 768px) {
-  .recipe-view {
-    grid-template-columns: 1fr;
-  }
+.delete-btn:hover {
+  background-color: #c82333;
 }
 
 .recipe-image-container {
-  position: relative;
+  margin: 0 auto 2rem auto;
+  text-align: center;
+  width: 300px;
+  height: 300px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 4px solid white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .recipe-image {
   width: 100%;
-  border-radius: 12px;
+  height: 100%;
   object-fit: cover;
-  aspect-ratio: 4/3;
 }
 
-.recipe-meta {
-  margin-top: 16px;
+.recipe-info {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
 }
 
-.recipe-meta p {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  margin-bottom: 8px;
-  color: #333;
-  font-weight: 400;
+.detail-item {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #2C3E50;
 }
 
-.recipe-meta i {
-  color: #3C4B3A;
-  font-size: 16px;
+.detail-item:last-child {
+  margin-bottom: 0;
 }
 
-.ingredients-section, .steps-section, .tips-section {
-  margin-bottom: 30px;
+.recipe-ingredients, .recipe-steps, .recipe-tips, .recipe-cupping {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
 }
 
-.ingredients-section h2, .steps-section h2, .tips-section h2 {
-  color: #333;
-  margin-bottom: 16px;
-  font-size: 24px;
+.recipe-ingredients h3, .recipe-steps h3, .recipe-tips h3, .recipe-cupping h3 {
+  color: #2C3E50;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
 }
 
-.ingredients-list {
+.recipe-ingredients ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.ingredients-list li {
-  display: flex;
-  align-items: baseline;
-  padding: 8px 0;
+.recipe-ingredients li {
+  padding: 0.5rem 0;
   border-bottom: 1px solid #eee;
+  color: #2C3E50;
 }
 
-.ingredient-quantity {
-  color: #333;
-  margin-right: 12px;
-  min-width: 80px;
+.recipe-ingredients li:last-child {
+  border-bottom: none;
 }
 
-.ingredient-name {
-  color: #333;
-}
-
-.steps-list {
-  padding-left: 20px;
-}
-
-.steps-list li {
-  margin-bottom: 16px;
+.steps-content, .tips-content, .cupping-content {
   line-height: 1.6;
-  color: #333;
+  color: #2C3E50;
 }
 
-.tips-content {
-  background-color: #f5f5f5;
-  padding: 15px;
-  border-radius: 8px;
-  border-left: 4px solid #3C4B3A;
-  color: #333;
-  line-height: 1.6;
-}
-
-/* Formulario de edición */
-.recipe-edit-form {
-  margin-top: 30px;
-}
-
-.form-section {
-  margin-bottom: 24px;
-}
-
-.form-section label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #333;
-}
-
-.form-section input, .form-section select, .form-section textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  background-color: #F8F7F2;
-}
-
-.form-section textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.ingredient-row, .step-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.quantity-input {
-  width: 80px !important;
-}
-
-.unit-input {
-  width: 80px !important;
-}
-
-.name-input {
-  flex: 1;
-}
-
-.step-number {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #3C4B3A;
-  color: white;
-  border-radius: 50%;
-  font-size: 14px;
-}
-
-.step-row textarea {
-  flex: 1;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 40px;
-}
-
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -811,72 +330,82 @@ textarea {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .modal-container {
   background-color: white;
-  border-radius: 12px;
+  border-radius: 8px;
   width: 90%;
   max-width: 500px;
-  padding: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 20px;
-  color: #333;
+  color: #2C3E50;
 }
 
 .close-btn {
   background: none;
   border: none;
+  font-size: 1.5rem;
   cursor: pointer;
-  font-size: 20px;
   color: #666;
 }
 
-.modal-body {
-  margin-bottom: 20px;
+.confirmation-content {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-.modal-body p {
-  margin: 0 0 16px;
-  color: #333;
+.confirmation-message {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  color: #2C3E50;
 }
 
-.modal-body .warning {
+.warning {
   color: #d32f2f;
-  font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 1rem;
 }
 
-.confirmation-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  text-align: center;
-  padding: 10px;
+.cancel-btn, .delete-confirm-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
 }
 
-.confirmation-message {
+.cancel-btn {
+  background-color: #e0e0e0;
   color: #333;
-  font-weight: 500;
-  font-size: 16px;
-  margin: 0;
+}
+
+.delete-confirm-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #d0d0d0;
+}
+
+.delete-confirm-btn:hover {
+  background-color: #c82333;
 }
 </style> 

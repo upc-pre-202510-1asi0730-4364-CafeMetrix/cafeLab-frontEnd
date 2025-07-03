@@ -7,29 +7,37 @@ export class Recipe {
    * Crea una instancia de Recipe
    * @param {Object} data - Los datos de la receta
    * @param {number} data.id - ID único de la receta
+   * @param {number} data.userId - ID del usuario que creó la receta
    * @param {string} data.name - Nombre de la receta
-   * @param {string} data.image - URL de la imagen de la receta
-   * @param {number|null} data.portfolioId - ID del portafolio al que pertenece (o null)
-   * @param {string} data.preparationTime - Tiempo de preparación
-   * @param {Array} data.ingredients - Ingredientes de la receta
-   * @param {Array<string>} data.steps - Pasos de preparación
+   * @param {string} data.imageUrl - URL de la imagen de la receta
+   * @param {string} data.extractionMethod - Método de extracción
+   * @param {string} data.ratio - Ratio de la receta
+   * @param {number} data.cuppingSessionId - ID de la sesión de cata
+   * @param {number} data.portfolioId - ID del portafolio al que pertenece
+   * @param {number} data.preparationTime - Tiempo de preparación en minutos
+   * @param {string} data.steps - Pasos de preparación
+   * @param {string} data.tips - Consejos adicionales
+   * @param {string} data.cupping - Notas de cata
+   * @param {string} data.grindSize - Tamaño de molienda
+   * @param {Date} data.createdAt - Fecha de creación
+   * @param {Array} data.ingredients - Lista de ingredientes
    */
   constructor(data) {
     this.id = data.id;
+    this.userId = data.userId;
     this.name = data.name;
-    this.image = data.image;
-    this.portfolioId = data.portfolioId;
-    this.preparationTime = data.preparationTime || '';
-    this.ingredients = data.ingredients || [];
-    
-    // Procesar los pasos de preparación
-    if (Array.isArray(data.steps)) {
-      this.steps = data.steps;
-    } else if (typeof data.steps === 'string') {
-      this.steps = data.steps.split('\n').map(step => step.trim()).filter(step => step.length > 0);
-    } else {
-      this.steps = [];
-    }
+    this.imageUrl = data.imageUrl || data.image_url;
+    this.extractionMethod = data.extractionMethod || data.extraction_method;
+    this.ratio = data.ratio;
+    this.cuppingSessionId = data.cuppingSessionId || data.cupping_session_id;
+    this.portfolioId = data.portfolioId || data.portfolio_id ? Number(data.portfolioId || data.portfolio_id) : null;
+    this.preparationTime = data.preparationTime || data.preparation_time;
+    this.steps = data.steps;
+    this.tips = data.tips;
+    this.cupping = data.cupping;
+    this.grindSize = data.grindSize || data.grind_size;
+    this.createdAt = data.createdAt || data.created_at;
+    this.ingredients = Array.isArray(data.ingredients) ? data.ingredients : [];
   }
 
   /**
@@ -42,6 +50,10 @@ export class Recipe {
       throw new Error('El nombre de la receta es obligatorio');
     }
     
+    if (!this.userId) {
+      throw new Error('El ID de usuario es obligatorio');
+    }
+    
     return true;
   }
 
@@ -52,12 +64,20 @@ export class Recipe {
   toJSON() {
     return {
       id: this.id,
+      userId: this.userId,
       name: this.name,
-      image: this.image,
+      imageUrl: this.imageUrl,
+      extractionMethod: this.extractionMethod,
+      ratio: this.ratio,
+      cuppingSessionId: this.cuppingSessionId,
       portfolioId: this.portfolioId,
       preparationTime: this.preparationTime,
-      ingredients: this.ingredients,
-      steps: Array.isArray(this.steps) ? this.steps : []
+      steps: this.steps,
+      tips: this.tips,
+      cupping: this.cupping,
+      grindSize: this.grindSize,
+      createdAt: this.createdAt,
+      ingredients: this.ingredients
     };
   }
 
@@ -66,7 +86,7 @@ export class Recipe {
    * @param {number} portfolioId - ID del portafolio
    */
   assignToPortfolio(portfolioId) {
-    this.portfolioId = portfolioId;
+    this.portfolioId = portfolioId ? Number(portfolioId) : null;
   }
 
   /**
@@ -85,22 +105,22 @@ export class Recipe {
   }
 
   /**
-   * Añadir un ingrediente
+   * Añade un ingrediente a la receta
    * @param {string} name - Nombre del ingrediente
-   * @param {string} quantity - Cantidad
+   * @param {number} amount - Cantidad del ingrediente
    * @param {string} unit - Unidad de medida
    */
-  addIngredient(name, quantity, unit) {
-    this.ingredients.push({ name, quantity, unit });
+  addIngredient(name, amount, unit) {
+    this.ingredients.push({ name, amount, unit });
   }
 
   /**
-   * Añadir un paso de preparación
-   * @param {string} step - Instrucción del paso
+   * Elimina un ingrediente de la receta
+   * @param {number} index - Índice del ingrediente a eliminar
    */
-  addStep(step) {
-    if (typeof step === 'string' && step.trim().length > 0) {
-      this.steps.push(step.trim());
+  removeIngredient(index) {
+    if (index >= 0 && index < this.ingredients.length) {
+      this.ingredients.splice(index, 1);
     }
   }
 } 

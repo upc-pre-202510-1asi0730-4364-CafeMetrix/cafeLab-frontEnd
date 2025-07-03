@@ -82,6 +82,7 @@ const routes = [
     { path: '/recetas/portfolio/:id', name: 'PortfolioDetail', component: () => import('../preparation/components/PortfolioDetail.component.vue') },
     { path: '/recetas/nueva', name: 'NewRecipe', component: () => import('../preparation/components/RecipeCreate.component.vue') },
     { path: '/recetas/detalle/:id', name: 'RecipeDetail', component: () => import('../preparation/components/RecipeDetail.component.vue') },
+    { path: '/recetas/editar/:id', name: 'EditRecipe', component: () => import('../preparation/components/RecipeCreate.component.vue') },
     // Rutas para los demás módulos (pueden estar pendientes de implementación)
 
     { path: '/cata-barista', name: 'BaristaCuppingSessions', component: BaristaCuppingSessions, meta: { title: 'Sesiones de Cata Barista' } },

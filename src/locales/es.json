@@ -306,7 +306,12 @@
   },
   "breadcrumb": {
     "home": "Inicio",
-    "inventory": "Inventario"
+    "inventory": "Inventario",
+    "recipes": "Recetas",
+    "recipeDetail": "Detalle de Receta",
+    "createRecipe": "Crear Receta",
+    "editRecipe": "Editar Receta",
+    "portfolios": "Portafolios"
   },
   "cupping": {
     "sessions": "Sesiones de Cata",
@@ -325,7 +330,29 @@
     "origin": "Origen",
     "variety": "Variedad",
     "cupping": "Cata",
-    "searchByName": "Buscar por nombre..."
+    "searchByName": "Buscar por nombre...",
+    "tips": "Consejos",
+    "tipsPlaceholder": "Escribe consejos útiles para esta receta...",
+    "removeFromPortfolio": "Quitar del portafolio",
+    "cuppingPlaceholder": "Escribe notas de cata para esta receta...",
+    "steps": "Pasos de Preparación",
+    "stepsPlaceholder": "Escribe los pasos de preparación...",
+    "minutes": "minutos",
+    "editRecipe": "Editar Receta",
+    "createRecipe": "Crear Receta",
+    "recipeDetail": "Detalle de Receta",
+    "preparationSteps": "Pasos de Preparación",
+    "cuppingNotes": "Notas de Cata",
+    "extractionType": "Extracción de café",
+    "espressoType": "Método de Espresso",
+    "grindFine": "Fino",
+    "grindMedium": "Medio",
+    "grindCoarse": "Grueso",
+    "selectCupping": "Selecciona una cata",
+    "cuppingSessionX": "Sesión Cata X",
+    "cuppingSessionZ": "Sesión Cata Z",
+    "unitPiece": "unidad",
+    "image": "Imagen"
   },
   "recipes": {
     "portfolios": "Portafolios",
@@ -373,7 +400,17 @@
     "cuppingSession": "Sesión de Cata",
     "tips": "Consejos",
     "tipsPlaceholder": "Escribe consejos útiles para esta receta...",
-    "removeFromPortfolio": "Quitar del portafolio"
+    "removeFromPortfolio": "Quitar del portafolio",
+    "cupping": "Notas de Cata",
+    "cuppingPlaceholder": "Escribe notas de cata para esta receta...",
+    "steps": "Pasos de Preparación",
+    "stepsPlaceholder": "Escribe los pasos de preparación...",
+    "minutes": "minutos",
+    "editRecipe": "Editar Receta",
+    "createRecipe": "Crear Receta",
+    "recipeDetail": "Detalle de Receta",
+    "preparationSteps": "Pasos de Preparación",
+    "cuppingNotes": "Notas de Cata"
   },
   "ERRORS": {
     "LOAD_LOTS": "Lotes no encontrados"

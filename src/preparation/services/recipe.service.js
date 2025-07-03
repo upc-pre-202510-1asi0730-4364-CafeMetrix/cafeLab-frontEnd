@@ -126,23 +126,31 @@ export class RecipeService extends BaseService {
     error.value = null;
     
     try {
-      // Preparar los datos de la receta
-      const steps = Array.isArray(recipeData.steps) 
-        ? recipeData.steps 
-        : typeof recipeData.steps === 'string'
-          ? recipeData.steps.split('\n').map(step => step.trim()).filter(step => step.length > 0)
-          : [];
+      // Separar los ingredientes temporalmente
+      const { ingredients, ...recipeDetails } = recipeData;
 
       const newRecipe = {
-        ...recipeData,
-        steps,
-        portfolioId: recipeData.portfolioId || null,
-        created: new Date().toISOString()
+        ...recipeDetails,
+        portfolioId: recipeDetails.portfolioId ? Number(recipeDetails.portfolioId) : null,
+        createdAt: new Date().toISOString()
       };
       
       // Crear la receta a través de la API
       const createdRecipe = await this.create(newRecipe);
-      const recipe = new Recipe(createdRecipe);
+      
+      // Ahora que tenemos el ID de la receta, asignarlo a los ingredientes
+      if (Array.isArray(ingredients) && ingredients.length > 0) {
+        createdRecipe.ingredients = ingredients.map(ingredient => ({
+          ...ingredient,
+          recipeId: createdRecipe.id
+        }));
+      } else {
+        createdRecipe.ingredients = [];
+      }
+
+      // Actualizar la receta con los ingredientes
+      const finalRecipe = await this.update(createdRecipe.id, createdRecipe);
+      const recipe = new Recipe(finalRecipe);
       
       // Agregar la nueva receta a la lista correspondiente
       if (recipe.portfolioId === null) {
@@ -172,18 +180,20 @@ export class RecipeService extends BaseService {
     error.value = null;
     
     try {
-      // Procesar los pasos
-      const steps = Array.isArray(recipeData.steps) 
-        ? recipeData.steps 
-        : typeof recipeData.steps === 'string'
-          ? recipeData.steps.split('\n').map(step => step.trim()).filter(step => step.length > 0)
-          : [];
+      // Asegurarse de que los ingredientes tengan el recipeId correcto
+      const ingredients = Array.isArray(recipeData.ingredients) 
+        ? recipeData.ingredients.map(ingredient => ({
+            ...ingredient,
+            recipeId: id
+          }))
+        : [];
 
-      // Añadir timestamp de actualización
+      // Añadir timestamp de actualización y asegurar que portfolioId sea número
       const updateData = {
         ...recipeData,
-        steps,
-        updated: new Date().toISOString()
+        ingredients,
+        portfolioId: recipeData.portfolioId ? Number(recipeData.portfolioId) : null,
+        updatedAt: new Date().toISOString()
       };
       
       // Actualizar la receta a través de la API
@@ -257,81 +267,15 @@ export class RecipeService extends BaseService {
    * @returns {Promise<Recipe>} La receta actualizada
    */
   async assignToPortfolio(recipeId, portfolioId) {
-    isLoading.value = true;
-    error.value = null;
-    
-    try {
-      // Convertir IDs a números para asegurar consistencia
-      const numRecipeId = Number(recipeId);
-      const numPortfolioId = portfolioId ? Number(portfolioId) : null;
-      
-      console.log(`Asignando receta ${numRecipeId} al portafolio ${numPortfolioId}`);
-      
-      // Obtener la receta actual
-      const recipe = await this.getById(numRecipeId);
-      
-      // Actualizar el campo portfolioId
-      recipe.portfolioId = numPortfolioId;
-      
-      // Enviar la actualización
-      const updatedRecipe = await this.update(numRecipeId, recipe);
-      const recipeInstance = new Recipe(updatedRecipe);
-      
-      // Actualizar la receta en las listas
-      const indexInRecipes = recipes.value.findIndex(r => r.id === numRecipeId);
-      if (indexInRecipes !== -1) {
-        recipes.value[indexInRecipes] = recipeInstance;
-      }
-      
-      // Remover de la lista sin portafolio si ahora tiene un portafolio
-      if (numPortfolioId !== null) {
-        recipesWithoutPortfolio.value = recipesWithoutPortfolio.value.filter(r => r.id !== numRecipeId);
-      }
-      
-      if (currentRecipe.value?.id === numRecipeId) {
-        currentRecipe.value = recipeInstance;
-      }
-      
-      return recipeInstance;
-    } catch (err) {
-      error.value = err.message;
-      console.error(`Error al asignar la receta ${recipeId} al portafolio ${portfolioId}:`, err);
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
+    return this.updateRecipe(recipeId, { portfolioId });
   }
 
   /**
-   * Remueve una receta de cualquier portafolio
+   * Remueve una receta de su portafolio actual
    * @param {number} recipeId - ID de la receta
    * @returns {Promise<Recipe>} La receta actualizada
    */
   async removeFromPortfolio(recipeId) {
-    try {
-      // Asignar a portfolioId null es equivalente a remover del portafolio
-      return await this.assignToPortfolio(recipeId, null);
-    } catch (err) {
-      error.value = err.message;
-      console.error(`Error al remover la receta ${recipeId} del portafolio:`, err);
-      throw err;
-    }
-  }
-
-  /**
-   * Reinicia los datos cargando desde data.json
-   * Útil para sincronizar con el archivo original durante desarrollo
-   */
-  async resetToOriginalData() {
-    try {
-      const response = await fetch('/server/data.json');
-      const data = await response.json();
-      localStorage.setItem(STORAGE_KEY_RECIPES, JSON.stringify(data.recipes));
-      console.log('Datos de recetas reiniciados desde data.json');
-      return true;
-    } catch (error) {
-      console.error('Error al reiniciar datos de recetas:', error);
-      throw error;
-    }
+    return this.updateRecipe(recipeId, { portfolioId: null });
   }
 } 

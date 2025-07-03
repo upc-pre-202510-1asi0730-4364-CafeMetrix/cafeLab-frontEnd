@@ -18,10 +18,6 @@
       <div class="portfolio-header">
         <h1>{{ portfolio?.name }}</h1>
         <div class="actions">
-          <button class="primary-btn" @click="showAddRecipeModal = true">
-            <i class="pi pi-plus"></i>
-            {{ $t('recipes.addRecipe') }}
-          </button>
           <button class="edit-btn" @click="showEditModal = true">
             <i class="pi pi-pencil"></i>
             {{ $t('common.edit') }}
@@ -35,36 +31,22 @@
       
       <div v-if="!portfolio?.recipes || portfolio?.recipes?.length === 0" class="empty-state">
         <p>{{ $t('recipes.noRecipesInPortfolio') }}</p>
-        <button @click="showAddRecipeModal = true">
-          {{ $t('recipes.addFirstRecipe') }}
-        </button>
       </div>
       
       <div v-else class="recipes-grid">
-        <div 
-          v-for="recipe in portfolio?.recipes" 
-          :key="recipe.id" 
-          class="recipe-card"
+        <RecipeCard
+          v-for="recipe in portfolio?.recipes"
+          :key="recipe.id"
+          :recipe="recipe"
+          :showActions="true"
+          :showView="true"
+          :showRemove="true"
+          :showAssign="false"
+          :showDelete="false"
           @click="navigateToRecipeDetail(recipe.id)"
-        >
-          <div class="recipe-image">
-            <img :src="recipe.image" :alt="recipe.name" />
-            <button 
-              class="remove-btn" 
-              @click.stop="confirmRemoveRecipe(recipe.id)"
-              :data-tooltip="$t('recipes.removeFromPortfolio')"
-            >
-              <i class="pi pi-times"></i>
-            </button>
-          </div>
-          <div class="recipe-info">
-            <h3>{{ recipe.name }}</h3>
-            <p v-if="recipe.preparationTime">
-              <i class="pi pi-clock"></i>
-              {{ recipe.preparationTime }}
-            </p>
-          </div>
-        </div>
+          @view="navigateToRecipeDetail"
+          @remove="confirmRemoveRecipe"
+        />
       </div>
     </div>
     
@@ -212,6 +194,7 @@ import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.c
 import { RecipeService } from '../services/recipe.service';
 import { PortfolioService } from '../services/portfolio.service';
 import HeaderBar from "../../public/components/headerBar.vue";
+import RecipeCard from './RecipeCard.component.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -226,7 +209,7 @@ const showDeleteConfirmation = ref(false);
 const showAddRecipeModal = ref(false);
 const showRemoveRecipeConfirmation = ref(false);
 const editedName = ref('');
-const recipeToRemove = ref(null);
+const selectedRecipeToRemove = ref(null);
 
 // Obtener el ID del portafolio de la ruta
 const portfolioId = computed(() => parseInt(route.params.id));
@@ -300,19 +283,21 @@ const deletePortfolio = async () => {
 
 // Gestión de recetas
 const confirmRemoveRecipe = (recipeId) => {
-  recipeToRemove.value = recipeId;
+  selectedRecipeToRemove.value = recipeId;
   showRemoveRecipeConfirmation.value = true;
 };
 
 const removeRecipe = async () => {
-  if (recipeToRemove.value) {
+  if (!selectedRecipeToRemove.value) return;
+  
   try {
-      await portfolioService.removeRecipeFromPortfolio(portfolioId.value, recipeToRemove.value);
-      showRemoveRecipeConfirmation.value = false;
-      recipeToRemove.value = null;
-    } catch (error) {
-      console.error('Error al remover la receta:', error);
-    }
+    await recipeService.removeFromPortfolio(selectedRecipeToRemove.value);
+    // Recargar los datos del portafolio para tener la lista actualizada
+    await loadData();
+    showRemoveRecipeConfirmation.value = false;
+    selectedRecipeToRemove.value = null;
+  } catch (error) {
+    console.error('Error al quitar la receta del portafolio:', error);
   }
 };
 
@@ -466,9 +451,9 @@ onMounted(() => {
 
 .recipes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
-  margin-top: 20px;
+  padding: 20px;
 }
 
 .recipe-card {
