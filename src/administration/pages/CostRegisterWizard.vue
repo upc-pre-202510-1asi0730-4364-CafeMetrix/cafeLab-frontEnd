@@ -281,7 +281,7 @@
       </template>
       <template v-else-if="step === 3">
         <button class="cancel-btn" @click="prevStep">{{ $t('costs.prev') }}</button>
-        <button class="save-btn" @click="guardarYAvanzar">Guardar registro</button>
+        <button class="save-btn" @click="guardarRegistro">Guardar registro</button>
       </template>
       <template v-else-if="step === 4">
         <button class="cancel-btn" @click="prevStep">{{ $t('costs.prev') }}</button>
@@ -295,6 +295,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import HeaderBar from "../../public/components/headerBar.vue";
 import api from '../../shared/services/api'
 import { coffeeLotService } from '../../coffee-lot/services/coffeeLotService.js'
+import { useRouter } from 'vue-router';
 
 const step = ref(1)
 const lote = ref('')
@@ -487,30 +488,27 @@ function percentOfTotal(val) {
   return Math.round((n / totalLote.value) * 100) + '%'
 }
 
-function guardarYAvanzar() {
-  guardarRegistro();
-  setTimeout(() => {
-    showSuccess.value = true;
-    registroCodigo.value = generarCodigoRegistro();
-    step.value = 4;
-  }, 100);
+function guardarRegistro() {
+  console.log('Click en Guardar registro');
+  saveCostRecord();
 }
 
 async function saveCostRecord() {
+  console.log('Intentando guardar en backend...');
   try {
     const recordToSave = {
       fecha: new Date().toISOString(),
       lote: lote.value,
-      materiaPrima: totalMateriaPrima.value.toFixed(2),
-      manoObra: totalManoObra.value.toFixed(2),
-      transporte: totalTransporteMateriaPrima.value.toFixed(2),
-      almacenamiento: totalAlmacenamiento.value.toFixed(2),
-      procesamiento: totalProcesamiento.value,
-      otrosCostos: totalOtrosCostos.value,
+      materiaPrima: Number(totalMateriaPrima.value || 0).toFixed(2),
+      manoObra: Number(totalManoObra.value || 0).toFixed(2),
+      transporte: Number(totalTransporteMateriaPrima.value || 0).toFixed(2),
+      almacenamiento: Number(totalAlmacenamiento.value || 0).toFixed(2),
+      procesamiento: Number(totalProcesamiento.value || 0),
+      otrosCostos: Number(totalOtrosCostos.value || 0),
       totales: {
-        totalLote: totalLote.value,
-        costPerKg: costPerKg.value,
-        costPerCup: costPerCup.value,
+        totalLote: Number(totalLote.value || 0),
+        costPerKg: Number(costPerKg.value || 0),
+        costPerCup: Number(costPerCup.value || 0),
       },
       detalle: {
         costoKgCafeVerde: parseFloat(costoKgCafeVerde.value),
@@ -535,13 +533,15 @@ async function saveCostRecord() {
     };
 
     const response = await api.post('/costosLote', recordToSave);
+    console.log('Respuesta del backend:', response);
 
-    if (response.status === 201) {
-      registroCodigo.value = response.data.id; // Assuming the API returns the created record with an id
+    if (response.status === 201 || response.status === 200) {
+      registroCodigo.value = response.data.id || '';
       showSuccess.value = true;
-      setTimeout(() => {
-        router.push({ name: 'home' }); // Redirect to home or another page
-      }, 3000); // Redirect after 3 seconds
+      step.value = 4; // Mostrar el resumen
+      // setTimeout(() => {
+      //   router.push({ name: 'costos-lote' });
+      // }, 3000);
     } else {
       console.error('Error saving cost record:', response);
       alert('Error al guardar el registro de costos.');
@@ -565,6 +565,8 @@ function salir() {
 function imprimirReporte() {
   window.print();
 }
+
+const router = useRouter();
 
 onMounted(async () => {
   document.body.classList.add('cupping-mode')
