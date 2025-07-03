@@ -58,8 +58,6 @@
 import { ref, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import ToolbarPlan from './ToolbarPlanComponent.vue'
-import UserService from '../../auth/services/user.service.js'
 import HeaderBarInit from "../../public/components/headerBarInit.vue";
 
 const { t, tm, locale } = useI18n();
@@ -69,15 +67,11 @@ const baristaFeatures = ref([]);
 const ownerFeatures = ref([]);
 const fullFeatures = ref([]);
 
-
 function loadTranslations() {
   baristaFeatures.value = tm('PLANS.BARISTA.FEATURES');
   ownerFeatures.value = tm('PLANS.OWNER.FEATURES');
   fullFeatures.value = tm('PLANS.FULL.FEATURES');
-
-
 }
-
 
 onMounted(() => {
   loadTranslations();
@@ -118,39 +112,8 @@ function selectPlan(type) {
   }
 
   localStorage.setItem('selectedPlan', JSON.stringify(selected));
-
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
-  if (!currentUser.id) {
-    console.error('El usuario actual no tiene un ID definido.');
-    return;
-  }
-
-  const updatedUser = {
-    ...currentUser,
-    plan: type,
-    hasPlan: false
-  };
-
-  console.log('currentUser:', currentUser);
-
-  UserService.updateProfile(currentUser.id, updatedUser)
-      .then(user => {
-        console.log('[SelectPlan] Usuario actualizado:', user); // ✅ deberías ver el usuario actualizado
-
-        // Guardar en localStorage para que router.beforeEach lo detecte correctamente
-        localStorage.setItem('currentUser', JSON.stringify(user));
-
-        router.push({ name: 'confirm-plan' });
-      })
-      .catch(err => {
-        console.error('Update profile error:', err);
-      });
-
+  router.push({ name: 'confirm-change' });
 }
-
-
-
 </script>
 
 <style scoped>
@@ -244,4 +207,4 @@ function selectPlan(type) {
 .plan-button:hover {
   background-color: #333228;
 }
-</style>
+</style> 

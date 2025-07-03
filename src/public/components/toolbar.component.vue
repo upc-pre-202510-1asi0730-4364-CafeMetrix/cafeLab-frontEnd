@@ -13,7 +13,7 @@
     <router-link to="/contacto" class="toolbar-button" active-class="active-link">
       {{ $t('NAVIGATION.CONTACT') }}
     </router-link>
-    <router-link to="/editprofile" class="toolbar-button" active-class="active-link">
+    <router-link to="/edit-profile-session" class="toolbar-button" active-class="active-link">
       {{ $t('NAVIGATION.PROFILE') }}
     </router-link>
     <span class="spacer"></span>
