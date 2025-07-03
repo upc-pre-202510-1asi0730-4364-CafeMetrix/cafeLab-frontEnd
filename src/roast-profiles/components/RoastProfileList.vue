@@ -435,7 +435,7 @@ export default {
         profile_name: newProfile.profile_name,
         roast_type: newProfile.roast_type,
         duration: Number(newProfile.duration) || 0,
-        coffee_lot_id: Number(newProfile.coffee_lot_id),
+        coffee_lot_id: String(newProfile.coffee_lot_id),
         temp_start: Number(newProfile.temp_start) || 0,
         temp_end: Number(newProfile.temp_end) || 0,
         is_favorite: false,
