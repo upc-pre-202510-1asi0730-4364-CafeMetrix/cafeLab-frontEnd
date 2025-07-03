@@ -39,10 +39,10 @@
               <!-- Campo de País como Select -->
               <select
                 v-if="field.type === 'select'"
-                  v-model="paymentForm.country"
-                  :id="field.name"
-                  :name="field.name"
-                  :class="getFieldClass(field.name).replace('form-input', 'form-select')"
+                v-model="paymentForm.country"
+                :id="field.name"
+                :name="field.name"
+                :class="getFieldClass(field.name).replace('form-input', 'form-select')"
               >
                 <option value="">{{ $t('CONFIRM.PAYMENT.SELECT_COUNTRY') }}</option>
                 <option v-for="country in latinAmericanCountries" :key="country" :value="country">
@@ -88,15 +88,12 @@
   </div>
 </template>
 
-
-
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import userService from '../../auth/services/user.service.js'
 import HeaderBarInit from "../../public/components/headerBarInit.vue";
-import { useAuthService } from "../../auth/services/authService.js";
 
 const latinAmericanCountries = [
   'Argentina',
@@ -120,7 +117,6 @@ const latinAmericanCountries = [
   'Venezuela'
 ]
 
-const auth = useAuthService()
 const router = useRouter()
 const { t, tm, locale } = useI18n()
 
@@ -253,27 +249,47 @@ const onSubmit = async () => {
   if (hasErrors) return
 
   try {
-    await auth.confirmPlan()
-    const planType = auth.getCurrentUser()?.plan
-
-    if (planType === 'owner') router.push('/dashboard/owner')
-    else if (planType === 'barista') router.push('/dashboard/barista')
-    else if (planType === 'complete') router.push('/dashboard/complete')
-    else router.push('/page-not-found')
-
+    // Cambiar el plan del usuario solo si se confirma el pago
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const selectedPlanObj = JSON.parse(localStorage.getItem('selectedPlan') || '{}');
+    if (!currentUser.id || !selectedPlanObj.type) {
+      console.error('No hay usuario en sesión o plan seleccionado.');
+      return;
+    }
+    const updatedUser = {
+      ...currentUser,
+      plan: selectedPlanObj.type,
+      hasPlan: true
+    };
+    await userService.updateProfile(currentUser.id, updatedUser);
+    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    // Redirigir al dashboard correspondiente
+    switch (selectedPlanObj.type) {
+      case 'owner':
+        router.push('/dashboard/owner');
+        break;
+      case 'barista':
+        router.push('/dashboard/barista');
+        break;
+      case 'complete':
+        router.push('/dashboard/complete');
+        break;
+      default:
+        router.push('/page-not-found');
+    }
   } catch (err) {
-    console.error('Error confirmando plan:', err)
+    console.error('Error confirmando cambio de plan:', err)
   }
 }
 
 const goBack = () => {
-  router.push('/select-plan')
+  router.push('/select-plan-change')
 }
 
 onMounted(() => {
   const stored = localStorage.getItem('selectedPlan')
   if (!stored) {
-    router.push({ name: 'select-plan' })
+    router.push({ name: 'select-plan-change' })
     return
   }
   selectedPlan.value = JSON.parse(stored)
@@ -431,5 +447,4 @@ watch(locale, () => {
     }
   }
 }
-</style>
-
+</style> 

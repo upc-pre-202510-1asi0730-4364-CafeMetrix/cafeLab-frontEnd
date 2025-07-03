@@ -6,7 +6,7 @@
     <nav class="nav-links">
       <button class="nav-btn" @click="goToDashboard">{{ $t('navbar.features') }}</button>
       <button class="nav-btn" @click="goToContact">{{ $t('navbar.contact') }}</button>
-      <button class="nav-btn">{{ $t('navbar.profile') }}</button>
+      <button class="nav-btn" @click="goToEdit">{{ $t('navbar.profile') }}</button>
     </nav>
 
 
@@ -47,6 +47,9 @@ function goToDashboard() {
 
 function goToContact() {
   router.push({ name: 'contactUs' })
+}
+function goToEdit() {
+  router.push({ name: 'edit-profile-session' })
 }
 
 function logout() {

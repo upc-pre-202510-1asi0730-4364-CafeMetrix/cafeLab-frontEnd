@@ -14,8 +14,18 @@
 
       <div class="p-field">
         <label for="experience" class="custom-label">{{ t('LOGUP.EXPERIENCE') }}</label>
-        <pv-input-text id="experience" v-model="form.experience" :class="{ 'p-invalid': isInvalidControl('experience') }" class="custom-input" />
+        <pv-dropdown
+            id="experience"
+            v-model="form.experience"
+            :options="experienceOptions"
+            option-label="label"
+            option-value="value"
+            :class="{ 'p-invalid': isInvalidControl('experience') }"
+            class="custom-input"
+            placeholder=""
+        />
       </div>
+
 
       <div class="p-field">
         <label for="password" class="custom-label">{{ t('LOGUP.PASSWORD') }}</label>
@@ -34,6 +44,10 @@
 
 
 <script>
+import Dropdown from 'primevue/dropdown';
+import InputText from 'primevue/inputtext';
+import Password from 'primevue/password';
+import Button from 'primevue/button';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -41,6 +55,12 @@ import userService from '../services/user.service.js';
 
 export default {
   name: 'LogupOwnerForm',
+  components: {
+    'pv-dropdown': Dropdown,
+    'pv-input-text': InputText,
+    'pv-password': Password,
+    'pv-button': Button
+  },
   setup() {
     const { t } = useI18n();
     const router = useRouter();
@@ -53,7 +73,12 @@ export default {
       experience: ''
     });
 
-    // Validación simple (puedes mejorarla si quieres)
+    const experienceOptions = [
+      { label: t('LOGUP.EXPERIENCE_0_3'), value: '0-3' },
+      { label: t('LOGUP.EXPERIENCE_4_7'), value: '4-7' },
+      { label: t('LOGUP.EXPERIENCE_8_PLUS'), value: '8+' }
+    ];
+
     const isInvalidControl = (controlName) => {
       return !form[controlName] || form[controlName].length === 0;
     };
@@ -73,7 +98,6 @@ export default {
           isInvalidControl('cafeteriaName') ||
           isInvalidControl('experience')
       ) {
-        // Opcional: puedes mostrar errores aquí
         return;
       }
 
@@ -108,7 +132,8 @@ export default {
       form,
       isInvalidControl,
       errorMessagesForControl,
-      onSubmit
+      onSubmit,
+      experienceOptions
     };
   }
 };

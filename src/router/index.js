@@ -4,6 +4,7 @@ import { useAuthService } from "../auth/services/authService.js";
 import SelectPlan from "../subscription/components/select-plan.vue";
 import ConfirmPlan from "../subscription/components/confirm-plan.vue";
 import SupplierPage from "../supply/page/SupplierPage.vue";
+import editProfileSessionFormComponent from "../auth/components/edit-profile-session-form.component.vue";
 
 import InventoryView from '../administration/pages/InventoryView.vue'
 import CostRegisterWizard from '../administration/pages/CostRegisterWizard.vue'
@@ -36,6 +37,9 @@ const OwnerDashboard = () => import('../profiles/components/OwnerDashboard.vue')
 const CompleteDashboard = () => import('../profiles/components/CompleteDashboard.component.vue');
 const PageNotFound = () => import('../public/pages/page-not-found.component.vue');
 const ContactUsPage = () => import('../public/pages/ContactUsPage.vue');
+const EditProfileSessionPage = () => import('../auth/pages/edit-profile-session-page.component.vue');
+const SelectPlanChange = () => import('../subscription/components/select-plan-change.vue');
+const ConfirmChange = () => import('../subscription/components/confirm-change.vue');
 
 
 
@@ -85,6 +89,10 @@ const routes = [
     // Rutas para los demás módulos (pueden estar pendientes de implementación)
 
     { path: '/cata-barista', name: 'BaristaCuppingSessions', component: BaristaCuppingSessions, meta: { title: 'Sesiones de Cata Barista' } },
+
+    { path: '/edit-profile-session', name: 'edit-profile-session', component: EditProfileSessionPage, meta: { title: 'Editar Perfil (Sesión)' } },
+    { path: '/select-plan-change', name: 'select-plan-change', component: SelectPlanChange, meta: { title: 'Cambiar Plan' } },
+    { path: '/confirm-change', name: 'confirm-change', component: ConfirmChange, meta: { title: 'Confirmar Cambio de Plan' } },
 
     { path: '/:pathMatch(.*)*',         name: 'notFound',            component: PageNotFound,            meta: { title: 'Page Not Found' } }
 ];

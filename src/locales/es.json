@@ -1,4 +1,5 @@
 {
+  "COUNTRY": "Pais  -----         ",
   "LOGIN": {
     "TITLE": "Iniciar sesión",
     "EMAIL": "Correo electrónico",
@@ -9,16 +10,25 @@
   },
   "LOGIN_SUCCESS": {
     "TITLE": "Inicio de sesión exitoso",
-    "MESSAGE": "¡Bienvenido, {{name}}!",
+    "MESSAGE": "¡Bienvenido, {name}!",
     "CONTINUE": "Continuar"
   },
   "LOGUP": {
+    "TITLE": "Registro de Dueño",
     "NAME": "Nombre",
     "EMAIL": "Correo electrónico",
+    "EXPERIENCE": "Años de experiencia",
+    "EXPERIENCEB": "Nivel de experiencia",
+    "EXPERIENCE_BEGINNER": "Principiante",
+    "EXPERIENCE_INTERMEDIATE": "Intermedio",
+    "EXPERIENCE_ADVANCED": "Avanzado",
+    "EXPERIENCE_0_3": "0 - 3",
+    "EXPERIENCE_4_7": "4 - 7 ",
+    "EXPERIENCE_8_PLUS": "8 - 99",
     "PASSWORD": "Contraseña",
-    "EXPERIENCE": "Experiencia",
-    "CAFETERIA_NAME": "Nombre de la Cafetería",
-    "SUBMIT": "Registrarse"
+    "CAFETERIA_NAME": "Nombre de la cafetería",
+    "SUBMIT": "Registrarse",
+    "REQUIRED": "Este campo es obligatorio"
   },
   "LOGUP_BARISTA": {
     "TITLE": "Registro de Barista"
@@ -47,7 +57,9 @@
     "MASTERCARD": "Mastercard",
     "SUBMIT": "Guardar",
     "INVALID_EMAIL": "Email invalido",
-    "REQUIRED": "Requerido"
+    "REQUIRED": "Requerido",
+    "SAVE_CHANGES": "Guardar cambios",
+    "CHANGE_PLAN": "Cambiar plan"
   },
   "SELECT_PLAN": {
     "TITLE": "Seleccionar Plan",
@@ -98,7 +110,8 @@
       "CVC": "Código CVC",
       "HOLDER": "Nombre del titular",
       "COUNTRY": "País",
-      "CONFIRM": "Confirmar Pago"
+      "CONFIRM": "Confirmar Pago",
+      "SELECT_COUNTRY": "Seleccione su país"
     },
     "ERRORS": {
       "EMAIL_REQUIRED": "El correo electrónico es obligatorio",
@@ -621,5 +634,26 @@
       "invalidEmail": "Por favor, introduce una dirección de correo electrónico válida.",
       "success": "Formulario enviado con éxito."
     }
+  },
+  "COUNTRIES": {
+    "Argentina": "Argentina",
+    "Bolivia": "Bolivia",
+    "Brasil": "Brasil",
+    "Chile": "Chile",
+    "Colombia": "Colombia",
+    "Costa Rica": "Costa Rica",
+    "Cuba": "Cuba",
+    "Ecuador": "Ecuador",
+    "El Salvador": "El Salvador",
+    "Guatemala": "Guatemala",
+    "Honduras": "Honduras",
+    "México": "México",
+    "Nicaragua": "Nicaragua",
+    "Panamá": "Panamá",
+    "Paraguay": "Paraguay",
+    "Perú": "Perú",
+    "República Dominicana": "República Dominicana",
+    "Uruguay": "Uruguay",
+    "Venezuela": "Venezuela"
   }
 }

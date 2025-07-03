@@ -17,10 +17,32 @@
       </div>
 
       <div class="p-field">
-        <pv-float-label for="experience">
-          <pv-input-text id="experience" v-model="form.experience" :class="{ 'p-invalid': isInvalidControl('experience') }" />
-          <label>{{ t('LOGUP.EXPERIENCE') }}</label>
-        </pv-float-label>
+        <label class="experience-label">{{ t('LOGUP.EXPERIENCEB') }}</label>
+        <div class="experience-buttons">
+          <button
+              type="button"
+              :class="['experience-btn', { selected: form.experience === 'beginner' }]"
+              @click="form.experience = 'beginner'"
+          >
+            {{ t('LOGUP.EXPERIENCE_BEGINNER') }}
+          </button>
+
+          <button
+              type="button"
+              :class="['experience-btn', { selected: form.experience === 'intermediate' }]"
+              @click="form.experience = 'intermediate'"
+          >
+            {{ t('LOGUP.EXPERIENCE_INTERMEDIATE') }}
+          </button>
+
+          <button
+              type="button"
+              :class="['experience-btn', { selected: form.experience === 'advanced' }]"
+              @click="form.experience = 'advanced'"
+          >
+            {{ t('LOGUP.EXPERIENCE_ADVANCED') }}
+          </button>
+        </div>
       </div>
 
       <div class="p-field">
@@ -36,6 +58,11 @@
 </template>
 
 <script>
+
+import Dropdown from 'primevue/dropdown';
+import InputText from 'primevue/inputtext';
+import Password from 'primevue/password';
+import Button from 'primevue/button';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -43,9 +70,22 @@ import userService from '../services/user.service.js';
 
 export default {
   name: 'LogupBaristaForm',
+  components: {
+    'pv-dropdown': Dropdown,
+    'pv-input-text': InputText,
+    'pv-password': Password,
+    'pv-button': Button
+  },
   setup() {
     const { t } = useI18n();
     const router = useRouter();
+
+    const experienceOptions = [
+      { label: t('LOGUP.EXPERIENCE_BEGINNER'), value: 'beginner' },
+      { label: t('LOGUP.EXPERIENCE_INTERMEDIATE'), value: 'intermediate' },
+      { label: t('LOGUP.EXPERIENCE_ADVANCED'), value: 'advanced' }
+    ];
+
 
     const form = reactive({
       name: '',
@@ -105,8 +145,10 @@ export default {
       form,
       isInvalidControl,
       errorMessagesForControl,
-      onSubmit
+      onSubmit,
+      experienceOptions
     };
+
   }
 };
 </script>
@@ -120,10 +162,11 @@ export default {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-width: 400px;
+  max-width: 520px; /* Un poco más ancho para evitar que los botones choquen */
   width: 100%;
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
 }
 
 .logup-form-container h2 {
@@ -139,94 +182,37 @@ export default {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  gap: 20px;
+  gap: 26px;
 }
 
 .logup-form .p-field {
-  width: 100%; /* Cambia el ancho al 100% */
-  display: flex; /* Añade display flex */
-  justify-content: center; /* Centra horizontalmente */
-}
-
-/* ===== BOTÓN CON DISEÑO MODERNO - TRES ESTADOS ===== */
-
-.modern-button {
-  /* Propiedades base */
   width: 100%;
-  padding: 16px 32px;
-  border: none;
-  border-radius: 50px; /* Bordes completamente redondeados */
-  font-size: 16px;
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   position: relative;
-  overflow: hidden;
-
-  /* Estado Default - Botón verde oscuro */
-  background: linear-gradient(135deg, #4D6443 0%, #5a6b2a 100%);
-  color: white;
-  box-shadow:
-      0 4px 14px rgba(77, 100, 67, 0.4),
-      0 2px 4px rgba(0, 0, 0, 0.1);
-
-  /* Efecto de brillo sutil */
-  background-size: 200% 200%;
-  animation: subtle-shine 3s ease-in-out infinite;
 }
 
-/* Estado Hover - Botón blanco con sombra */
-.modern-button:hover {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  color: #4D6443;
-  transform: translateY(-2px);
-  box-shadow:
-      0 8px 25px rgba(0, 0, 0, 0.15),
-      0 4px 10px rgba(0, 0, 0, 0.1);
+.p-field pv-float-label,
+.p-field pv-float-label > *,
+.p-field pv-input-text,
+.p-field pv-password,
+.p-field pv-dropdown {
+  width: 100%;
 }
 
-/* Estado Active/Focus - Botón blanco con borde verde */
-.modern-button:active,
-.modern-button:focus {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  color: #4D6443;
-  transform: translateY(0);
-  outline: none;
-  border: 2px solid #4D6443;
-  box-shadow:
-      0 0 0 3px rgba(77, 100, 67, 0.1),
-      0 4px 15px rgba(0, 0, 0, 0.1);
+.p-field :deep(.p-dropdown) {
+  width: 100%;
 }
 
-/* Animación sutil de brillo */
-@keyframes subtle-shine {
-  0%, 100% { background-position: 0 50%; }
-  50% { background-position: 100% 50%; }
+
+.p-dropdown {
+  width: 100%;
 }
 
-/* Efecto de ondas al hacer clic */
-.modern-button::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.modern-button:active::before {
-  width: 300px;
-  height: 300px;
-}
-/* ===== APLICACIÓN EN TU FORMULARIO ===== */
-
+/* ===== BOTÓN MODERNO ===== */
+.modern-button,
 .logup-form button {
-  /* Reemplaza el CSS anterior del botón con esto */
   width: 100%;
   padding: 16px 32px;
   border: none;
@@ -239,27 +225,23 @@ export default {
   position: relative;
   overflow: hidden;
   margin-top: 20px;
-
-  /* Estado Default */
   background: linear-gradient(135deg, #4D6443 0%, #5a6b2a 100%);
   color: white;
-  box-shadow:
-      0 4px 14px rgba(77, 100, 67, 0.4),
-      0 2px 4px rgba(0, 0, 0, 0.1);
-
+  box-shadow: 0 4px 14px rgba(77, 100, 67, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1);
   background-size: 200% 200%;
   animation: subtle-shine 3s ease-in-out infinite;
 }
 
+.modern-button:hover,
 .logup-form button:hover {
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   color: #4D6443;
   transform: translateY(-2px);
-  box-shadow:
-      0 8px 25px rgba(0, 0, 0, 0.15),
-      0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+.modern-button:active,
+.modern-button:focus,
 .logup-form button:active,
 .logup-form button:focus {
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
@@ -267,11 +249,10 @@ export default {
   transform: translateY(0);
   outline: none;
   border: 2px solid #4D6443;
-  box-shadow:
-      0 0 0 3px rgba(77, 100, 67, 0.1),
-      0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 3px rgba(77, 100, 67, 0.1), 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+.modern-button::before,
 .logup-form button::before {
   content: '';
   position: absolute;
@@ -285,16 +266,80 @@ export default {
   transition: width 0.6s, height 0.6s;
 }
 
+.modern-button:active::before,
 .logup-form button:active::before {
   width: 300px;
   height: 300px;
 }
 
-/* ===== RESPONSIVE ===== */
+@keyframes subtle-shine {
+  0%, 100% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 @media (max-width: 480px) {
+  .modern-button,
   .logup-form button {
     padding: 14px 28px;
     font-size: 15px;
   }
 }
+
+.experience-label {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.experience-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+  flex-wrap: wrap; /* Para que en pantallas pequeñas los botones no se deformen */
+}
+
+.experience-btn {
+  flex: 1;
+  padding: 13px 16px;
+  min-width: 96px;
+  max-width: 180px;
+  border: 2px solid #4D6443;
+  border-radius: 10px;
+  background: #fff;
+  color: #4D6443;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: none;
+}
+
+.experience-btn.selected,
+.experience-btn.selected:hover,
+.experience-btn.selected:focus,
+.experience-btn.selected:active {
+  background-color: #618985 !important;
+  color: #fff !important;
+  border: 2px solid #414535 !important;
+  box-shadow: 0 4px 16px rgba(65, 137, 133, 0.25);
+  transform: scale(1.04);
+  z-index: 2;
+}
+
+@media (max-width: 480px) {
+  .experience-btn {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
 </style>
