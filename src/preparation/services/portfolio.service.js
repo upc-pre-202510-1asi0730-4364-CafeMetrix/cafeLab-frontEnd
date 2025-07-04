@@ -202,7 +202,23 @@ export class PortfolioService extends BaseService {
       if (Number(existingPortfolio.userId) !== userId) {
         throw new Error('No tienes permisos para eliminar este portafolio');
       }
+
+      // Obtener todas las recetas asociadas a este portafolio
+      const allRecipes = await this.recipeService.getAll();
+      const portfolioRecipes = allRecipes.filter(recipe => 
+        recipe.portfolioId === id && Number(recipe.userId) === userId
+      );
+
+      // Actualizar cada receta para quitar la referencia al portafolio
+      for (const recipe of portfolioRecipes) {
+        await this.recipeService.update(recipe.id, {
+          ...recipe,
+          portfolioId: null,
+          updatedAt: new Date().toISOString()
+        });
+      }
       
+      // Eliminar el portafolio
       await this.delete(id);
       portfolios.value = portfolios.value.filter(p => p.id !== id);
       
