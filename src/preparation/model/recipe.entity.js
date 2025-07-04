@@ -29,7 +29,7 @@ export class Recipe {
     this.imageUrl = data.imageUrl || data.image_url;
     this.extractionMethod = data.extractionMethod || data.extraction_method;
     this.ratio = data.ratio;
-    this.cuppingSessionId = data.cuppingSessionId || data.cupping_session_id;
+    this.cuppingSessionId = data.cuppingSessionId || data.cupping_session_id ? Number(data.cuppingSessionId || data.cupping_session_id) : null;
     this.portfolioId = data.portfolioId || data.portfolio_id ? Number(data.portfolioId || data.portfolio_id) : null;
     this.preparationTime = data.preparationTime || data.preparation_time;
     this.steps = data.steps;

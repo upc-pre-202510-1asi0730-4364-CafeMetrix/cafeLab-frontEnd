@@ -45,7 +45,7 @@
       <h4>{{ recipe.name }}</h4>
       <p v-if="recipe.preparationTime">
         <i class="pi pi-clock"></i>
-        {{ recipe.preparationTime }}
+        {{ recipe.preparationTime + ' mins' }}
       </p>
     </div>
     <div v-if="portfolioName" class="recipe-portfolio-badge">

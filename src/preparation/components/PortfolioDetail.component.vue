@@ -338,7 +338,24 @@ onMounted(() => {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.loading-container, .error-container {
+.loading-container  {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 50px 0;
+  text-align: center;
+  background-color: #f5f5f5;
+  border: 2px solid #505050;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.loading-container span {
+  color: #515151;
+}
+
+.error-container {
   display: flex;
   flex-direction: column;
   align-items: center;

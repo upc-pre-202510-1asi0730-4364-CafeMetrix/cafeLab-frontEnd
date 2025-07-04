@@ -358,9 +358,6 @@
     "cuppingNotes": "Notas de Cata",
     "extractionType": "Extracción de café",
     "espressoType": "Método de Espresso",
-    "grindFine": "Fino",
-    "grindMedium": "Medio",
-    "grindCoarse": "Grueso",
     "selectCupping": "Selecciona una cata",
     "cuppingSessionX": "Sesión Cata X",
     "cuppingSessionZ": "Sesión Cata Z",
@@ -408,6 +405,8 @@
     "lot": "Lote Vinculado",
     "roastProfile": "Perfil de Tueste",
     "extractionMethod": "Método de extracción",
+    "coffeeExtraction": "Extracción de café",
+    "espressoMethod": "Método de Espresso",
     "grindSize": "Molienda",
     "ratio": "Ratio",
     "cuppingSession": "Sesión de Cata",
@@ -423,7 +422,10 @@
     "createRecipe": "Crear Receta",
     "recipeDetail": "Detalle de Receta",
     "preparationSteps": "Pasos de Preparación",
-    "cuppingNotes": "Notas de Cata"
+    "cuppingNotes": "Notas de Cata",
+    "grindFine": "Fino",
+    "grindMedium": "Medio",
+    "grindCoarse": "Grueso"
   },
   "ERRORS": {
     "LOAD_LOTS": "Lotes no encontrados"

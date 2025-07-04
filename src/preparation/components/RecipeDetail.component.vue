@@ -40,6 +40,9 @@
           <div v-if="recipe.grindSize" class="detail-item">
             <strong>{{ $t('recipes.grindSize') }}:</strong> {{ recipe.grindSize }}
           </div>
+          <div v-if="recipe.cupping" class="detail-item">
+            <strong>{{ $t('recipes.cuppingSession') }}:</strong> {{ recipe.cupping }}
+          </div>
         </div>
 
         <!-- Ingredientes -->
@@ -55,20 +58,16 @@
         <!-- Pasos de preparación -->
         <div class="recipe-steps">
           <h3>{{ $t('recipes.preparationSteps') }}</h3>
-          <div class="steps-content">{{ recipe.steps }}</div>
+          <div class="steps-content" v-html="formatSteps(recipe.steps)"></div>
         </div>
 
         <!-- Tips -->
         <div v-if="recipe.tips" class="recipe-tips">
           <h3>{{ $t('recipes.tips') }}</h3>
-          <div class="tips-content">{{ recipe.tips }}</div>
+          <div class="tips-content" v-html="formatSteps(recipe.tips)"></div>
         </div>
 
-        <!-- Notas de cata -->
-        <div v-if="recipe.cupping" class="recipe-cupping">
-          <h3>{{ $t('recipes.cuppingNotes') }}</h3>
-          <div class="cupping-content">{{ recipe.cupping }}</div>
-        </div>
+        
       </div>
     </div>
 
@@ -129,7 +128,15 @@ export default {
     const showDeleteConfirmation = ref(false);
 
     const userCanEdit = computed(() => {
-      return recipe.value && recipe.value.userId === userId;
+      if (!recipe.value || !recipe.value.userId) return false;
+      
+      // Convertir ambos userId a números para comparación consistente
+      const currentUserId = Number(userId);
+      const recipeUserId = Number(recipe.value.userId);
+      
+      console.log('Comparando userIds:', { currentUserId, recipeUserId, match: currentUserId === recipeUserId });
+      
+      return currentUserId === recipeUserId;
     });
 
     const breadcrumbItems = computed(() => [
@@ -166,6 +173,12 @@ export default {
       }
     };
 
+    const formatSteps = (steps) => {
+      if (!steps) return '';
+      // Convertir saltos de línea en <br> tags para que se muestren correctamente en HTML
+      return steps.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+    };
+
     onMounted(() => {
       loadRecipe();
     });
@@ -178,7 +191,8 @@ export default {
       deleteRecipe,
       showDeleteConfirmation,
       breadcrumbItems,
-      t
+      t,
+      formatSteps
     };
   }
 };

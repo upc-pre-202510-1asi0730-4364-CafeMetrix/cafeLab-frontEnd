@@ -425,6 +425,8 @@
     "lot": "Linked Lot",
     "roastProfile": "Roast Profile",
     "extractionMethod": "Extraction method",
+    "coffeeExtraction": "Coffee Extraction",
+    "espressoMethod": "Espresso Method",
     "grindSize": "Grind size",
     "ratio": "Ratio",
     "cuppingSession": "Cupping Session",

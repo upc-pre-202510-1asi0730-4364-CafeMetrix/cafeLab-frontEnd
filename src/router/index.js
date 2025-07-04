@@ -82,11 +82,11 @@ const routes = [
 
     { path: '/dashboard/complete',      name: 'completeDashboard',   component: CompleteDashboard,       meta: { title: 'Complete Dashboard' } },
 
-    { path: '/recetas', name: 'Recetas', component: () => import('../preparation/components/PortfolioList.component.vue') },
-    { path: '/recetas/portfolio/:id', name: 'PortfolioDetail', component: () => import('../preparation/components/PortfolioDetail.component.vue') },
-    { path: '/recetas/nueva', name: 'NewRecipe', component: () => import('../preparation/components/RecipeCreate.component.vue') },
-    { path: '/recetas/detalle/:id', name: 'RecipeDetail', component: () => import('../preparation/components/RecipeDetail.component.vue') },
-    { path: '/recetas/editar/:id', name: 'EditRecipe', component: () => import('../preparation/components/RecipeCreate.component.vue') },
+    { path: '/recetas', name: 'Recetas', component: () => import('../preparation/pages/Recipes&PortfolioPage.component.vue') },
+    { path: '/recetas/portfolio/:id', name: 'PortfolioDetail', component: () => import('../preparation/pages/PortfolioDetailPage.component.vue') },
+    { path: '/recetas/nueva', name: 'NewRecipe', component: () => import('../preparation/pages/CreateRecipePage.component.vue') },
+    { path: '/recetas/detalle/:id', name: 'RecipeDetail', component: () => import('../preparation/pages/RecipeDetailPage.component.vue') },
+    { path: '/recetas/editar/:id', name: 'EditRecipe', component: () => import('../preparation/pages/CreateRecipePage.component.vue') },
     // Rutas para los demás módulos (pueden estar pendientes de implementación)
 
     { path: '/cata-barista', name: 'BaristaCuppingSessions', component: BaristaCuppingSessions, meta: { title: 'Sesiones de Cata Barista' } },

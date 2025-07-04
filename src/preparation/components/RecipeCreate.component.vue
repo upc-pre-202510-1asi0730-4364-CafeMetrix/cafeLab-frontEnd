@@ -10,13 +10,13 @@
             :class="['type-button', { active: recipeType === 'extraction' }]" 
             @click="recipeType = 'extraction'"
           >
-            {{ $t('recipes.extractionType') }}
+            {{ $t('recipes.coffeeExtraction') }}
           </button>
           <button 
             :class="['type-button', { active: recipeType === 'espresso' }]" 
             @click="recipeType = 'espresso'"
           >
-            {{ $t('recipes.espressoType') }}
+            {{ $t('recipes.espressoMethod') }}
           </button>
         </div>
         
@@ -80,8 +80,13 @@
               <label for="cuppingSession">{{ $t('recipes.cuppingSession') }}</label>
               <select id="cuppingSession" v-model="newRecipe.cuppingSessionId">
                 <option value="">{{ $t('recipes.selectCupping') }}</option>
-                <option value="sesion-x">{{ $t('recipes.cuppingSessionX') }}</option>
-                <option value="sesion-z">{{ $t('recipes.cuppingSessionZ') }}</option>
+                <option 
+                  v-for="session in cuppingSessions" 
+                  :key="session.id" 
+                  :value="session.id"
+                >
+                  {{ session.name }}
+                </option>
               </select>
             </div>
             
@@ -228,6 +233,7 @@ import { useAuthService } from '../../auth/services/authService.js';
 import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.component.vue';
 import { RecipeService } from '../services/recipe.service';
 import { PortfolioService } from '../services/portfolio.service';
+import { getCuppingSessions } from '../../sensory-evaluation/services/cuppingService.js';
 import HeaderBar from "../../public/components/headerBar.vue";
 
 const router = useRouter();
@@ -242,6 +248,7 @@ const portfolioService = new PortfolioService();
 // Estados
 const recipeType = ref('extraction');
 const isEditing = ref(false);
+const cuppingSessions = ref([]);
 const newRecipe = ref({
   id: '',
   name: '',
@@ -252,10 +259,10 @@ const newRecipe = ref({
   grindSize: null,
   ratio: '',
   cuppingSessionId: '',
+  cupping: '',
   portfolioId: '',
   steps: '',
   tips: '',
-  cupping: '',
   ingredients: []
 });
 
@@ -295,6 +302,18 @@ watch(recipeType, (newType) => {
   newRecipe.value.ratio = '';
 });
 
+// Observar cambios en la selección de cupping para actualizar el nombre
+watch(() => newRecipe.value.cuppingSessionId, (newCuppingId) => {
+  if (newCuppingId) {
+    const selectedSession = cuppingSessions.value.find(session => session.id == newCuppingId);
+    if (selectedSession) {
+      newRecipe.value.cupping = selectedSession.name;
+    }
+  } else {
+    newRecipe.value.cupping = '';
+  }
+});
+
 // Método para añadir ingrediente (solo disponible para espresso)
 const addIngredient = () => {
   if (recipeType.value === 'espresso') {
@@ -315,27 +334,40 @@ const removeIngredient = (index) => {
 
 // Cargar datos iniciales
 const loadData = async () => {
-  await portfolioService.getAllPortfolios();
-  
-  // Si estamos en modo edición, cargar la receta
-  if (route.params.id) {
-    isEditing.value = true;
-    try {
-      const recipe = await recipeService.getRecipeById(route.params.id);
-      newRecipe.value = {
-        ...recipe,
-        ingredients: recipe.ingredients || []
-      };
-      recipeType.value = recipe.type || 'extraction';
-    } catch (error) {
-      console.error('Error al cargar la receta:', error);
+  try {
+    // Cargar portafolios
+    await portfolioService.getAllPortfolios();
+    
+    // Cargar sesiones de cupping
+    console.log('Cargando sesiones de cupping...');
+    const sessions = await getCuppingSessions();
+    console.log('Sesiones de cupping cargadas:', sessions);
+    cuppingSessions.value = sessions;
+    
+    // Si estamos en modo edición, cargar la receta
+    if (route.params.id) {
+      isEditing.value = true;
+      try {
+        const recipe = await recipeService.getRecipeById(route.params.id);
+        newRecipe.value = {
+          ...recipe,
+          ingredients: recipe.ingredients || []
+        };
+        recipeType.value = recipe.type || 'extraction';
+      } catch (error) {
+        console.error('Error al cargar la receta:', error);
+      }
+    } else {
+      // Si es una nueva receta, inicializar los ingredientes para extracción
+      newRecipe.value.ingredients = [
+        { name: 'Café', amount: '', unit: 'gr' },
+        { name: 'Agua', amount: '', unit: 'ml' }
+      ];
     }
-  } else {
-    // Si es una nueva receta, inicializar los ingredientes para extracción
-    newRecipe.value.ingredients = [
-      { name: 'Café', amount: '', unit: 'gr' },
-      { name: 'Agua', amount: '', unit: 'ml' }
-    ];
+  } catch (error) {
+    console.error('Error al cargar datos:', error);
+    // Si hay error al cargar sesiones de cupping, inicializar como array vacío
+    cuppingSessions.value = [];
   }
 };
 
@@ -349,7 +381,8 @@ const saveRecipe = async () => {
     const recipeData = {
       ...newRecipe.value,
       type: recipeType.value,
-      userId: auth.getCurrentUserId()
+      userId: auth.getCurrentUserId(),
+      cuppingSessionId: newRecipe.value.cuppingSessionId ? Number(newRecipe.value.cuppingSessionId) : null
     };
     
     if (isEditing.value) {

@@ -26,7 +26,7 @@ export class PortfolioService extends BaseService {
     if (!currentUser?.id) {
       throw new Error('Usuario no autenticado o sin ID');
     }
-    return currentUser.id;
+    return Number(currentUser.id);
   }
 
   // Getters de estado
@@ -46,8 +46,8 @@ export class PortfolioService extends BaseService {
     try {
       const userId = this.getCurrentUserIdOrThrow();
       const result = await this.getAll();
-      // Filtrar solo los portafolios del usuario actual
-      const userPortfolios = result.filter(portfolio => portfolio.userId === userId);
+      // Filtrar solo los portafolios del usuario actual y asegurar que userId sea número
+      const userPortfolios = result.filter(portfolio => Number(portfolio.userId) === userId);
       portfolios.value = userPortfolios.map(portfolio => new Portfolio(portfolio));
       return portfolios.value;
     } catch (err) {
@@ -75,14 +75,14 @@ export class PortfolioService extends BaseService {
       const portfolioData = await this.getById(id);
       
       // Verificar que el portafolio pertenezca al usuario actual
-      if (portfolioData.userId !== userId) {
+      if (Number(portfolioData.userId) !== userId) {
         throw new Error('No tienes permisos para acceder a este portafolio');
       }
       
       // Obtener las recetas asociadas a este portafolio (solo del usuario)
       const allRecipes = await this.recipeService.getAll();
       const recipes = allRecipes.filter(recipe => 
-        recipe.portfolioId === id && recipe.userId === userId
+        recipe.portfolioId === id && Number(recipe.userId) === userId
       );
       
       // Crear el objeto Portfolio y añadir las recetas
@@ -116,7 +116,7 @@ export class PortfolioService extends BaseService {
       // Preparar los datos del portafolio
       const newPortfolio = {
         name: portfolioData.name,
-        userId: userId, // Asignar el ID del usuario autenticado
+        userId: userId,
         createdAt: new Date().toISOString(),
         recipeIds: portfolioData.recipeIds || []
       };
@@ -150,7 +150,7 @@ export class PortfolioService extends BaseService {
       
       // Verificar que el portafolio pertenezca al usuario antes de actualizar
       const existingPortfolio = await this.getById(id);
-      if (existingPortfolio.userId !== userId) {
+      if (Number(existingPortfolio.userId) !== userId) {
         throw new Error('No tienes permisos para modificar este portafolio');
       }
       
@@ -158,7 +158,7 @@ export class PortfolioService extends BaseService {
       // No modificar el userId original
       const updateData = {
         ...portfolioData,
-        userId: existingPortfolio.userId, // Mantener el userId original
+        userId: Number(existingPortfolio.userId), // Mantener el userId original como número
         updatedAt: new Date().toISOString()
       };
       
@@ -199,7 +199,7 @@ export class PortfolioService extends BaseService {
       
       // Verificar que el portafolio pertenezca al usuario antes de eliminar
       const existingPortfolio = await this.getById(id);
-      if (existingPortfolio.userId !== userId) {
+      if (Number(existingPortfolio.userId) !== userId) {
         throw new Error('No tienes permisos para eliminar este portafolio');
       }
       
@@ -238,13 +238,13 @@ export class PortfolioService extends BaseService {
       
       // Verificar que el portafolio pertenezca al usuario
       const portfolio = await this.getById(numPortfolioId);
-      if (portfolio.userId !== userId) {
+      if (Number(portfolio.userId) !== userId) {
         throw new Error('No tienes permisos para modificar este portafolio');
       }
       
       // Verificar que la receta pertenezca al usuario
       const recipe = await this.recipeService.getById(numRecipeId);
-      if (recipe.userId !== userId) {
+      if (Number(recipe.userId) !== userId) {
         throw new Error('No tienes permisos para usar esta receta');
       }
       
@@ -308,13 +308,13 @@ export class PortfolioService extends BaseService {
       
       // Verificar que el portafolio pertenezca al usuario
       const portfolio = await this.getById(numPortfolioId);
-      if (portfolio.userId !== userId) {
+      if (Number(portfolio.userId) !== userId) {
         throw new Error('No tienes permisos para modificar este portafolio');
       }
       
       // Verificar que la receta pertenezca al usuario
       const recipe = await this.recipeService.getById(numRecipeId);
-      if (recipe.userId !== userId) {
+      if (Number(recipe.userId) !== userId) {
         throw new Error('No tienes permisos para modificar esta receta');
       }
       

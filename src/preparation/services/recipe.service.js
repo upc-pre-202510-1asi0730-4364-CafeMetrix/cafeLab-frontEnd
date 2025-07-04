@@ -26,7 +26,7 @@ export class RecipeService extends BaseService {
     if (!currentUser?.id) {
       throw new Error('Usuario no autenticado o sin ID');
     }
-    return currentUser.id;
+    return Number(currentUser.id);
   }
 
   // Getters de estado
@@ -47,8 +47,8 @@ export class RecipeService extends BaseService {
     try {
       const userId = this.getCurrentUserIdOrThrow();
       const result = await this.getAll();
-      // Filtrar solo las recetas del usuario actual
-      const userRecipes = result.filter(recipe => recipe.userId === userId);
+      // Filtrar solo las recetas del usuario actual y asegurar que userId sea número
+      const userRecipes = result.filter(recipe => Number(recipe.userId) === userId);
       recipes.value = userRecipes.map(recipe => new Recipe(recipe));
       return recipes.value;
     } catch (err) {
@@ -73,9 +73,9 @@ export class RecipeService extends BaseService {
       console.log('Buscando recetas sin portafolio...');
       
       const allRecipes = await this.getAll();
-      // Filtrar por usuario y sin portafolio
+      // Filtrar por usuario y sin portafolio, asegurando que userId sea número
       const filteredRecipes = allRecipes.filter(recipe => 
-        recipe.userId === userId && !recipe.portfolioId
+        Number(recipe.userId) === userId && !recipe.portfolioId
       );
       recipesWithoutPortfolio.value = filteredRecipes.map(recipe => new Recipe(recipe));
       
@@ -104,7 +104,7 @@ export class RecipeService extends BaseService {
       const recipe = await this.getById(id);
       
       // Verificar que la receta pertenezca al usuario actual
-      if (recipe.userId !== userId) {
+      if (Number(recipe.userId) !== userId) {
         throw new Error('No tienes permisos para acceder a esta receta');
       }
       
@@ -131,9 +131,9 @@ export class RecipeService extends BaseService {
     try {
       const userId = this.getCurrentUserIdOrThrow();
       const allRecipes = await this.getAll();
-      // Filtrar por usuario y portafolio
+      // Filtrar por usuario y portafolio, asegurando que userId sea número
       const filteredRecipes = allRecipes.filter(recipe => 
-        recipe.userId === userId && recipe.portfolioId === portfolioId
+        Number(recipe.userId) === userId && recipe.portfolioId === portfolioId
       );
       recipes.value = filteredRecipes.map(recipe => new Recipe(recipe));
       return recipes.value;
@@ -163,7 +163,7 @@ export class RecipeService extends BaseService {
 
       const newRecipe = {
         ...recipeDetails,
-        userId: userId, // Asignar el ID del usuario autenticado
+        userId: userId,
         portfolioId: recipeDetails.portfolioId ? Number(recipeDetails.portfolioId) : null,
         createdAt: new Date().toISOString()
       };
@@ -217,7 +217,7 @@ export class RecipeService extends BaseService {
       
       // Verificar que la receta pertenezca al usuario antes de actualizar
       const existingRecipe = await this.getById(id);
-      if (existingRecipe.userId !== userId) {
+      if (Number(existingRecipe.userId) !== userId) {
         throw new Error('No tienes permisos para modificar esta receta');
       }
       
@@ -287,7 +287,7 @@ export class RecipeService extends BaseService {
       
       // Verificar que la receta pertenezca al usuario antes de eliminar
       const existingRecipe = await this.getById(id);
-      if (existingRecipe.userId !== userId) {
+      if (Number(existingRecipe.userId) !== userId) {
         throw new Error('No tienes permisos para eliminar esta receta');
       }
       
@@ -323,7 +323,7 @@ export class RecipeService extends BaseService {
       
       // Verificar que la receta pertenezca al usuario
       const recipe = await this.getById(recipeId);
-      if (recipe.userId !== userId) {
+      if (Number(recipe.userId) !== userId) {
         throw new Error('No tienes permisos para modificar esta receta');
       }
       
@@ -345,7 +345,7 @@ export class RecipeService extends BaseService {
       
       // Verificar que la receta pertenezca al usuario
       const recipe = await this.getById(recipeId);
-      if (recipe.userId !== userId) {
+      if (Number(recipe.userId) !== userId) {
         throw new Error('No tienes permisos para modificar esta receta');
       }
       
