@@ -224,6 +224,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { useAuthService } from '../../auth/services/authService.js';
 import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.component.vue';
 import { RecipeService } from '../services/recipe.service';
 import { PortfolioService } from '../services/portfolio.service';
@@ -232,6 +233,7 @@ import HeaderBar from "../../public/components/headerBar.vue";
 const router = useRouter();
 const route = useRoute();
 const { t } = useI18n();
+const auth = useAuthService();
 
 // Servicios
 const recipeService = new RecipeService();
@@ -347,7 +349,7 @@ const saveRecipe = async () => {
     const recipeData = {
       ...newRecipe.value,
       type: recipeType.value,
-      userId: localStorage.getItem('userId')
+      userId: auth.getCurrentUserId()
     };
     
     if (isEditing.value) {

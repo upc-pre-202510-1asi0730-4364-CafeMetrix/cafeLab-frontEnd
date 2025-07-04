@@ -17,6 +17,18 @@ export class PortfolioService extends BaseService {
     this.recipeService = new BaseService('recipes');
   }
 
+  /**
+   * Helper to get current user ID from localStorage or throw an error.
+   * @private
+   */
+  getCurrentUserIdOrThrow() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser?.id) {
+      throw new Error('Usuario no autenticado o sin ID');
+    }
+    return currentUser.id;
+  }
+
   // Getters de estado
   getPortfolios() { return portfolios; }
   getCurrentPortfolio() { return currentPortfolio; }
@@ -24,7 +36,7 @@ export class PortfolioService extends BaseService {
   getError() { return error; }
   
   /**
-   * Obtiene todos los portafolios
+   * Obtiene todos los portafolios del usuario autenticado
    * @returns {Promise<Portfolio[]>} Lista de portafolios
    */
   async getAllPortfolios() {
@@ -32,8 +44,11 @@ export class PortfolioService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
       const result = await this.getAll();
-      portfolios.value = result.map(portfolio => new Portfolio(portfolio));
+      // Filtrar solo los portafolios del usuario actual
+      const userPortfolios = result.filter(portfolio => portfolio.userId === userId);
+      portfolios.value = userPortfolios.map(portfolio => new Portfolio(portfolio));
       return portfolios.value;
     } catch (err) {
       error.value = err.message;
@@ -45,7 +60,7 @@ export class PortfolioService extends BaseService {
   }
 
   /**
-   * Obtiene un portafolio por su ID
+   * Obtiene un portafolio por su ID (verifica que pertenezca al usuario)
    * @param {number} id - ID del portafolio
    * @returns {Promise<Portfolio>} El portafolio encontrado
    */
@@ -54,12 +69,21 @@ export class PortfolioService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
       // Obtener los datos del portafolio
       const portfolioData = await this.getById(id);
       
-      // Obtener las recetas asociadas a este portafolio
+      // Verificar que el portafolio pertenezca al usuario actual
+      if (portfolioData.userId !== userId) {
+        throw new Error('No tienes permisos para acceder a este portafolio');
+      }
+      
+      // Obtener las recetas asociadas a este portafolio (solo del usuario)
       const allRecipes = await this.recipeService.getAll();
-      const recipes = allRecipes.filter(recipe => recipe.portfolioId === id);
+      const recipes = allRecipes.filter(recipe => 
+        recipe.portfolioId === id && recipe.userId === userId
+      );
       
       // Crear el objeto Portfolio y añadir las recetas
       const portfolio = new Portfolio(portfolioData);
@@ -78,7 +102,7 @@ export class PortfolioService extends BaseService {
   }
 
   /**
-   * Crea un nuevo portafolio
+   * Crea un nuevo portafolio para el usuario autenticado
    * @param {Object} portfolioData - Datos del portafolio a crear
    * @returns {Promise<Portfolio>} El portafolio creado
    */
@@ -87,9 +111,12 @@ export class PortfolioService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
       // Preparar los datos del portafolio
       const newPortfolio = {
         name: portfolioData.name,
+        userId: userId, // Asignar el ID del usuario autenticado
         createdAt: new Date().toISOString(),
         recipeIds: portfolioData.recipeIds || []
       };
@@ -109,7 +136,7 @@ export class PortfolioService extends BaseService {
   }
 
   /**
-   * Actualiza un portafolio existente
+   * Actualiza un portafolio existente (verifica que pertenezca al usuario)
    * @param {number} id - ID del portafolio
    * @param {Object} portfolioData - Datos a actualizar
    * @returns {Promise<Portfolio>} El portafolio actualizado
@@ -119,9 +146,19 @@ export class PortfolioService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
+      // Verificar que el portafolio pertenezca al usuario antes de actualizar
+      const existingPortfolio = await this.getById(id);
+      if (existingPortfolio.userId !== userId) {
+        throw new Error('No tienes permisos para modificar este portafolio');
+      }
+      
       // Añadir timestamp de actualización
+      // No modificar el userId original
       const updateData = {
         ...portfolioData,
+        userId: existingPortfolio.userId, // Mantener el userId original
         updatedAt: new Date().toISOString()
       };
       
@@ -149,7 +186,7 @@ export class PortfolioService extends BaseService {
   }
 
   /**
-   * Elimina un portafolio
+   * Elimina un portafolio (verifica que pertenezca al usuario)
    * @param {number} id - ID del portafolio a eliminar
    * @returns {Promise<boolean>} True si se eliminó correctamente
    */
@@ -158,6 +195,14 @@ export class PortfolioService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
+      // Verificar que el portafolio pertenezca al usuario antes de eliminar
+      const existingPortfolio = await this.getById(id);
+      if (existingPortfolio.userId !== userId) {
+        throw new Error('No tienes permisos para eliminar este portafolio');
+      }
+      
       await this.delete(id);
       portfolios.value = portfolios.value.filter(p => p.id !== id);
       
@@ -176,21 +221,32 @@ export class PortfolioService extends BaseService {
   }
 
   /**
-   * Añade una receta a un portafolio
+   * Añade una receta a un portafolio (verifica que ambos pertenezcan al usuario)
    * @param {number} portfolioId - ID del portafolio
    * @param {number} recipeId - ID de la receta
    * @returns {Promise<Portfolio>} El portafolio actualizado
    */
   async addRecipeToPortfolio(portfolioId, recipeId) {
     try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
       // Convertir IDs a números para asegurar consistencia
       const numPortfolioId = Number(portfolioId);
       const numRecipeId = Number(recipeId);
       
       console.log(`Añadiendo receta ${numRecipeId} al portafolio ${numPortfolioId}`);
       
-      // Primero, obtener el portafolio actual
+      // Verificar que el portafolio pertenezca al usuario
       const portfolio = await this.getById(numPortfolioId);
+      if (portfolio.userId !== userId) {
+        throw new Error('No tienes permisos para modificar este portafolio');
+      }
+      
+      // Verificar que la receta pertenezca al usuario
+      const recipe = await this.recipeService.getById(numRecipeId);
+      if (recipe.userId !== userId) {
+        throw new Error('No tienes permisos para usar esta receta');
+      }
       
       // Asegurarse de que recipeIds exista y sea un array
       if (!portfolio.recipeIds) {
@@ -208,7 +264,6 @@ export class PortfolioService extends BaseService {
         const updatedPortfolio = await this.update(numPortfolioId, portfolio);
         
         // Actualizar la receta para referenciar al portafolio
-        const recipe = await this.recipeService.getById(numRecipeId);
         recipe.portfolioId = numPortfolioId;
         await this.recipeService.update(numRecipeId, recipe);
         
@@ -236,30 +291,40 @@ export class PortfolioService extends BaseService {
   }
 
   /**
-   * Elimina una receta de un portafolio
+   * Elimina una receta de un portafolio (verifica que ambos pertenezcan al usuario)
    * @param {number} portfolioId - ID del portafolio
    * @param {number} recipeId - ID de la receta
    * @returns {Promise<Portfolio>} El portafolio actualizado
    */
   async removeRecipeFromPortfolio(portfolioId, recipeId) {
     try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
       // Convertir IDs a números para asegurar consistencia
       const numPortfolioId = Number(portfolioId);
       const numRecipeId = Number(recipeId);
       
       console.log(`Eliminando receta ${numRecipeId} del portafolio ${numPortfolioId}`);
       
-      // Primero, obtener el portafolio actual
+      // Verificar que el portafolio pertenezca al usuario
       const portfolio = await this.getById(numPortfolioId);
+      if (portfolio.userId !== userId) {
+        throw new Error('No tienes permisos para modificar este portafolio');
+      }
+      
+      // Verificar que la receta pertenezca al usuario
+      const recipe = await this.recipeService.getById(numRecipeId);
+      if (recipe.userId !== userId) {
+        throw new Error('No tienes permisos para modificar esta receta');
+      }
       
       // Asegurarse de que recipeIds exista y sea un array
       if (!portfolio.recipeIds) {
         portfolio.recipeIds = [];
-        return new Portfolio(portfolio);
       }
       
       // Eliminar la receta del portafolio
-      portfolio.recipeIds = portfolio.recipeIds.filter(id => Number(id) !== numRecipeId);
+      portfolio.recipeIds = portfolio.recipeIds.filter(id => id !== numRecipeId);
       
       console.log(`RecipeIds actualizados: ${JSON.stringify(portfolio.recipeIds)}`);
       
@@ -267,7 +332,6 @@ export class PortfolioService extends BaseService {
       const updatedPortfolio = await this.update(numPortfolioId, portfolio);
       
       // Actualizar la receta para quitar la referencia al portafolio
-      const recipe = await this.recipeService.getById(numRecipeId);
       recipe.portfolioId = null;
       await this.recipeService.update(numRecipeId, recipe);
       
@@ -280,7 +344,8 @@ export class PortfolioService extends BaseService {
       }
       
       if (currentPortfolio.value?.id === numPortfolioId) {
-        currentPortfolio.value = portfolioInstance;
+        // Recargar el portafolio actual para obtener las recetas actualizadas
+        await this.getPortfolioById(numPortfolioId);
       }
       
       return portfolioInstance;

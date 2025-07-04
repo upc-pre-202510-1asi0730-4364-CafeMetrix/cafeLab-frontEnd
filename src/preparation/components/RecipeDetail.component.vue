@@ -109,6 +109,7 @@ import BreadcrumbNavigation from '../../shared/components/BreadcrumbNavigation.c
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { useAuthService } from '../../auth/services/authService.js';
 import { RecipeService } from '../services/recipe.service';
 
 export default {
@@ -121,8 +122,9 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const { t } = useI18n();
+    const auth = useAuthService();
     const recipe = ref(null);
-    const userId = localStorage.getItem('userId');
+    const userId = auth.getCurrentUserId();
     const recipeService = new RecipeService();
     const showDeleteConfirmation = ref(false);
 

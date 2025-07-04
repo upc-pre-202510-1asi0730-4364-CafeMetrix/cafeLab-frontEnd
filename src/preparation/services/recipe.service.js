@@ -17,6 +17,18 @@ export class RecipeService extends BaseService {
     super('recipes');
   }
 
+  /**
+   * Helper to get current user ID from localStorage or throw an error.
+   * @private
+   */
+  getCurrentUserIdOrThrow() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser?.id) {
+      throw new Error('Usuario no autenticado o sin ID');
+    }
+    return currentUser.id;
+  }
+
   // Getters de estado
   getRecipes() { return recipes; }
   getRecipesWithoutPortfolio() { return recipesWithoutPortfolio; }
@@ -25,7 +37,7 @@ export class RecipeService extends BaseService {
   getError() { return error; }
   
   /**
-   * Obtiene todas las recetas
+   * Obtiene todas las recetas del usuario autenticado
    * @returns {Promise<Recipe[]>} Lista de recetas
    */
   async getAllRecipes() {
@@ -33,8 +45,11 @@ export class RecipeService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
       const result = await this.getAll();
-      recipes.value = result.map(recipe => new Recipe(recipe));
+      // Filtrar solo las recetas del usuario actual
+      const userRecipes = result.filter(recipe => recipe.userId === userId);
+      recipes.value = userRecipes.map(recipe => new Recipe(recipe));
       return recipes.value;
     } catch (err) {
       error.value = err.message;
@@ -46,7 +61,7 @@ export class RecipeService extends BaseService {
   }
 
   /**
-   * Obtiene todas las recetas que no están asociadas a un portafolio
+   * Obtiene todas las recetas del usuario que no están asociadas a un portafolio
    * @returns {Promise<Recipe[]>} Lista de recetas sin portafolio
    */
   async getRecipesWithoutPortfolio() {
@@ -54,10 +69,14 @@ export class RecipeService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
       console.log('Buscando recetas sin portafolio...');
       
       const allRecipes = await this.getAll();
-      const filteredRecipes = allRecipes.filter(recipe => !recipe.portfolioId);
+      // Filtrar por usuario y sin portafolio
+      const filteredRecipes = allRecipes.filter(recipe => 
+        recipe.userId === userId && !recipe.portfolioId
+      );
       recipesWithoutPortfolio.value = filteredRecipes.map(recipe => new Recipe(recipe));
       
       console.log(`Recetas sin portafolio obtenidas: ${recipesWithoutPortfolio.value.length}`);
@@ -72,7 +91,7 @@ export class RecipeService extends BaseService {
   }
 
   /**
-   * Obtiene una receta por su ID
+   * Obtiene una receta por su ID (verifica que pertenezca al usuario)
    * @param {number} id - ID de la receta
    * @returns {Promise<Recipe>} La receta encontrada
    */
@@ -81,7 +100,14 @@ export class RecipeService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
       const recipe = await this.getById(id);
+      
+      // Verificar que la receta pertenezca al usuario actual
+      if (recipe.userId !== userId) {
+        throw new Error('No tienes permisos para acceder a esta receta');
+      }
+      
       currentRecipe.value = new Recipe(recipe);
       return currentRecipe.value;
     } catch (err) {
@@ -94,7 +120,7 @@ export class RecipeService extends BaseService {
   }
 
   /**
-   * Obtiene todas las recetas asociadas a un portafolio
+   * Obtiene todas las recetas asociadas a un portafolio del usuario
    * @param {number} portfolioId - ID del portafolio
    * @returns {Promise<Recipe[]>} Lista de recetas del portafolio
    */
@@ -103,8 +129,12 @@ export class RecipeService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
       const allRecipes = await this.getAll();
-      const filteredRecipes = allRecipes.filter(recipe => recipe.portfolioId === portfolioId);
+      // Filtrar por usuario y portafolio
+      const filteredRecipes = allRecipes.filter(recipe => 
+        recipe.userId === userId && recipe.portfolioId === portfolioId
+      );
       recipes.value = filteredRecipes.map(recipe => new Recipe(recipe));
       return recipes.value;
     } catch (err) {
@@ -117,7 +147,7 @@ export class RecipeService extends BaseService {
   }
 
   /**
-   * Crea una nueva receta
+   * Crea una nueva receta para el usuario autenticado
    * @param {Object} recipeData - Datos de la receta a crear
    * @returns {Promise<Recipe>} La receta creada
    */
@@ -126,11 +156,14 @@ export class RecipeService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
       // Separar los ingredientes temporalmente
       const { ingredients, ...recipeDetails } = recipeData;
 
       const newRecipe = {
         ...recipeDetails,
+        userId: userId, // Asignar el ID del usuario autenticado
         portfolioId: recipeDetails.portfolioId ? Number(recipeDetails.portfolioId) : null,
         createdAt: new Date().toISOString()
       };
@@ -170,7 +203,7 @@ export class RecipeService extends BaseService {
   }
 
   /**
-   * Actualiza una receta existente
+   * Actualiza una receta existente (verifica que pertenezca al usuario)
    * @param {number} id - ID de la receta
    * @param {Object} recipeData - Datos a actualizar
    * @returns {Promise<Recipe>} La receta actualizada
@@ -180,6 +213,14 @@ export class RecipeService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
+      // Verificar que la receta pertenezca al usuario antes de actualizar
+      const existingRecipe = await this.getById(id);
+      if (existingRecipe.userId !== userId) {
+        throw new Error('No tienes permisos para modificar esta receta');
+      }
+      
       // Asegurarse de que los ingredientes tengan el recipeId correcto
       const ingredients = Array.isArray(recipeData.ingredients) 
         ? recipeData.ingredients.map(ingredient => ({
@@ -189,9 +230,11 @@ export class RecipeService extends BaseService {
         : [];
 
       // Añadir timestamp de actualización y asegurar que portfolioId sea número
+      // No modificar el userId original
       const updateData = {
         ...recipeData,
         ingredients,
+        userId: existingRecipe.userId, // Mantener el userId original
         portfolioId: recipeData.portfolioId ? Number(recipeData.portfolioId) : null,
         updatedAt: new Date().toISOString()
       };
@@ -231,7 +274,7 @@ export class RecipeService extends BaseService {
   }
 
   /**
-   * Elimina una receta
+   * Elimina una receta (verifica que pertenezca al usuario)
    * @param {number} id - ID de la receta a eliminar
    * @returns {Promise<boolean>} True si se eliminó correctamente
    */
@@ -240,6 +283,14 @@ export class RecipeService extends BaseService {
     error.value = null;
     
     try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
+      // Verificar que la receta pertenezca al usuario antes de eliminar
+      const existingRecipe = await this.getById(id);
+      if (existingRecipe.userId !== userId) {
+        throw new Error('No tienes permisos para eliminar esta receta');
+      }
+      
       await this.delete(id);
       
       // Eliminar la receta de las listas
@@ -261,21 +312,47 @@ export class RecipeService extends BaseService {
   }
 
   /**
-   * Asigna una receta a un portafolio
+   * Asigna una receta a un portafolio (verifica que ambos pertenezcan al usuario)
    * @param {number} recipeId - ID de la receta
    * @param {number} portfolioId - ID del portafolio
    * @returns {Promise<Recipe>} La receta actualizada
    */
   async assignToPortfolio(recipeId, portfolioId) {
-    return this.updateRecipe(recipeId, { portfolioId });
+    try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
+      // Verificar que la receta pertenezca al usuario
+      const recipe = await this.getById(recipeId);
+      if (recipe.userId !== userId) {
+        throw new Error('No tienes permisos para modificar esta receta');
+      }
+      
+      return await this.updateRecipe(recipeId, { ...recipe, portfolioId });
+    } catch (err) {
+      console.error(`Error al asignar la receta ${recipeId} al portafolio ${portfolioId}:`, err);
+      throw err;
+    }
   }
 
   /**
-   * Remueve una receta de su portafolio actual
+   * Remueve una receta de un portafolio (verifica que pertenezca al usuario)
    * @param {number} recipeId - ID de la receta
    * @returns {Promise<Recipe>} La receta actualizada
    */
   async removeFromPortfolio(recipeId) {
-    return this.updateRecipe(recipeId, { portfolioId: null });
+    try {
+      const userId = this.getCurrentUserIdOrThrow();
+      
+      // Verificar que la receta pertenezca al usuario
+      const recipe = await this.getById(recipeId);
+      if (recipe.userId !== userId) {
+        throw new Error('No tienes permisos para modificar esta receta');
+      }
+      
+      return await this.updateRecipe(recipeId, { ...recipe, portfolioId: null });
+    } catch (err) {
+      console.error(`Error al remover la receta ${recipeId} del portafolio:`, err);
+      throw err;
+    }
   }
 } 
