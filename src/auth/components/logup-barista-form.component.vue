@@ -94,7 +94,6 @@ export default {
       experience: ''
     });
 
-    // Validación simple por ahora
     const isInvalidControl = (controlName) => {
       return !form[controlName] || form[controlName].length === 0;
     };
@@ -107,9 +106,7 @@ export default {
     };
 
     const onSubmit = () => {
-      // Validación simple
       if (isInvalidControl('name') || isInvalidControl('email') || isInvalidControl('password') || isInvalidControl('experience')) {
-        // Opcional: mostrar errores aquí
         return;
       }
 
@@ -130,7 +127,6 @@ export default {
 
       userService.register(newUser)
           .then(response => {
-            // Aquí sí es .data (respuesta Axios)
             const user = response.data;
             localStorage.setItem('currentUser', JSON.stringify(user));
             router.push({ name: 'logupBaristaSuccess' });

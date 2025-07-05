@@ -1,4 +1,3 @@
-// src/services/authService.js
 import userService from './user.service.js'
 
 export function useAuthService() {

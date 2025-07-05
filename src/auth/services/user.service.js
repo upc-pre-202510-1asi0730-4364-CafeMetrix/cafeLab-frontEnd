@@ -51,7 +51,7 @@ export class UserService {
      */
     updateProfile(userId, updatedUser) {
         return httpInstance.put(`${this.resourceEndpoint}/${String(userId)}`, updatedUser)
-            .then(response => response.data); // ✅ Devuelve solo los datos
+            .then(response => response.data);
     }
 
 

@@ -106,7 +106,7 @@ export default {
         name,
         email,
         password,
-        role: 'dueno_cafeteria',
+        role: 'owner',
         cafeteriaName,
         experience,
         profilePicture: '',
