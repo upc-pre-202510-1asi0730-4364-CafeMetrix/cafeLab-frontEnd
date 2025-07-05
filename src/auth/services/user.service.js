@@ -47,11 +47,15 @@ export class UserService {
      * Updates a user's profile
      * @param {number} userId - The ID of the user to update
      * @param {Object} updatedUser - The updated user data
-     * @returns {Promise<AxiosResponse<any>>} Promise that resolves to the updated user
+     * @returns {Promise<Object>} The updated user profile
      */
     updateProfile(userId, updatedUser) {
-        return httpInstance.put(`${this.resourceEndpoint}/${String(userId)}`, updatedUser)
-            .then(response => response.data);
+        return httpInstance.put(`${this.resourceEndpoint}/${userId}`, updatedUser)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Update profile error:', error);
+                throw error;
+            });
     }
 
 
