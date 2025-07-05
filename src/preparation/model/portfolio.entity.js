@@ -7,12 +7,14 @@ export class Portfolio {
    * Crea una instancia de Portfolio
    * @param {Object} data - Los datos del portafolio
    * @param {number} data.id - ID único del portafolio
+   * @param {number} data.userId - ID del usuario que creó el portafolio
    * @param {string} data.name - Nombre del portafolio
    * @param {string} data.createdAt - Fecha de creación en formato ISO
    * @param {number[]} data.recipeIds - Lista de IDs de recetas asociadas
    */
   constructor(data) {
     this.id = data.id;
+    this.userId = data.userId;
     this.name = data.name;
     this.createdAt = data.createdAt;
     this.recipeIds = data.recipeIds || [];
@@ -39,6 +41,7 @@ export class Portfolio {
   toJSON() {
     return {
       id: this.id,
+      userId: this.userId,
       name: this.name,
       createdAt: this.createdAt,
       recipeIds: this.recipeIds

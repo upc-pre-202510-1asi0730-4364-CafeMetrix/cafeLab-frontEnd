@@ -449,8 +449,6 @@
     "grindMedium": "Medium",
     "grindCoarse": "Coarse",
     "selectCupping": "Select a cupping session",
-    "cuppingSessionX": "Cupping Session X",
-    "cuppingSessionZ": "Cupping Session Z",
     "unitPiece": "piece",
     "image": "Image"
   },

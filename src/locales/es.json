@@ -425,7 +425,10 @@
     "cuppingNotes": "Notas de Cata",
     "grindFine": "Fino",
     "grindMedium": "Medio",
-    "grindCoarse": "Grueso"
+    "grindCoarse": "Grueso",
+    "selectCupping": "Seleccionar sesión de cata",
+    "unitPiece": "unidad",
+    "image": "Imagen"
   },
   "ERRORS": {
     "LOAD_LOTS": "Lotes no encontrados"
@@ -616,7 +619,6 @@
       "loading": "Cargando comparación..."
     },
     "registerModalTitle": "Registrar perfil de tueste",
-    "registerButton": "Registrar perfil de tueste",
     "selectType": "Tipo de Café",
     "minutes": "min",
     "selectLot": "Seleccionar lote"

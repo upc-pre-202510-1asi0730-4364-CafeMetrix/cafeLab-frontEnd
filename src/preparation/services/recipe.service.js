@@ -133,7 +133,7 @@ export class RecipeService extends BaseService {
       const allRecipes = await this.getAll();
       // Filtrar por usuario y portafolio, asegurando que userId sea número
       const filteredRecipes = allRecipes.filter(recipe => 
-        Number(recipe.userId) === userId && recipe.portfolioId === portfolioId
+        Number(recipe.userId) === userId && Number(recipe.portfolioId) === Number(portfolioId)
       );
       recipes.value = filteredRecipes.map(recipe => new Recipe(recipe));
       return recipes.value;
@@ -158,32 +158,32 @@ export class RecipeService extends BaseService {
     try {
       const userId = this.getCurrentUserIdOrThrow();
       
-      // Separar los ingredientes temporalmente
-      const { ingredients, ...recipeDetails } = recipeData;
-
+      // Preparar los datos de la receta según el formato esperado por la API
       const newRecipe = {
-        ...recipeDetails,
+        name: recipeData.name || '',
+        imageUrl: recipeData.imageUrl || '',
+        extractionMethod: recipeData.extractionMethod || '',
+        ratio: recipeData.ratio || '',
+        cuppingSessionId: recipeData.cuppingSessionId ? Number(recipeData.cuppingSessionId) : null,
+        portfolioId: recipeData.portfolioId ? Number(recipeData.portfolioId) : null,
+        preparationTime: recipeData.preparationTime ? Number(recipeData.preparationTime) : 0,
+        steps: recipeData.steps || '',
+        tips: recipeData.tips || '',
+        cupping: recipeData.cupping || '',
+        grindSize: recipeData.grindSize || '',
         userId: userId,
-        portfolioId: recipeDetails.portfolioId ? Number(recipeDetails.portfolioId) : null,
-        createdAt: new Date().toISOString()
+        ingredients: Array.isArray(recipeData.ingredients) ? recipeData.ingredients.map(ingredient => ({
+          name: ingredient.name || '',
+          amount: ingredient.amount ? Number(ingredient.amount) : 0,
+          unit: ingredient.unit || ''
+        })) : []
       };
       
-      // Crear la receta a través de la API
-      const createdRecipe = await this.create(newRecipe);
+      console.log('📋 Datos a enviar a la API:', newRecipe);
       
-      // Ahora que tenemos el ID de la receta, asignarlo a los ingredientes
-      if (Array.isArray(ingredients) && ingredients.length > 0) {
-        createdRecipe.ingredients = ingredients.map(ingredient => ({
-          ...ingredient,
-          recipeId: createdRecipe.id
-        }));
-      } else {
-        createdRecipe.ingredients = [];
-      }
-
-      // Actualizar la receta con los ingredientes
-      const finalRecipe = await this.update(createdRecipe.id, createdRecipe);
-      const recipe = new Recipe(finalRecipe);
+      // Crear la receta a través de la API con todos los datos
+      const createdRecipe = await this.create(newRecipe);
+      const recipe = new Recipe(createdRecipe);
       
       // Agregar la nueva receta a la lista correspondiente
       if (recipe.portfolioId === null) {
