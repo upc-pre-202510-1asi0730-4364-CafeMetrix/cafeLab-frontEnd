@@ -6,7 +6,7 @@
         <label>Fecha:</label>
         <InputText v-model="form.fecha" type="date" />
         <label>Lote:</label>
-        <Dropdown v-model="form.lote" :options="lotes" placeholder="Selecciona lote" />
+        <Dropdown v-model="form.lote" :options="lotesOptions" optionLabel="label" optionValue="value" placeholder="Selecciona lote" />
         <label>Producto Final:</label>
         <InputText v-model="form.producto" placeholder="Ej: Espresso" />
         <label>Cantidad Usada (kg):</label>
@@ -15,10 +15,10 @@
       <div class="summary-section">
         <div class="summary-card">
           <strong>Resumen de lote</strong>
-          <div style="margin-top: 8px;">Lote {{ form.lote || '-' }} - {{ tipoCafeLabel }}</div>
-          <div>Origen: Ayacucho</div>
-          <div>Stock restante: 12.5 kg</div>
-          <div>Fecha de entrada: 10/04/25</div>
+          <div style="margin-top: 8px;">Lote {{ selectedLote.lot_name || '-' }} - {{ tipoCafeLabel }}</div>
+          <div>Origen: {{ selectedLote.origin || '-' }}</div>
+          <div>Stock restante: {{ selectedLote.weight || '-' }} kg</div>
+          <div>Fecha de entrada: {{ selectedLote.entry_date || '-' }}</div>
         </div>
         <div class="summary-card">
           <strong>Movimientos Anteriores:</strong>
@@ -74,6 +74,9 @@ watch(() => props.visible, (val) => {
     }
   }
 })
+
+const lotesOptions = computed(() => props.lotes.map(l => ({ label: l.lot_name, value: l.id, ...l })))
+const selectedLote = computed(() => props.lotes.find(l => l.id === form.value.lote) || {})
 
 function registrar() {
   if (!form.value.fecha || !form.value.lote || !form.value.producto || !form.value.cantidad) return
@@ -160,4 +163,4 @@ input, .p-inputtext, .p-dropdown, .p-dropdown-label {
   color: #333 !important;
   border-radius: 8px !important;
 }
-</style> 
+</style>

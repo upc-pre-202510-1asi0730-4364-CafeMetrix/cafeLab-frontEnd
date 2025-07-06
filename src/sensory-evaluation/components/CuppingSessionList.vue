@@ -57,8 +57,8 @@ import Column from 'primevue/column'
 import CuppingHeader from '../../shared/components/CuppingHeader.component.vue'
 import CuppingFilterModal from '../../shared/components/CuppingFilterModal.vue'
 import NewCuppingButton from './NewCuppingButton.vue'
-import api from '../../shared/services/api'
 import HeaderBar from "../../public/components/headerBar.vue";
+import { getCuppingSessions, saveCuppingSession } from '../services/cuppingService.js';
 
 const router = useRouter()
 const filterModalVisible = ref(false)
@@ -94,22 +94,14 @@ const handleFilterApply = (filters) => {
 
 const handleNewCuppingCreated = async (newSession) => {
   try {
-    const maxId = cuppingSessions.value.reduce((max, s) => {
-      const idNum = typeof s.id === 'number' ? s.id : parseInt(s.id, 10);
-      return idNum > max ? idNum : max;
-    }, 0);
-
-    const newId = maxId + 1;
-
     const lot = newSession.lot && newSession.lot.trim() !== "" ? newSession.lot : "N/A";
     const profile = newSession.profile && newSession.profile.trim() !== "" ? newSession.profile : "N/A";
     const origin = newSession.origin && newSession.origin.trim() !== "" ? newSession.origin : "N/A";
 
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    const userId = currentUser?.id || 'N/A';
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const user_id = user?.id;
 
-    const response = await api.post('/cuppingSessions', {
-      id: newId,
+    const response = await saveCuppingSession({
       name: newSession.name,
       date: new Date().toISOString().split('T')[0],
       origin: origin,
@@ -118,10 +110,11 @@ const handleNewCuppingCreated = async (newSession) => {
       lot,
       profile,
       ratings: { ...defaultRatings, ...(newSession.ratings || {}) },
-      user_id: userId
+      user_id
     });
-    cuppingSessions.value.push(response.data);
-    router.push(`/cata/${Number(response.data.id)}`);
+    const allSessions = await getCuppingSessions();
+    cuppingSessions.value = allSessions.filter(session => String(session.userId) === String(user_id));
+    router.push(`/cata/${Number(response.id)}`);
   } catch (error) {
     console.error('Error creating new cupping session:', error);
     alert('Error al crear la nueva sesión de cata');
@@ -144,7 +137,7 @@ const compareSessions = () => {
 const deleteCuppingSession = async (sessionId) => {
   if (!confirm('¿Seguro que quieres borrar esta cata?')) return;
   try {
-    await api.delete(`/cuppingSessions/${sessionId}`);
+    await localApi.delete(`/cuppingsessions/${sessionId}`);
     cuppingSessions.value = cuppingSessions.value.filter(s => s.id != sessionId);
   } catch (error) {
     alert('Error al borrar la cata');
@@ -175,8 +168,18 @@ const actionTemplate = (session) => {
 
 onMounted(async () => {
   document.body.classList.add('cupping-mode')
-  const response = await api.get('/cuppingSessions');
-  cuppingSessions.value = response.data;
+  const response = await getCuppingSessions();
+  const user = JSON.parse(localStorage.getItem('currentUser'));
+  const user_id = user?.id;
+  console.log('Sesiones recibidas:', response);
+  console.log('user_id:', user_id);
+  const filtradas = response.filter(session => String(session.userId) === String(user_id));
+  console.log('Sesiones filtradas:', filtradas);
+  if (user_id) {
+    cuppingSessions.value = filtradas;
+  } else {
+    cuppingSessions.value = [];
+  }
 })
 
 onUnmounted(() => {

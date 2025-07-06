@@ -3,15 +3,16 @@
     <!-- Agregar el HeaderBar al inicio del archivo -->
     <HeaderBar />
 
-    <!-- Breadcrumb -->
-    <div class="breadcrumb-container">
-      <div class="breadcrumb">
-        {{ t('breadcrumb.home') }} > <strong>{{ t('DEFECTS.LIBRARY_TITLE') }}</strong>
-      </div>
+    <!-- Breadcrumb y mensaje de error en la misma línea -->
+    <div class="breadcrumb-defects-centered error-breadcrumb-row">
+      <span class="breadcrumb-home">{{ t('breadcrumb.home') }}</span>
+      <span class="breadcrumb-separator">&gt;</span>
+      <span class="breadcrumb-current">{{ t('DEFECTS.LIBRARY_TITLE') }}</span>
+      <span v-if="deleteErrorMsg" class="error-alert-inline">{{ deleteErrorMsg }}</span>
     </div>
 
     <!-- Filtros de búsqueda modernos -->
-    <div class="filters-row">
+    <div class="centered-filters-container">
       <div class="filter-block">
         <label class="filter-label">{{ t('DEFECTS.SEARCH_CAFE_TYPE') }}</label>
         <div class="filter-input-group">
@@ -35,10 +36,11 @@
     </div>
 
     <!-- Tabla de defectos -->
-    <div class="defect-container">
+    <div class="centered-table-container">
       <table class="defect-table">
         <thead>
         <tr>
+          <th></th>
           <th>{{ t('DEFECTS.TABLE_HEADER_WEIGHT') }}</th>
           <th>{{ t('DEFECTS.TABLE_HEADER_CAFE') }}</th>
           <th>{{ t('DEFECTS.TABLE_HEADER_DEFECT') }}</th>
@@ -47,15 +49,17 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="defect in filteredDefects" :key="defect.id">
+        <tr v-for="defect in filteredDefects" :key="defect.id" :class="{selected: selectedDefectId === defect.id}" @click="selectedDefectId = defect.id">
+          <td>
+            <input type="checkbox" :checked="selectedDefectId === defect.id" @change="selectDefect(defect.id, $event)" class="custom-checkbox" />
+          </td>
           <td>{{ defect.peso || '' }}</td>
           <td>{{ defect.cafe || '' }}</td>
           <td>{{ defect.defecto }}</td>
           <td>{{ defect.porcentaje || '' }}</td>
-          <td>
-            <button class="view-btn" @click="openModal(defect)">
-              <i class="fa fa-search"></i>
-            </button>
+          <td class="action-cell">
+            <button class="icon-btn action-btn" @click.stop="openEditModal(defect)"><i class="fa fa-pencil"></i></button>
+            <button class="icon-btn action-btn" @click.stop="openModal(defect)"><i class="fa fa-search"></i></button>
           </td>
         </tr>
         </tbody>
@@ -63,7 +67,10 @@
     </div>
 
     <!-- Botón para agregar un defecto -->
-    <button @click="showAddDefectModal = true" class="add-btn-modern">{{ t('DEFECTS.ADD_DEFECT_BUTTON') }}</button>
+    <div class="buttons-row">
+      <button @click="handleDeleteSelectedDefect" class="delete-btn-green">{{ t('DEFECTS.DELETE_BUTTON') }}</button>
+      <button @click="showAddDefectModal = true" class="add-btn-modern">{{ t('DEFECTS.ADD_BUTTON') }}</button>
+    </div>
 
     <!-- Modal para agregar defecto -->
     <div v-if="showAddDefectModal" class="modal">
@@ -117,9 +124,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Mensaje de error -->
-    <div v-if="errorMsg" class="error-message">{{ errorMsg }}</div>
   </div>
 </template>
 
@@ -129,7 +133,7 @@ import HeaderBar from '../../public/components/headerBar.vue'
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { getAllDefects, createDefect } from '../service';
+import { getAllDefects, createDefect, deleteDefect } from '../service';
 
 export default {
   components: {
@@ -148,6 +152,12 @@ export default {
     const selectedCafe = ref('');
     const selectedDefecto = ref('');
     const errorMsg = ref('');
+    const selectedDefectId = ref(null);
+    const deleteErrorMsg = ref("");
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const userId = currentUser?.id;
+    const userPlan = currentUser?.plan;
 
     const uniqueCafes = computed(() => [...new Set(defects.value.map(d => d.cafe).filter(Boolean))]);
     const uniqueDefectos = computed(() => [...new Set(defects.value.map(d => d.defecto).filter(Boolean))]);
@@ -164,31 +174,27 @@ export default {
 
     const loadDefects = async () => {
       try {
-        const response = await getAllDefects();
-        console.log('Defectos recibidos:', response.data);
+        const response = await getAllDefects(userId);
         if (Array.isArray(response.data)) {
-          defects.value = response.data;
+          // Filtra por plan si es necesario (ejemplo: owner ve todos, barista solo los suyos)
+          defects.value = userPlan === 'owner' ? response.data : response.data.filter(d => d.user_id === userId);
         } else {
-          console.error('Error: La respuesta de la API no es un array válido.', response.data);
           throw new Error('Formato de datos incorrecto recibido de la API.');
         }
         errorMsg.value = '';
       } catch (error) {
-        console.error('Error al cargar defectos:', error);
         errorMsg.value = t('DEFECTS.ERROR_LOAD');
       }
     };
 
     const addNewDefect = async () => {
       try {
-        console.log('Nuevo defecto a agregar:', newDefect.value);
-        await createDefect(newDefect.value);
+        await createDefect({ ...newDefect.value, user_id: userId }, userId);
         await loadDefects();
         showAddDefectModal.value = false;
         newDefect.value = { peso: null, cafe: '', defecto: '', porcentaje: null, causas: '', soluciones: '' };
         errorMsg.value = '';
       } catch (error) {
-        console.error('Error al agregar defecto:', error);
         errorMsg.value = t('DEFECTS.ERROR_ADD');
       }
     };
@@ -204,6 +210,39 @@ export default {
 
     const closeModal = () => {
       showModal.value = false;
+    };
+
+    const canDelete = (defect) => defect.user_id === userId || userPlan === 'owner';
+    const handleDelete = async (defect) => {
+      if (!canDelete(defect)) return;
+      if (!confirm(t('DEFECTS.CONFIRM_DELETE'))) return;
+      await deleteDefect(defect.id);
+      await loadDefects();
+    };
+
+    const handleDeleteSelectedDefect = async () => {
+      deleteErrorMsg.value = "";
+      if (!selectedDefectId.value) {
+        deleteErrorMsg.value = t('DEFECTS.ERROR_NO_DEFECT_SELECTED');
+        return;
+      }
+      if (!confirm(t('DEFECTS.CONFIRM_DELETE_SELECTED'))) return;
+      await deleteDefect(selectedDefectId.value);
+      await loadDefects();
+      selectedDefectId.value = null;
+    };
+
+    const selectDefect = (id, event) => {
+      if (event.target.checked) {
+        selectedDefectId.value = id;
+      } else {
+        selectedDefectId.value = null;
+      }
+    };
+
+    const openEditModal = (defect) => {
+      // Implementa la lógica para abrir el modal de edición
+      console.log('Editar defecto:', defect);
     };
 
     onMounted(() => {
@@ -228,7 +267,14 @@ export default {
       closeAddDefectModal,
       openModal,
       closeModal,
-      errorMsg
+      errorMsg,
+      canDelete,
+      handleDelete,
+      handleDeleteSelectedDefect,
+      deleteErrorMsg,
+      selectDefect,
+      userPlan,
+      openEditModal
     };
   },
 };
@@ -244,37 +290,60 @@ body {
 }
 
 .defect-list {
-  padding: 20px;
+  background-color: #F8F7F2;
+  min-height: 100vh;
+  padding-bottom: 40px;
 }
 
-.breadcrumb-container {
+.breadcrumb-defects,
+.breadcrumb-defects-centered {
+  max-width: 1100px;
+  margin: 70px auto 0 auto;
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
+  align-items: center;
+  font-size: 2rem;
+  color: #414535;
+  font-family: 'Inter', sans-serif;
+  padding-bottom: 32px;
+  justify-content: flex-start;
 }
 
-.breadcrumb {
-  font-size: 16px;
-  color: #414535; /* Color de texto solicitado */
+.breadcrumb-home {
+  color: #414535;
+  font-weight: 400;
+}
+
+.breadcrumb-separator {
+  color: #b0b0b0;
+  margin: 0 8px;
+  font-size: 2.2rem;
+}
+
+.breadcrumb-current {
+  color: #414535;
+  font-weight: 500;
 }
 
 /* Filtros */
-.filters-row {
+.centered-filters-container {
+  max-width: 1100px;
+  margin: 0 auto 24px auto;
   display: flex;
-  gap: 32px;
-  margin-bottom: 24px;
+  gap: 24px;
+  align-items: flex-end;
 }
 
 .filter-block {
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 
 .filter-label {
   font-weight: 600;
-  margin-bottom: 6px;
   color: #414535;
+  margin-bottom: 4px;
 }
 
 .filter-input-group {
@@ -283,26 +352,28 @@ body {
 }
 
 .search-bar {
-  flex: 2;
-  padding: 8px;
-  border-radius: 6px;
+  flex: 1;
+  padding: 8px 12px;
   border: 1px solid #ccc;
-  background: #fff;
-  color: #111;
+  border-radius: 6px;
+  font-size: 1rem;
 }
 
 .dropdown {
-  flex: 1;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 8px 12px;
   border: 1px solid #ccc;
-  background: #fff;
-  color: #111;
+  border-radius: 6px;
+  font-size: 1rem;
 }
 
 /* Tabla de defectos */
-.defect-container {
-  margin-top: 20px;
+.centered-table-container {
+  max-width: 1100px;
+  margin: 40px auto 0 auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 0 0 30px 0;
 }
 
 .defect-table {
@@ -314,8 +385,8 @@ body {
   padding: 12px;
   text-align: left;
   border: 1px solid #ddd;
-  background-color: #618985;
-  color: white;
+  background-color: #fff;
+  color: #414535;
 }
 
 .defect-table i {
@@ -324,7 +395,8 @@ body {
 }
 
 .defect-table th {
-  background-color: #4b6f6b;
+  background-color: #618985;
+  color: white;
 }
 
 /* Botón circular en la columna de acción */
@@ -486,5 +558,89 @@ button[type="submit"]:hover {
 }
 .close-btn:hover {
   background-color: #3c3f31;
+}
+.selected {
+  background-color: #e0e0e0;
+}
+.delete-btn-green {
+  background-color: #618985;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  border: none;
+  margin-top: 18px;
+  cursor: pointer;
+  float: right;
+  transition: background 0.2s;
+}
+.delete-btn-green:hover {
+  background-color: #4b6f6b;
+}
+.error-alert {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  padding: 10px 20px;
+  margin: 10px 0 0 0;
+  font-weight: 600;
+  text-align: right;
+  max-width: 400px;
+  float: right;
+}
+.buttons-row {
+  max-width: 1100px;
+  margin: 16px auto 0 auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+}
+.custom-checkbox {
+  width: 22px;
+  height: 22px;
+  accent-color: #414535;
+  border-radius: 4px;
+  border: 2px solid #414535;
+  background: #414535;
+}
+.action-cell {
+  min-width: 120px;
+  max-width: 140px;
+  text-align: center;
+}
+.icon-btn {
+  background: #23231f;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin: 0 2px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.action-btn {
+  background: #23231f;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin: 0 2px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.action-btn:hover {
+  background: #414535;
 }
 </style>

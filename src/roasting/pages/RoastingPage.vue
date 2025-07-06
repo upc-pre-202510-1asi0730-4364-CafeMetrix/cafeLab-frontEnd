@@ -1,14 +1,14 @@
 <template>
-  <RoastFlavorCorrelation />
+  <!-- Eliminar: <RoastFlavorCorrelation /> -->
 </template>
 
 <script>
-import RoastFlavorCorrelation from '../components/RoastFlavorCorrelation.vue';
+// Eliminar: import RoastFlavorCorrelation from '../components/RoastFlavorCorrelation.vue';
 
 export default {
   name: 'RoastingPage',
   components: {
-    RoastFlavorCorrelation
+    // Eliminar: RoastFlavorCorrelation
   }
 }
 </script> 

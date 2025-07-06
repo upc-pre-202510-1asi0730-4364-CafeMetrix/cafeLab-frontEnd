@@ -22,4 +22,4 @@ export async function updateMovimiento(id, data) {
 export async function deleteMovimiento(id) {
     const response = await api.delete(`/movimientosInventario/${id}`);
     return response.data;
-} 
+}

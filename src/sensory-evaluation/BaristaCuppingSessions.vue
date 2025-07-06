@@ -50,14 +50,21 @@ const radarByProfile = {
 }
 
 onMounted(async () => {
-  sessions.value = await getBaristaCuppingSessions()
+  const user = JSON.parse(localStorage.getItem('currentUser'));
+  const userId = user?.id;
+  const response = await getBaristaCuppingSessions(userId);
+  sessions.value = Array.isArray(response) ? response : [response];
 })
 
 const addSession = async (session) => {
+  const user = JSON.parse(localStorage.getItem('currentUser'));
+  const user_id = user?.id;
   const newSession = {
     ...session,
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0],
+    user_id
   }
+  console.log('Nueva sesión a guardar:', newSession);
   const saved = await saveBaristaCuppingSession(newSession)
   sessions.value.push(saved)
 }
@@ -133,4 +140,4 @@ const onRowClick = (event) => {
   width: 350px !important;
   height: 350px !important;
 }
-</style> 
+</style>

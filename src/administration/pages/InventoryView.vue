@@ -8,80 +8,164 @@
     <div class="stock-panels">
       <div class="stock-card">
         <h2>{{ $t('inventory.greenCoffee') }}</h2>
-        <div class="dropdown">{{ $t('inventory.typica') }}</div>
+        <select class="dropdown" v-model="tipoVerde">
+          <option v-for="t in tiposCafe" :key="t.value" :value="t.value">{{ t.label }}</option>
+        </select>
         <div class="details">
-          <p>{{ $t('inventory.total') }}: <strong>10kg</strong> <span class="low-stock">({{ $t('inventory.lowStock') }})</span></p>
-          <p>{{ $t('inventory.activeLots') }}: <strong>5</strong></p>
-          <p>{{ $t('inventory.suppliers') }}: <strong>3</strong></p>
+          <p>{{ $t('inventory.total') }}: <strong>{{ totalVerde }}kg</strong> <span :class="totalVerde < 15 ? 'low-stock' : 'ok-stock'">({{ totalVerde < 15 ? $t('inventory.lowStock') : $t('inventory.okStock') }})</span></p>
+          <p>{{ $t('inventory.activeLots') }}: <strong>{{ lotesActivosVerde }}</strong></p>
+          <p>{{ $t('inventory.suppliers') }}: <strong>{{ proveedoresVerde }}</strong></p>
         </div>
         <Button class="consume-btn" :label="$t('inventory.registerConsumption')" @click="openModal('verde')" />
       </div>
 
       <div class="stock-card">
         <h2>{{ $t('inventory.roastedCoffee') }}</h2>
-        <div class="dropdown">{{ $t('inventory.typica') }}</div>
+        <select class="dropdown" v-model="tipoTostado">
+          <option v-for="t in tiposCafe" :key="t.value" :value="t.value">{{ t.label }}</option>
+        </select>
         <div class="details">
-          <p>{{ $t('inventory.total') }}: <strong>25kg</strong> <span class="ok-stock">({{ $t('inventory.okStock') }})</span></p>
-          <p>{{ $t('inventory.types') }}: <strong>Espresso, Filtro</strong></p>
-          <p>{{ $t('inventory.suppliers') }}: <strong>4</strong></p>
+          <p>{{ $t('inventory.total') }}: <strong>{{ totalTostado }}kg</strong> <span :class="totalTostado < 15 ? 'low-stock' : 'ok-stock'">({{ totalTostado < 15 ? $t('inventory.lowStock') : $t('inventory.okStock') }})</span></p>
+          <p>{{ $t('inventory.activeLots') }}: <strong>{{ lotesActivosTostado }}</strong></p>
+          <p>{{ $t('inventory.suppliers') }}: <strong>{{ proveedoresTostado }}</strong></p>
         </div>
         <Button class="consume-btn" :label="$t('inventory.registerConsumption')" @click="openModal('tostado')" />
       </div>
     </div>
 
     <h3 class="recent-title">{{ $t('inventory.recentMovements') }}</h3>
-    <DataTable :value="movimientos" class="inventory-table">
+    <DataTable :value="movimientosFiltrados" class="inventory-table">
       <Column field="fecha" :header="$t('inventory.date')" />
       <Column field="producto" :header="$t('inventory.product')" />
-      <Column field="lote" :header="$t('inventory.lot')" />
+      <Column :header="$t('inventory.lot')" :body="getNombreLoteCol" />
       <Column field="cantidad" :header="$t('inventory.amount')" />
     </DataTable>
 
     <RegisterConsumptionModal
-      v-model:visible="modalVisible"
-      :tipoCafe="modalTipo"
-      :lotes="lotes"
-      @registrado="registrarMovimiento"
+        v-model:visible="modalVisible"
+        :tipoCafe="modalTipo"
+        :lotes="lotesModal"
+        @registrado="registrarMovimiento"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import HeaderBar from "../../public/components/headerBar.vue";
 import RegisterConsumptionModal from '../components/RegisterConsumptionModal.vue'
 import api from '../../shared/services/api'
+import { coffeeLotService } from '../../coffee-lot/services/coffeeLotService.js'
 
+const tiposCafe = [
+  { label: 'ArÃ¡bica', value: 'arabica' },
+  { label: 'Robusta', value: 'robusta' },
+  { label: 'Mezcla', value: 'mezcla' }
+]
+
+const tipoVerde = ref('arabica')
+const tipoTostado = ref('arabica')
+const lotesVerde = ref([])
+const lotesTostado = ref([])
 const movimientos = ref([])
 const modalVisible = ref(false)
 const modalTipo = ref('verde')
-const lotes = ref(['Lote A', 'Lote B', 'Lote C'])
+const lotesModal = ref([])
+const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+const allLotsRef = ref([])
 
-function openModal(tipo) {
-  modalTipo.value = tipo
-  modalVisible.value = true
+const proveedoresVerde = computed(() => [...new Set(lotesVerde.value.map(l => l.supplier_id))].length)
+const proveedoresTostado = computed(() => [...new Set(lotesTostado.value.map(l => l.supplier_id))].length)
+const totalVerde = computed(() => lotesVerde.value.reduce((sum, l) => sum + (Number(l.weight) || 0), 0))
+const totalTostado = computed(() => lotesTostado.value.reduce((sum, l) => sum + (Number(l.weight) || 0), 0))
+
+const lotesActivosVerde = computed(() => lotesVerde.value.length)
+const lotesActivosTostado = computed(() => lotesTostado.value.length)
+
+const movimientosFiltrados = computed(() => {
+  const filtrados = movimientos.value.filter(m =>
+      (String(m.userId) === String(currentUser?.id) || String(m.user_id) === String(currentUser?.id)) &&
+      (m.tipoCafe === modalTipo.value || m.tipo === modalTipo.value)
+  )
+  return filtrados
+})
+
+watch(tipoVerde, () => {
+  cargarLotes();
+});
+watch(tipoTostado, () => {
+  cargarLotes();
+});
+
+async function cargarLotes() {
+  const allLots = await coffeeLotService.getLots();
+  allLotsRef.value = allLots;
+  lotesVerde.value = allLots.filter(l =>
+      l.processing_method && l.processing_method.toLowerCase().trim() !== 'tostado' &&
+      String(l.user_id) === String(currentUser?.id) &&
+      l.coffee_type &&
+      l.coffee_type.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '') ===
+      tipoVerde.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '')
+  )
+  lotesTostado.value = allLots.filter(l =>
+      l.processing_method && l.processing_method.toLowerCase().trim() === 'tostado' &&
+      String(l.user_id) === String(currentUser?.id) &&
+      l.coffee_type &&
+      l.coffee_type.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '') ===
+      tipoTostado.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '')
+  )
 }
 
 async function cargarMovimientos() {
-  const response = await api.get('/movimientosInventario');
-  movimientos.value = response.data;
+  const response = await fetch('http://localhost:5129/api/v1/movimientosinventario');
+  const data = await response.json();
+  movimientos.value = data;
+}
+
+function openModal(tipo) {
+  modalTipo.value = tipo
+  lotesModal.value = tipo === 'verde' ? lotesVerde.value : lotesTostado.value
+  modalVisible.value = true
 }
 
 async function registrarMovimiento(data) {
   const nuevoMovimiento = {
     id: Date.now(),
-    ...data
+    ...data,
+    userId: currentUser?.id
   };
-  await api.post('/movimientosInventario', nuevoMovimiento);
+  await fetch('http://localhost:5129/api/v1/movimientosinventario', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(nuevoMovimiento)
+  });
+  // Descontar cantidad del lote
+  const lotes = [...lotesVerde.value, ...lotesTostado.value];
+  const lote = lotes.find(l => l.id === data.lote);
+  if (lote) {
+    const nuevaCantidad = Number(lote.weight) - Number(data.cantidad);
+    await api.put(`/coffee-lots/${lote.id}`, { ...lote, weight: nuevaCantidad });
+  }
+  await cargarLotes();
   await cargarMovimientos();
 }
 
-onMounted(() => {
+function getNombreLote(id) {
+  const lote = allLotsRef.value.find(l => String(l.id) === String(id));
+  return lote ? lote.lot_name : id;
+}
+
+function getNombreLoteCol(row) {
+  return getNombreLote(row.lote);
+}
+
+onMounted(async () => {
   document.body.classList.add('cupping-mode')
-  cargarMovimientos()
+  await cargarLotes()
+  await cargarMovimientos()
 })
 onUnmounted(() => {
   document.body.classList.remove('cupping-mode')

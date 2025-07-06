@@ -12,16 +12,13 @@
           <img src="https://img.icons8.com/ios/100/coffee-to-go.png" alt="Librería de Defectos" />
           <p>{{$t('dashboard.defectLibrary')}}</p>
         </div>
-        <div class="feature" @click="goToRoasting">
-          <img src="https://img.icons8.com/ios/100/smell.png" alt="Correlación Tueste-Sabor" />
-          <p>{{$t('dashboard.roastCorrelation')}}<br /></p>
-        </div>
+
         <div class="feature" @click="goToCalibration">
-          <img src="https://img.icons8.com/ios/100/coffee-beans.png" alt="Calibración de Molienda" />
+          <img src="https://cdn-icons-png.flaticon.com/512/4526/4526117.png" alt="Calibración de molienda">
           <p>{{$t('dashboard.grindCalibration')}}</p>
         </div>
         <div class="feature" @click="goToRecipes">
-          <img src="https://img.icons8.com/ios/100/recipe.png" alt="Recetas" />
+          <img src="https://cdn2.iconfinder.com/data/icons/coffee-shop-154/60/coffee__recipe__menu__card__clipboard-512.png" alt="Recetas">
           <p>{{$t('dashboard.recipes')}}</p>
         </div>
       </div>

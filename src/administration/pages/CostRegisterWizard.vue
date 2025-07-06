@@ -17,7 +17,10 @@
       <h2>{{ $t(`costs.stepTitle${step}`) }}</h2>
       <template v-if="step === 1">
         <div v-if="!loteSeleccionado">
-          <input class="input-lote" v-model="lote" :placeholder="$t('costs.lotPlaceholder')" />
+          <select class="input-lote" v-model="lote">
+            <option value="" disabled selected>Selecciona un lote...</option>
+            <option v-for="lot in lots" :key="lot.id" :value="lot.lot_name">{{ lot.lot_name }}</option>
+          </select>
         </div>
         <div v-else>
           <div class="selected-lot-row">
@@ -92,7 +95,7 @@
               <div class="cost-fields-horizontal">
                 <div>
                   <label>{{ $t('costs.storageDays') }}</label>
-                  <input v-model="diasAlmacen" type="number" min="0" step="1" placeholder="días" />
+                  <input v-model="diasAlmacen" type="number" min="0" step="1" placeholder="dÃ­as" />
                 </div>
                 <div>
                   <label>{{ $t('costs.storageDailyCost') }}</label>
@@ -160,48 +163,48 @@
           <div class="summary-table-card">
             <table class="summary-table">
               <thead>
-                <tr>
-                  <th>{{ $t('costs.summaryCategory') }}</th>
-                  <th>{{ $t('costs.summaryAmount') }}</th>
-                  <th>{{ $t('costs.summaryPercent') }}</th>
-                </tr>
+              <tr>
+                <th>{{ $t('costs.summaryCategory') }}</th>
+                <th>{{ $t('costs.summaryAmount') }}</th>
+                <th>{{ $t('costs.summaryPercent') }}</th>
+              </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>{{ $t('costs.summaryRawMaterial') }}</td>
-                  <td>{{ formatCurrency(totalMateriaPrima) }}</td>
-                  <td>{{ percentOfTotal(totalMateriaPrima) }}</td>
-                </tr>
-                <tr>
-                  <td>{{ $t('costs.summaryLabor') }}</td>
-                  <td>{{ formatCurrency(totalManoObra) }}</td>
-                  <td>{{ percentOfTotal(totalManoObra) }}</td>
-                </tr>
-                <tr>
-                  <td>{{ $t('costs.summaryTransport') }}</td>
-                  <td>{{ formatCurrency(totalTransporteMateriaPrima) }}</td>
-                  <td>{{ percentOfTotal(totalTransporteMateriaPrima) }}</td>
-                </tr>
-                <tr>
-                  <td>{{ $t('costs.summaryStorage') }}</td>
-                  <td>{{ formatCurrency(totalAlmacenamiento) }}</td>
-                  <td>{{ percentOfTotal(totalAlmacenamiento) }}</td>
-                </tr>
-                <tr>
-                  <td>{{ $t('costs.summaryProcessing') }}</td>
-                  <td>{{ formatCurrency(totalProcesamiento) }}</td>
-                  <td>{{ percentOfTotal(totalProcesamiento) }}</td>
-                </tr>
-                <tr>
-                  <td>{{ $t('costs.summaryOther') }}</td>
-                  <td>{{ formatCurrency(totalOtrosCostos) }}</td>
-                  <td>{{ percentOfTotal(totalOtrosCostos) }}</td>
-                </tr>
-                <tr class="total-row">
-                  <td>{{ $t('costs.summaryTotal') }}</td>
-                  <td>{{ formatCurrency(totalLote) }}</td>
-                  <td>100%</td>
-                </tr>
+              <tr>
+                <td>{{ $t('costs.summaryRawMaterial') }}</td>
+                <td>{{ formatCurrency(totalMateriaPrima) }}</td>
+                <td>{{ percentOfTotal(totalMateriaPrima) }}</td>
+              </tr>
+              <tr>
+                <td>{{ $t('costs.summaryLabor') }}</td>
+                <td>{{ formatCurrency(totalManoObra) }}</td>
+                <td>{{ percentOfTotal(totalManoObra) }}</td>
+              </tr>
+              <tr>
+                <td>{{ $t('costs.summaryTransport') }}</td>
+                <td>{{ formatCurrency(totalTransporteMateriaPrima) }}</td>
+                <td>{{ percentOfTotal(totalTransporteMateriaPrima) }}</td>
+              </tr>
+              <tr>
+                <td>{{ $t('costs.summaryStorage') }}</td>
+                <td>{{ formatCurrency(totalAlmacenamiento) }}</td>
+                <td>{{ percentOfTotal(totalAlmacenamiento) }}</td>
+              </tr>
+              <tr>
+                <td>{{ $t('costs.summaryProcessing') }}</td>
+                <td>{{ formatCurrency(totalProcesamiento) }}</td>
+                <td>{{ percentOfTotal(totalProcesamiento) }}</td>
+              </tr>
+              <tr>
+                <td>{{ $t('costs.summaryOther') }}</td>
+                <td>{{ formatCurrency(totalOtrosCostos) }}</td>
+                <td>{{ percentOfTotal(totalOtrosCostos) }}</td>
+              </tr>
+              <tr class="total-row">
+                <td>{{ $t('costs.summaryTotal') }}</td>
+                <td>{{ formatCurrency(totalLote) }}</td>
+                <td>100%</td>
+              </tr>
               </tbody>
             </table>
           </div>
@@ -225,7 +228,8 @@
         <div>
           <div v-if="showSuccess" class="success-banner">
             <strong>{{ $t('costs.successTitle') }}</strong><br />
-            <span>{{ $t('costs.successCode') }}: {{ registroCodigo }}</span>
+            <span v-if="registroCodigo">{{ $t('costs.successCode') }}: {{ registroCodigo }}</span>
+            <span v-else>Â¡Registro guardado correctamente!</span>
           </div>
           <div class="summary-flex-row">
             <div class="summary-cards-col left">
@@ -281,12 +285,15 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import HeaderBar from "../../public/components/headerBar.vue";
 import api from '../../shared/services/api'
+import { coffeeLotService } from '../../coffee-lot/services/coffeeLotService.js'
+import { saveCostRecord } from '../services/costService.js'
 
 const step = ref(1)
 const lote = ref('')
 const loteSeleccionado = ref(false)
 const showSuccess = ref(false)
 const registroCodigo = ref('')
+const lots = ref([])
 
 // Paso 2: Costos directos
 const costoKgCafeVerde = ref('')
@@ -468,30 +475,24 @@ function percentOfTotal(val) {
   return Math.round((n / totalLote.value) * 100) + '%'
 }
 
-function guardarYAvanzar() {
-  guardarRegistro();
-  setTimeout(() => {
-    showSuccess.value = true;
-    registroCodigo.value = generarCodigoRegistro();
-    step.value = 4;
-  }, 100);
-}
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+const userId = currentUser?.id;
 
-async function saveCostRecord() {
+async function handleSaveCostRecord() {
   try {
     const recordToSave = {
       fecha: new Date().toISOString(),
       lote: lote.value,
-      materiaPrima: totalMateriaPrima.value.toFixed(2),
-      manoObra: totalManoObra.value.toFixed(2),
-      transporte: totalTransporteMateriaPrima.value.toFixed(2),
-      almacenamiento: totalAlmacenamiento.value.toFixed(2),
-      procesamiento: totalProcesamiento.value,
-      otrosCostos: totalOtrosCostos.value,
+      materiaPrima: Number(totalMateriaPrima.value).toFixed(2),
+      manoObra: Number(totalManoObra.value).toFixed(2),
+      transporte: Number(totalTransporteMateriaPrima.value).toFixed(2),
+      almacenamiento: Number(totalAlmacenamiento.value).toFixed(2),
+      procesamiento: Number(totalProcesamiento.value).toFixed(2),
+      otrosCostos: Number(totalOtrosCostos.value).toFixed(2),
       totales: {
-        totalLote: totalLote.value,
-        costPerKg: costPerKg.value,
-        costPerCup: costPerCup.value,
+        totalLote: Number(totalLote.value).toFixed(2),
+        costPerKg: Number(costPerKg.value).toFixed(2),
+        costPerCup: Number(costPerCup.value).toFixed(2),
       },
       detalle: {
         costoKgCafeVerde: parseFloat(costoKgCafeVerde.value),
@@ -512,29 +513,30 @@ async function saveCostRecord() {
         certificaciones: parseFloat(certificaciones.value),
         seguros: parseFloat(seguros.value),
         gastosAdministrativos: parseFloat(gastosAdministrativos.value),
-      }
+      },
+      userId: userId
     };
 
-    const response = await api.post('/costosLote', recordToSave);
+    const response = await saveCostRecord(recordToSave);
+    console.log('RESPUESTA DEL BACKEND:', response);
 
-    if (response.status === 201) {
-      registroCodigo.value = response.data.id; // Assuming the API returns the created record with an id
-      showSuccess.value = true;
-      setTimeout(() => {
-        router.push({ name: 'home' }); // Redirect to home or another page
-      }, 3000); // Redirect after 3 seconds
+    if (response && response.id) {
+      registroCodigo.value = response.id;
+      return true;
     } else {
       console.error('Error saving cost record:', response);
       alert('Error al guardar el registro de costos.');
+      return false;
     }
   } catch (error) {
     console.error('Error saving cost record:', error);
     alert('Error al guardar el registro de costos.');
+    return false;
   }
 }
 
 function generarCodigoRegistro() {
-  // Ejemplo: RC-2024- + 6 dígitos aleatorios
+  // Ejemplo: RC-2024- + 6 dÃ­gitos aleatorios
   const rand = Math.floor(100000 + Math.random() * 900000)
   return `RC-2024-${rand}`
 }
@@ -547,8 +549,18 @@ function imprimirReporte() {
   window.print();
 }
 
-onMounted(() => {
+async function guardarYAvanzar() {
+  const success = await handleSaveCostRecord();
+  if (success) {
+    showSuccess.value = true;
+    registroCodigo.value = generarCodigoRegistro();
+    step.value = 4;
+  }
+}
+
+onMounted(async () => {
   document.body.classList.add('cupping-mode')
+  lots.value = await coffeeLotService.getLots();
 })
 onUnmounted(() => {
   document.body.classList.remove('cupping-mode')
@@ -1015,4 +1027,4 @@ onUnmounted(() => {
   margin-top: 30px;
   display: flex;
 }
-</style> 
+</style>

@@ -425,7 +425,10 @@
     "cuppingNotes": "Notas de Cata",
     "grindFine": "Fino",
     "grindMedium": "Medio",
-    "grindCoarse": "Grueso"
+    "grindCoarse": "Grueso",
+    "selectCupping": "Seleccionar sesión de cata",
+    "unitPiece": "unidad",
+    "image": "Imagen"
   },
   "ERRORS": {
     "LOAD_LOTS": "Lotes no encontrados"
@@ -485,7 +488,12 @@
     "NOT_AVAILABLE": "No disponible",
     "CLOSE_BUTTON": "Cerrar",
     "ERROR_LOAD": "No se pudieron cargar los defectos.",
-    "ERROR_ADD": "No se pudo agregar el defecto."
+    "ERROR_ADD": "No se pudo agregar el defecto.",
+    "DELETE_BUTTON": "Eliminar defecto",
+    "ADD_BUTTON": "Agregar defecto",
+    "ERROR_NO_DEFECT_SELECTED": "Error: no se escogió un defecto para eliminar.",
+    "CONFIRM_DELETE": "¿Seguro que quieres eliminar este defecto?",
+    "CONFIRM_DELETE_SELECTED": "¿Seguro que quieres eliminar el defecto seleccionado?"
   },
   "CALIBRATION": {
     "PAGE_TITLE": "Calibraciones",
@@ -520,7 +528,11 @@
     "METHOD_ESPRESSO": "Espresso",
     "METHOD_FILTER": "Filtrado",
     "EQUIPMENT_ESPRESSO": "Maquina Espresso",
-    "EQUIPMENT_FILTER": "Maquina Filtrado"
+    "EQUIPMENT_FILTER": "Maquina Filtrado",
+    "DELETE_BUTTON": "Eliminar calibración",
+    "CONFIRM_DELETE": "¿Seguro que quieres eliminar esta calibración?",
+    "CONFIRM_DELETE_SELECTED": "¿Seguro que quieres eliminar la calibración seleccionada?",
+    "ERROR_NO_CALIBRATION_SELECTED": "Error: no se escogió una calibración para eliminar."
   },
   "roastProfiles": {
     "title": "Perfiles de Tueste",
@@ -616,7 +628,6 @@
       "loading": "Cargando comparación..."
     },
     "registerModalTitle": "Registrar perfil de tueste",
-    "registerButton": "Registrar perfil de tueste",
     "selectType": "Tipo de Café",
     "minutes": "min",
     "selectLot": "Seleccionar lote"

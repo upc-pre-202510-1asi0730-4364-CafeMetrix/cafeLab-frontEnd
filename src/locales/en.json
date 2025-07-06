@@ -449,8 +449,7 @@
     "grindMedium": "Medium",
     "grindCoarse": "Coarse",
     "selectCupping": "Select a cupping session",
-    "cuppingSessionX": "Cupping Session X",
-    "cuppingSessionZ": "Cupping Session Z",
+
     "unitPiece": "piece",
     "image": "Image"
   },
@@ -484,7 +483,12 @@
     "NOT_AVAILABLE": "Not available",
     "CLOSE_BUTTON": "Close",
     "ERROR_LOAD": "Could not load defects.",
-    "ERROR_ADD": "Could not add the defect."
+    "ERROR_ADD": "Could not add the defect.",
+    "DELETE_BUTTON": "Delete defect",
+    "ADD_BUTTON": "Add defect",
+    "ERROR_NO_DEFECT_SELECTED": "Error: no defect was selected for deletion.",
+    "CONFIRM_DELETE": "Are you sure you want to delete this defect?",
+    "CONFIRM_DELETE_SELECTED": "Are you sure you want to delete the selected defect?"
   },
   "CALIBRATION": {
     "PAGE_TITLE": "Calibrations",
@@ -519,7 +523,11 @@
     "METHOD_ESPRESSO": "Espresso",
     "METHOD_FILTER": "Filter",
     "EQUIPMENT_ESPRESSO": "Espresso Machine",
-    "EQUIPMENT_FILTER": "Filter Machine"
+    "EQUIPMENT_FILTER": "Filter Machine",
+    "DELETE_BUTTON": "Delete calibration",
+    "CONFIRM_DELETE": "Are you sure you want to delete this calibration?",
+    "CONFIRM_DELETE_SELECTED": "Are you sure you want to delete the selected calibration?",
+    "ERROR_NO_CALIBRATION_SELECTED": "Error: no calibration was selected for deletion."
   },
   "roastProfiles": {
     "title": "Roast Profiles",

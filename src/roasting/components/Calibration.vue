@@ -4,24 +4,26 @@
   </header>
 
   <div class="calibration">
-    <!-- Breadcrumb -->
-    <div class="breadcrumb-container">
-      <div class="breadcrumb">
-        {{ t('breadcrumb.home') }} > <strong>{{ t('CALIBRATION.PAGE_TITLE') }}</strong>
-      </div>
+    <!-- Breadcrumb y mensaje de error en la misma línea -->
+    <div class="breadcrumb-calibration error-breadcrumb-row">
+      <span class="breadcrumb-home">{{ t('breadcrumb.home') }}</span>
+      <span class="breadcrumb-separator">&gt;</span>
+      <span class="breadcrumb-current">{{ t('CALIBRATION.PAGE_TITLE') }}</span>
+      <span v-if="deleteErrorMsg" class="error-alert-inline">{{ deleteErrorMsg }}</span>
     </div>
 
     <!-- Filtros de búsqueda -->
-    <div class="filters">
+    <div class="centered-search-container">
       <input type="text" v-model="searchTerm" :placeholder="t('CALIBRATION.SEARCH_PLACEHOLDER')" class="search-bar" />
     </div>
 
     <!-- Tabla de calibraciones -->
-    <div class="calibrations-table-container">
+    <div class="centered-table-container">
       <h3>{{ t('CALIBRATION.TABLE_TITLE') }}</h3>
       <table class="calibration-table">
         <thead>
           <tr>
+            <th></th>
             <th>{{ t('CALIBRATION.TABLE_HEADER_NAME') }}</th>
             <th>{{ t('CALIBRATION.TABLE_HEADER_METHOD') }}</th>
             <th>{{ t('CALIBRATION.TABLE_HEADER_EQUIPMENT') }}</th>
@@ -30,22 +32,28 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="cal in filteredCalibrations" :key="cal.id">
+          <tr v-for="cal in filteredCalibrations" :key="cal.id" :class="{selected: selectedCalibrationId === cal.id}" @click="selectedCalibrationId = cal.id">
+            <td>
+              <input type="checkbox" :checked="selectedCalibrationId === cal.id" @change="selectCalibration(cal.id, $event)" class="custom-checkbox" />
+            </td>
             <td>{{ cal.nombre }}</td>
             <td>{{ cal.method }}</td>
             <td>{{ cal.equipment }}</td>
             <td>{{ cal.opening }}</td>
-            <td>
-              <button class="icon-btn" @click="openEditModal(cal)"><i class="fa fa-pencil"></i></button>
-              <button class="icon-btn" @click="openViewModal(cal)"><i class="fa fa-search"></i></button>
+            <td class="action-cell">
+              <button class="icon-btn action-btn" @click="openEditModal(cal)"><i class="fa fa-pencil"></i></button>
+              <button class="icon-btn action-btn" @click="openViewModal(cal)"><i class="fa fa-search"></i></button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Botón para registrar nueva calibración -->
-    <button @click="showRegisterModal = true" class="register-btn">{{ t('CALIBRATION.REGISTER_BUTTON') }}</button>
+    <!-- Botones debajo de la tabla -->
+    <div class="buttons-row">
+      <button @click="handleDeleteSelectedCalibration" class="delete-btn-green">{{ t('CALIBRATION.DELETE_BUTTON') }}</button>
+      <button @click="showRegisterModal = true" class="register-btn">{{ t('CALIBRATION.REGISTER_BUTTON') }}</button>
+    </div>
 
     <!-- Modal para registrar o editar calibración -->
     <div v-if="showRegisterModal" class="modal">
@@ -122,7 +130,7 @@
 
     <!-- Modal para ver calibración -->
     <div v-if="showViewModal" class="modal">
-       <div class="modal-content calibration-modal-content">
+      <div class="modal-content calibration-modal-content">
         <span class="close" @click="closeViewModal">&times;</span>
         <h2 class="modal-title">{{ t('CALIBRATION.VIEW_MODAL_TITLE') }}</h2>
         <form v-if="showEditModal" @submit.prevent="saveEditCalibration" class="calibration-form">
@@ -217,9 +225,10 @@
 
 <script>
 import axios from 'axios';
-import { getAllCalibrations, saveCalibration } from '../service';
+import { getAllCalibrations, saveCalibration, deleteCalibration } from '../service';
 import HeaderBar from '../../public/components/headerBar.vue';
 import { useI18n } from 'vue-i18n';
+import { ref } from 'vue';
 
 export default {
   name: 'Calibration',
@@ -228,7 +237,8 @@ export default {
   },
   setup() {
     const { t } = useI18n();
-    return { t };
+    const selectedCalibrationId = ref(null);
+    return { t, selectedCalibrationId };
   },
   data() {
     return {
@@ -251,6 +261,8 @@ export default {
       showViewModal: false,
       selectedCalibration: null,
       editCalibrationData: {},
+      userPlan: '',
+      deleteErrorMsg: '',
     };
   },
   computed: {
@@ -265,23 +277,25 @@ export default {
   },
   methods: {
     loadCalibrations() {
-      getAllCalibrations()
-        .then(response => {
-          this.calibrationRecords = response.data;
-        })
-        .catch(error => {
-          console.error('Error al obtener calibraciones:', error);
-        });
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const userId = currentUser?.id;
+      const userPlan = currentUser?.plan;
+      this.userPlan = userPlan;
+      const loadCalibrations = async () => {
+        const response = await getAllCalibrations(userId);
+        this.calibrationRecords = userPlan === 'owner' ? response.data : response.data.filter(c => c.user_id === userId);
+      };
+      loadCalibrations();
     },
     registerCalibration() {
-      axios.post('/api/calibrations', this.newCalibration)
-        .then(() => {
-          this.loadCalibrations();
-          this.closeRegisterModal();
-        })
-        .catch(error => {
-          console.error('Error al registrar calibración:', error);
-        });
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const userId = currentUser?.id;
+      const registerCalibration = async () => {
+        await saveCalibration({ ...this.newCalibration, user_id: userId }, userId);
+        await this.loadCalibrations();
+          this.showRegisterModal = false;
+      };
+      registerCalibration();
     },
     openEditModal(cal) {
       this.editCalibrationData = { ...cal };
@@ -311,7 +325,7 @@ export default {
       if (this.editMode) {
         this.editCalibrationData.visualization = file;
       } else {
-        this.newCalibration.visualization = file;
+      this.newCalibration.visualization = file;
       }
     },
     updateCalibration() {
@@ -324,6 +338,45 @@ export default {
           console.error('Error al actualizar calibración:', error);
         });
     },
+    canDelete(cal) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const userId = currentUser?.id;
+      const userPlan = currentUser?.plan;
+      return cal.user_id === userId || userPlan === 'owner';
+    },
+    handleDelete(cal) {
+      if (!this.canDelete(cal)) return;
+      if (!confirm(this.t('CALIBRATION.CONFIRM_DELETE'))) return;
+      axios.delete(`/api/calibrations/${cal.id}`)
+        .then(() => {
+          this.loadCalibrations();
+        })
+        .catch(error => {
+          console.error('Error al eliminar calibración:', error);
+        });
+    },
+    handleDeleteSelectedCalibration() {
+      if (!this.selectedCalibrationId) {
+        this.deleteErrorMsg = this.t('CALIBRATION.ERROR_NO_CALIBRATION_SELECTED');
+        return;
+      }
+      if (!confirm(this.t('CALIBRATION.CONFIRM_DELETE_SELECTED'))) return;
+      axios.delete(`/api/calibrations/${this.selectedCalibrationId}`)
+        .then(() => {
+          this.loadCalibrations();
+          this.selectedCalibrationId = null;
+        })
+        .catch(error => {
+          console.error('Error al eliminar calibración:', error);
+        });
+    },
+    selectCalibration(id, event) {
+      if (event.target.checked) {
+        this.selectedCalibrationId = id;
+      } else {
+        this.selectedCalibrationId = null;
+      }
+    },
   },
   mounted() {
     this.loadCalibrations();
@@ -334,24 +387,46 @@ export default {
 <style scoped>
 /* Estilos de la tabla y modal */
 .calibration {
-  padding: 20px;
-  background-color: #f8f7f2;
-  color: #414535;
+  background-color: #F8F7F2;
+  min-height: 100vh;
+  padding-bottom: 40px;
 }
 
-.breadcrumb-container {
+.breadcrumb-calibration {
+  max-width: 1100px;
+  margin: 70px auto 0 auto;
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-}
-
-.breadcrumb {
-  font-size: 16px;
+  align-items: center;
+  font-size: 2rem;
   color: #414535;
+  font-family: 'Inter', sans-serif;
+  padding-bottom: 32px;
+  justify-content: flex-start;
 }
 
-.calibrations-table-container {
-  margin-top: 24px;
+.breadcrumb-home {
+  color: #414535;
+  font-weight: 400;
+}
+
+.breadcrumb-separator {
+  color: #b0b0b0;
+  margin: 0 8px;
+  font-size: 2.2rem;
+}
+
+.breadcrumb-current {
+  color: #414535;
+  font-weight: 500;
+}
+
+.centered-table-container {
+  max-width: 1100px;
+  margin: 40px auto 0 auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 0 0 30px 0;
 }
 
 .calibration-table {
@@ -443,14 +518,19 @@ button.submit-btn:hover {
 
 .register-btn {
   background-color: #414535;
-  color: white;
-  padding: 10px 15px;
-  width: auto;
-  border-radius: 5px;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  border: none;
+  margin-top: 0;
   cursor: pointer;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
+  transition: background 0.2s;
+}
+
+.register-btn:hover {
+  background-color: #23231f;
 }
 
 .icon-btn {
@@ -650,6 +730,89 @@ button.submit-btn:hover {
 }
 .register-btn-modern:hover {
   background: #5a6c6a;
+}
+.centered-search-container {
+  max-width: 1100px;
+  margin: 0 auto 24px auto;
+  display: flex;
+  justify-content: center;
+}
+.action-cell {
+  min-width: 120px;
+  max-width: 140px;
+  text-align: center;
+}
+.action-btn {
+  background: #23231f;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin: 0 2px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.action-btn:hover {
+  background: #414535;
+}
+.delete-btn-green {
+  background-color: #618985;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: 600;
+  border: none;
+  margin-top: 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.delete-btn-green:hover {
+  background-color: #4b6f6b;
+}
+.buttons-row {
+  max-width: 1100px;
+  margin: 16px auto 0 auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+}
+.custom-checkbox {
+  width: 22px;
+  height: 22px;
+  accent-color: #414535;
+  border-radius: 4px;
+  border: 2px solid #414535;
+  background: #414535;
+}
+/* Nueva clase para alinear breadcrumb y error */
+.error-breadcrumb-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  position: relative;
+}
+.error-alert-inline {
+  margin-left: auto;
+  background: #f8d7da;
+  color: #721c24;
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-size: 0.98em;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1.5px solid #d32f2f;
 }
 </style>
 
