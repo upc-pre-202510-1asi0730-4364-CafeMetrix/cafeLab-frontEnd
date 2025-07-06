@@ -13,7 +13,7 @@ export class SupplierService {
         throw new Error('Usuario no autenticado o sin ID');
       }
 
-      const { data } = await httpInstance.get(`${this.resourceEndpoint}?user_id=${currentUser.id}`);
+      const { data } = await httpInstance.get(`${this.resourceEndpoint}?userId=${currentUser.id}`);
       return data;
     } catch (error) {
       this.handleError(error);
@@ -32,7 +32,7 @@ export class SupplierService {
 
       const supplierWithUser = {
         ...supplier,
-        user_id: currentUser.id
+        userId: currentUser.id
       };
 
       const { data } = await httpInstance.post(this.resourceEndpoint, supplierWithUser);
@@ -51,7 +51,7 @@ export class SupplierService {
   async update(supplier) {
     try {
       const sanitizedSupplier = { ...supplier };
-      delete sanitizedSupplier.user_id;
+      delete sanitizedSupplier.userId;
 
       const { data } = await httpInstance.put(`${this.resourceEndpoint}/${supplier.id}`, sanitizedSupplier);
       return data;
@@ -84,7 +84,7 @@ export class SupplierService {
         throw new Error('Usuario no autenticado o sin ID');
       }
 
-      const { data } = await httpInstance.get(`${this.resourceEndpoint}?name=${encodeURIComponent(query)}&user_id=${currentUser.id}`);
+      const { data } = await httpInstance.get(`${this.resourceEndpoint}?name=${encodeURIComponent(query)}&userId=${currentUser.id}`);
       return data;
     } catch (error) {
       this.handleError(error);

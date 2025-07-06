@@ -2,7 +2,7 @@
   <div class="roast-profile-container">
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-      <router-link to="/dashboard-owner">{{ t('breadcrumb.home') }}</router-link> &gt;
+      <a @click="goToDashboard" style="cursor:pointer">{{ t('breadcrumb.home') }}</a> &gt;
       <span
         v-if="showProfileDetails"
         class="breadcrumb-link"
@@ -72,15 +72,15 @@
             <td>
               <input type="checkbox" :value="profile.id" v-model="selectedProfiles" :disabled="selectedProfiles.length >= 4 && !selectedProfiles.includes(profile.id)" />
             </td>
-            <td>{{ profile.profile_name }}</td>
-            <td>{{ profile.roast_type }}</td>
+            <td>{{ profile.profileName }}</td>
+            <td>{{ profile.roastType }}</td>
             <td>{{ profile.duration }} min</td>
-            <td>{{ getLotName(profile.coffee_lot_id) }}</td>
-            <td>{{ profile.temp_start }}°C - {{ profile.temp_end }}°C</td>
+            <td>{{ getLotName(profile.coffeeLotId) }}</td>
+            <td>{{ profile.tempStart }}°C - {{ profile.tempEnd }}°C</td>
             <td>
               <button class="favorite-btn" @click="toggleFavorite(profile, $event)">
-                <i :class="['material-icons', profile.is_favorite ? 'favorite-icon' : 'not-favorite-icon']">
-                  {{ profile.is_favorite ? 'favorite' : 'favorite_border' }}
+                <i :class="['material-icons', profile.isFavorite ? 'favorite-icon' : 'not-favorite-icon']">
+                  {{ profile.isFavorite ? 'favorite' : 'favorite_border' }}
                 </i>
               </button>
             </td>
@@ -120,11 +120,11 @@
       <h2>{{ t('roastProfiles.profileDetailsTitle') }}</h2>
       <div class="detail-group">
         <label>{{ t('roastProfiles.columns.name') }}:</label>
-        <p>{{ selectedProfile?.profile_name }}</p>
+        <p>{{ selectedProfile?.profileName }}</p>
       </div>
       <div class="detail-group">
         <label>{{ t('roastProfiles.columns.type') }}:</label>
-        <p>{{ selectedProfile?.roast_type }}</p>
+        <p>{{ selectedProfile?.roastType }}</p>
       </div>
       <div class="detail-group">
         <label>{{ t('roastProfiles.columns.duration') }}:</label>
@@ -132,19 +132,19 @@
       </div>
       <div class="detail-group">
         <label>{{ t('roastProfiles.columns.lot') }}:</label>
-        <p>{{ getLotName(selectedProfile?.coffee_lot_id) }}</p>
+        <p>{{ getLotName(selectedProfile?.coffeeLotId) }}</p>
       </div>
       <div class="detail-group">
         <label>{{ t('roastProfiles.columns.temperatureStart') }}:</label>
-        <p>{{ selectedProfile?.temp_start }}°C</p>
+        <p>{{ selectedProfile?.tempStart }}°C</p>
       </div>
       <div class="detail-group">
         <label>{{ t('roastProfiles.columns.temperatureEnd') }}:</label>
-        <p>{{ selectedProfile?.temp_end }}°C</p>
+        <p>{{ selectedProfile?.tempEnd }}°C</p>
       </div>
       <div class="detail-group">
         <label>{{ t('roastProfiles.columns.creationDate') }}:</label>
-        <p>{{ formatDate(selectedProfile?.created_at) }}</p>
+        <p>{{ formatDate(selectedProfile?.createdAt) }}</p>
       </div>
       
       <!-- Canvas para el gráfico de curva de tostado -->
@@ -164,11 +164,11 @@
         <form @submit.prevent="registerProfile">
           <div class="form-group">
             <label>{{ t('roastProfiles.columns.name') }}</label>
-            <input v-model="newProfile.profile_name" required />
+            <input v-model="newProfile.profileName" required />
           </div>
           <div class="form-group">
             <label>{{ t('roastProfiles.columns.type') }}</label>
-            <select v-model="newProfile.roast_type" required>
+            <select v-model="newProfile.roastType" required>
               <option value="">{{ t('roastProfiles.selectType') }}</option>
               <option v-for="type in roastTypes" :key="type" :value="type">
                 {{ type }}
@@ -181,21 +181,21 @@
           </div>
           <div class="form-group">
             <label>{{ t('roastProfiles.columns.lot') }}</label>
-            <select v-model="newProfile.coffee_lot_id" required>
+            <select v-model="newProfile.coffeeLotId" required>
               <option value="">{{ t('roastProfiles.selectLot') }}</option>
               <option v-for="lot in coffeeLots" :key="lot.id" :value="lot.id">
-                {{ lot.lot_name }}
+                {{ lot.lotName }}
               </option>
             </select>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label>{{ t('roastProfiles.columns.temperatureStart') }} (°C)</label>
-              <input v-model.number="newProfile.temp_start" type="number" min="0" required />
+              <input v-model.number="newProfile.tempStart" type="number" min="0" required />
             </div>
             <div class="form-group">
               <label>{{ t('roastProfiles.columns.temperatureEnd') }} (°C)</label>
-              <input v-model.number="newProfile.temp_end" type="number" min="0" required />
+              <input v-model.number="newProfile.tempEnd" type="number" min="0" required />
             </div>
           </div>
           <div class="form-actions">
@@ -215,11 +215,11 @@
         <form @submit.prevent="saveProfileChanges">
           <div class="form-group">
             <label>{{ t('roastProfiles.columns.name') }}</label>
-            <input v-model="editingProfile.profile_name" required />
+            <input v-model="editingProfile.profileName" required />
           </div>
           <div class="form-group">
             <label>{{ t('roastProfiles.columns.type') }}</label>
-            <select v-model="editingProfile.roast_type" required>
+            <select v-model="editingProfile.roastType" required>
               <option value="">{{ t('roastProfiles.selectType') }}</option>
               <option v-for="type in roastTypes" :key="type" :value="type">
                 {{ type }}
@@ -232,21 +232,21 @@
           </div>
           <div class="form-group">
             <label>{{ t('roastProfiles.columns.lot') }}</label>
-            <select v-model="editingProfile.coffee_lot_id" required>
+            <select v-model="editingProfile.coffeeLotId" required>
               <option value="">{{ t('roastProfiles.selectLot') }}</option>
               <option v-for="lot in coffeeLots" :key="lot.id" :value="lot.id">
-                {{ lot.lot_name }}
+                {{ lot.lotName }}
               </option>
             </select>
           </div>
           <div class="form-row">
             <div class="form-group">
               <label>{{ t('roastProfiles.columns.temperatureStart') }} (°C)</label>
-              <input v-model.number="editingProfile.temp_start" type="number" min="0" required />
+              <input v-model.number="editingProfile.tempStart" type="number" min="0" required />
             </div>
             <div class="form-group">
               <label>{{ t('roastProfiles.columns.temperatureEnd') }} (°C)</label>
-              <input v-model.number="editingProfile.temp_end" type="number" min="0" required />
+              <input v-model.number="editingProfile.tempEnd" type="number" min="0" required />
             </div>
           </div>
           <div class="form-actions">
@@ -288,16 +288,23 @@ export default {
     const selectedProfile = ref(null);
     const editingProfile = ref(null);
     const newProfile = reactive({
-      profile_name: '',
-      roast_type: '',
+      profileName: '',
+      roastType: '',
       duration: 0,
-      coffee_lot_id: '',
-      temp_start: 0,
-      temp_end: 0
+      coffeeLotId: '',
+      tempStart: 0,
+      tempEnd: 0,
+      isFavorite: false,
+      userId: ''
     });
     
     // Filters
-    const roastTypes = ['Ligero', 'Medio', 'Medio-Oscuro', 'Oscuro'];
+    const roastTypes = [
+      t('roastProfiles.types.light'),
+      t('roastProfiles.types.medium'),
+      t('roastProfiles.types.mediumDark'),
+      t('roastProfiles.types.dark')
+    ];
     
     // Canvas reference
     const roastCurveCanvas = ref(null);
@@ -320,7 +327,7 @@ export default {
         profiles.value = await roastProfileService.getRoastProfiles();
       } catch (err) {
         console.error('Error loading profiles:', err);
-        error.value = 'Error al cargar los perfiles de tueste. Por favor intente nuevamente.';
+        error.value = t('roastProfiles.messages.error_loading');
       } finally {
         loading.value = false;
       }
@@ -339,7 +346,7 @@ export default {
         profiles.value = await roastProfileService.searchRoastProfiles(searchQuery.value);
       } catch (err) {
         console.error('Error searching profiles:', err);
-        error.value = 'Error al buscar perfiles. Por favor intente nuevamente.';
+        error.value = t('roastProfiles.messages.error_searching');
       } finally {
         loading.value = false;
       }
@@ -388,7 +395,7 @@ export default {
         }
       } catch (err) {
         console.error('Error updating profile:', err);
-        error.value = 'Error al actualizar el perfil. Por favor intente nuevamente.';
+        error.value = t('roastProfiles.messages.error_updating');
       }
     };
 
@@ -400,9 +407,9 @@ export default {
         const duplicatedProfile = {
           ...profile,
           id: undefined,
-          profile_name: `${profile.profile_name} (Copia)`,
-          created_at: undefined,
-          updated_at: undefined
+          profileName: `${profile.profileName} (Copia)`,
+          createdAt: undefined,
+          updatedAt: undefined
         };
         
         const result = await roastProfileService.createRoastProfile(duplicatedProfile);
@@ -411,7 +418,7 @@ export default {
         }
       } catch (err) {
         console.error('Error duplicating profile:', err);
-        error.value = 'Error al duplicar el perfil. Por favor intente nuevamente.';
+        error.value = t('roastProfiles.messages.error_duplicating');
       }
     };
 
@@ -423,7 +430,7 @@ export default {
         profiles.value = profiles.value.filter(p => p.id !== id);
       } catch (err) {
         console.error('Error deleting profile:', err);
-        error.value = 'Error al eliminar el perfil. Por favor intente nuevamente.';
+        error.value = t('roastProfiles.messages.error_deleting');
       }
     };
 
@@ -432,16 +439,16 @@ export default {
       const user_id = Number(auth.getCurrentUserId());
       // Completar campos faltantes y asegurar tipos correctos
       const payload = {
-        profile_name: newProfile.profile_name,
-        roast_type: newProfile.roast_type,
+        profileName: newProfile.profileName,
+        roastType: newProfile.roastType,
         duration: Number(newProfile.duration) || 0,
-        coffee_lot_id: String(newProfile.coffee_lot_id),
-        temp_start: Number(newProfile.temp_start) || 0,
-        temp_end: Number(newProfile.temp_end) || 0,
-        is_favorite: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        user_id // <-- Ahora como número
+        coffeeLotId: String(newProfile.coffeeLotId),
+        tempStart: Number(newProfile.tempStart) || 0,
+        tempEnd: Number(newProfile.tempEnd) || 0,
+        isFavorite: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        userId: user_id // <-- Ahora como número
       };
       console.log('[DEBUG] Payload a enviar para crear perfil de tueste (con user_id numérico):', payload);
       try {
@@ -453,7 +460,7 @@ export default {
         }
       } catch (err) {
         console.error('Error creating profile:', err);
-        error.value = 'Error al crear el perfil. Por favor intente nuevamente.';
+        error.value = t('roastProfiles.messages.error_creating');
       }
     };
 
@@ -465,12 +472,14 @@ export default {
 
     const resetForm = () => {
       Object.assign(newProfile, {
-        profile_name: '',
-        roast_type: '',
+        profileName: '',
+        roastType: '',
         duration: 0,
-        coffee_lot_id: '',
-        temp_start: 0,
-        temp_end: 0
+        coffeeLotId: '',
+        tempStart: 0,
+        tempEnd: 0,
+        isFavorite: false,
+        userId: ''
       });
     };
 
@@ -479,13 +488,13 @@ export default {
         coffeeLots.value = await roastProfileService.getAvailableLots();
       } catch (err) {
         console.error('Error loading coffee lots:', err);
-        error.value = 'Error al cargar los lotes de café. Por favor intente nuevamente.';
+        error.value = t('roastProfiles.messages.error_loading_lots');
       }
     };
 
     const getLotName = (lotId) => {
       const lot = coffeeLots.value.find(l => l.id === lotId);
-      return lot ? lot.lot_name : 'Lote no encontrado';
+      return lot ? lot.lotName : t('LOTS.messages.lot_not_found');
     };
 
     const drawRoastCurve = () => {
@@ -500,8 +509,8 @@ export default {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const duration = selectedProfile.value.duration;
-      const tempStart = selectedProfile.value.temp_start;
-      const tempEnd = selectedProfile.value.temp_end;
+      const tempStart = selectedProfile.value.tempStart;
+      const tempEnd = selectedProfile.value.tempEnd;
 
       const padding = 70;
       const graphWidth = canvas.width - padding * 2;
@@ -578,7 +587,7 @@ export default {
       ctx.textAlign = 'center';
       ctx.font = '18px Arial';
       ctx.fillText(
-        'Curva de Tostado',
+        t('roastProfiles.curve.title'),
         canvas.width / 2,
         padding / 2
       );
@@ -645,10 +654,10 @@ export default {
       const lineHeight = 20;
 
       const legendItems = [
-        { color: '#8e44ad', label: 'Temperatura del Grano' },
-        { color: '#c0392b', label: 'Temperatura del Tambor' },
-        { color: '#f1c40f', label: 'First Crack' },
-        { color: '#e74c3c', label: 'Second Crack' },
+        { color: '#8e44ad', label: t('roastProfiles.curve.legend.grain') },
+        { color: '#c0392b', label: t('roastProfiles.curve.legend.drum') },
+        { color: '#f1c40f', label: t('roastProfiles.curve.legend.firstCrack') },
+        { color: '#e74c3c', label: t('roastProfiles.curve.legend.secondCrack') },
       ];
 
       legendItems.forEach((item, index) => {
@@ -684,14 +693,29 @@ export default {
     const toggleFavorite = async (profile, event) => {
       event.stopPropagation();
       try {
-        const updated = await roastProfileService.toggleFavorite(profile.id, profile.is_favorite);
+        const updated = await roastProfileService.toggleFavorite(profile.id, profile.isFavorite);
         if (updated) {
-          profile.is_favorite = updated.is_favorite;
+          profile.isFavorite = updated.isFavorite;
         }
       } catch (err) {
         error.value = t('roastProfiles.messages.error_favorite');
       }
     };
+
+    function goToDashboard() {
+      if (!auth.isLoggedIn()) {
+        return router.push({ name: 'login' })
+      }
+      const user = auth.getCurrentUser()
+      const dashboardRoutes = {
+        barista: 'baristaDashboard',
+        owner: 'ownerDashboard',
+        complete: 'completeDashboard'
+      }
+      const plan = user.plan?.toLowerCase()
+      const targetRoute = dashboardRoutes[plan] || 'baristaDashboard'
+      router.push({ name: targetRoute })
+    }
 
     // Lifecycle
     onMounted(async () => {
@@ -705,14 +729,14 @@ export default {
     const filteredProfiles = computed(() => {
       let filtered = profiles.value;
       if (showFavoritesOnly.value) {
-        filtered = filtered.filter(p => p.is_favorite && p.user_id === userId.value);
+        filtered = filtered.filter(p => p.isFavorite && p.userId === userId.value);
       } else {
-        filtered = filtered.filter(p => p.user_id === userId.value);
+        filtered = filtered.filter(p => p.userId === userId.value);
       }
       // Ordenar por fecha
       filtered = filtered.slice().sort((a, b) => {
-        const dateA = new Date(a.created_at || a.createdAt).getTime();
-        const dateB = new Date(b.created_at || b.createdAt).getTime();
+        const dateA = new Date(a.createdAt || a.createdAt).getTime();
+        const dateB = new Date(b.createdAt || b.createdAt).getTime();
         return sortOrder.value === 'asc' ? dateA - dateB : dateB - dateA;
       });
       return filtered;
@@ -758,7 +782,8 @@ export default {
       formatDate,
       goToComparison,
       toggleFavorite,
-      t
+      t,
+      goToDashboard
     };
   }
 };

@@ -2,7 +2,7 @@
   <div class="lot-container">
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-      <a @click="router.push('/')">Inicio</a> / {{ t('LOTS.TITLE') }}
+      <a @click="goToDashboard" style="cursor:pointer">{{ t('navbar.home') }}</a> / {{ t('LOTS.TITLE') }}
     </div>
 
     <!-- Search -->
@@ -52,16 +52,16 @@
             </td>
           </tr>
           <tr v-for="lot in lots" :key="lot.id">
-            <td>{{ lot.lot_name }}</td>
-            <td>{{ lot.coffee_type }}</td>
+            <td>{{ lot.lotName }}</td>
+            <td>{{ lot.coffeeType }}</td>
             <td>{{ lot.weight }} kg</td>
-            <td>{{ getSupplierName(lot.supplier_id) }}</td>
+            <td>{{ getSupplierName(lot.supplierId) }}</td>
             <td class="action-cell">
               <button class="action-button" @click="viewLotDetails(lot)">
                 <span class="material-icons">visibility</span>
               </button>
             </td>
-              <td class="action-cell">
+            <td class="action-cell">
               <button class="action-button" @click="editLot(lot)">
                 <span class="material-icons">edit</span>
               </button>
@@ -90,11 +90,11 @@
         <div class="form-row">
           <div class="form-group">
             <label>{{ t('LOTS.LOT_NAME') }}</label>
-            <input v-model="newLot.lot_name" />
+            <input v-model="newLot.lotName" />
           </div>
           <div class="form-group">
             <label>{{ t('LOTS.COFFEE_TYPE') }}</label>
-            <select v-model="newLot.coffee_type">
+            <select v-model="newLot.coffeeType">
               <option value="" disabled>{{ t('COMMON.SELECT') }}</option>
               <option v-for="type in coffeeTypes" :key="type">{{ type }}</option>
             </select>
@@ -104,7 +104,7 @@
         <div class="form-row">
           <div class="form-group">
             <label>{{ t('LOTS.PROCESSING_METHOD') }}</label>
-            <select v-model="newLot.processing_method">
+            <select v-model="newLot.processingMethod">
               <option value="" disabled>{{ t('COMMON.SELECT') }}</option>
               <option v-for="method in processTypes" :key="method">{{ method }}</option>
             </select>
@@ -128,7 +128,7 @@
 
         <div class="form-group">
           <label>{{ t('LOTS.SUPPLIER') }}</label>
-          <select v-model="newLot.supplier_id">
+          <select v-model="newLot.supplierId">
             <option value="" disabled>{{ t('COMMON.SELECT') }}</option>
             <option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.name }}</option>
           </select>
@@ -170,14 +170,14 @@
           <div class="form-group">
             <label>{{ t('LOTS.LOT_NAME') }}</label>
             <div class="input-icon-wrapper">
-              <input v-model="editingLot.lot_name" />
+              <input v-model="editingLot.lotName" />
               <span class="material-icons edit-icon">edit</span>
             </div>
           </div>
           <div class="form-group">
             <label>{{ t('LOTS.COFFEE_TYPE') }}</label>
             <div class="input-icon-wrapper">
-              <select v-model="editingLot.coffee_type">
+              <select v-model="editingLot.coffeeType">
                 <option value="" disabled>{{ t('COMMON.SELECT') }}</option>
                 <option v-for="type in coffeeTypes" :key="type">{{ type }}</option>
               </select>
@@ -190,7 +190,7 @@
           <div class="form-group">
             <label>{{ t('LOTS.PROCESSING_METHOD') }}</label>
             <div class="input-icon-wrapper">
-              <select v-model="editingLot.processing_method">
+              <select v-model="editingLot.processingMethod">
                 <option value="" disabled>{{ t('COMMON.SELECT') }}</option>
                 <option v-for="method in processTypes" :key="method">{{ method }}</option>
               </select>
@@ -226,7 +226,7 @@
         <div class="form-group">
           <label>{{ t('LOTS.SUPPLIER') }}</label>
           <div class="input-icon-wrapper">
-            <select v-model="editingLot.supplier_id">
+            <select v-model="editingLot.supplierId">
               <option value="" disabled>{{ t('COMMON.SELECT') }}</option>
               <option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.name }}</option>
             </select>
@@ -268,11 +268,11 @@
           <i class="material-icons">arrow_back</i> {{ t('COMMON.BACK') }}
         </button>
         <div class="lot-details">
-          <h2>{{ selectedLot.lot_name }}</h2>
+          <h2>{{ selectedLot.lotName }}</h2>
           <div class="detail-row">
             <div class="detail-group">
               <label>{{ t('LOTS.COFFEE_TYPE') }}</label>
-              <p>{{ selectedLot.coffee_type }}</p>
+              <p>{{ selectedLot.coffeeType }}</p>
             </div>
             <div class="detail-group">
               <label>{{ t('LOTS.WEIGHT') }}</label>
@@ -280,11 +280,11 @@
             </div>
             <div class="detail-group">
               <label>{{ t('LOTS.PROCESSING_METHOD') }}</label>
-              <p>{{ selectedLot.processing_method }}</p>
+              <p>{{ selectedLot.processingMethod }}</p>
             </div>
             <div class="detail-group">
               <label>{{ t('LOTS.SUPPLIER') }}</label>
-              <p>{{ getSupplierName(selectedLot.supplier_id) }}</p>
+              <p>{{ getSupplierName(selectedLot.supplierId) }}</p>
             </div>
           </div>
 
@@ -304,17 +304,16 @@
 
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import {ref, onMounted, computed} from 'vue';
+import {useI18n} from 'vue-i18n';
+import {useRouter} from 'vue-router';
 import axios from 'axios';
-import { coffeeLotService as CoffeeLotService } from '../services/coffeeLotService';
-import { SupplierService} from "../../supply/service/SupplierService.js";
-import { useAuthService } from '../../auth/services/authService';
+import {coffeeLotService as CoffeeLotService} from '../services/coffeeLotService';
+import {supplierService} from '../../supply/service/SupplierService.js';
+import {useAuthService} from '../../auth/services/authService';
 
-const supplierService = new SupplierService();
 const AuthService = useAuthService();
-const { t } = useI18n();
+const {t} = useI18n();
 const router = useRouter();
 
 const lots = ref([]);
@@ -327,9 +326,22 @@ const loading = ref(false);
 const error = ref(null);
 const newCertification = ref('');
 
-const coffeeTypes = ['Arábica', 'Robusta', 'Mezcla'];
-const processTypes = ['Grano Verde', 'Tostado'];
-const certificationsOptions = ['Comercio Justo', 'Bird Friendly', 'UTZ certified', 'Orgánico', 'Rainforest Alliance'];
+const coffeeTypes = [
+  t('LOTS.types.arabica'),
+  t('LOTS.types.robusta'), 
+  t('LOTS.types.blend')
+];
+const processTypes = [
+  t('LOTS.processing.greenBean'),
+  t('LOTS.processing.roasted')
+];
+const certificationsOptions = [
+  t('LOTS.certifications.fairTrade'),
+  t('LOTS.certifications.birdFriendly'),
+  t('LOTS.certifications.utzCertified'),
+  t('LOTS.certifications.organic'),
+  t('LOTS.certifications.rainforestAlliance')
+];
 
 const newLot = ref(getEmptyLot());
 const editingLot = ref(getEmptyLot());
@@ -337,23 +349,23 @@ const selectedLot = ref(null);
 
 function getEmptyLot() {
   return {
-    lot_name: '',
-    coffee_type: '',
-    processing_method: '',
+    lotName: '',
+    coffeeType: '',
+    processingMethod: '',
     altitude: 0,
     weight: 0,
     origin: '',
     certifications: [],
-    supplier_id: '',
-    user_id: ''
+    supplierId: 0,
+    userId: 0
   };
 }
 
 async function loadSuppliers() {
-  const userId = AuthService.getCurrentUserId();
+  const userId = Number(AuthService.getCurrentUserId());
   try {
-    const res = await axios.get('https://6824c1b40f0188d7e72aabca.mockapi.io/api/v1/suppliers');
-    suppliers.value = res.data.filter(s => s.user_id === userId);
+    const allSuppliers = await supplierService.getAllSuppliers();
+    suppliers.value = allSuppliers.filter(s => Number(s.userId) === userId);
   } catch (err) {
     console.error('Error loading suppliers', err);
     suppliers.value = [];
@@ -373,11 +385,11 @@ async function loadLots() {
       throw new Error('La respuesta del servidor no es una lista');
     }
 
-    lots.value = allLots.filter(lot => lot.user_id === userId);
+    lots.value = allLots.filter(lot => Number(lot.userId) === Number(userId));
     console.log('Lotes cargados:', lots.value);
   } catch (err) {
     console.error('Error al cargar lotes:', err);
-    error.value = t('ERRORS.LOAD_LOTS');
+    error.value = t('LOTS.messages.error_loading');
     lots.value = []; // Garantiza que se actualice
   } finally {
     loading.value = false;
@@ -386,15 +398,13 @@ async function loadLots() {
 
 
 async function searchLots() {
-  if ((searchQuery.value || '').trim())
-  {
+  if ((searchQuery.value || '').trim()) {
     loading.value = true;
     try {
       lots.value = await CoffeeLotService.searchLots(searchQuery.value);
-    } catch (err) {
-      error.value = t('ERROR.SEARCH_LOTS');
-    }
-    finally {
+      } catch (err) {
+    error.value = t('LOTS.messages.error_searching');
+  } finally {
       loading.value = false;
     }
   } else {
@@ -403,7 +413,7 @@ async function searchLots() {
 }
 
 function viewLotDetails(lot) {
-  selectedLot.value = { ...lot };
+  selectedLot.value = {...lot};
   showLotDetails.value = true;
 }
 
@@ -413,7 +423,7 @@ function closeLotDetails() {
 }
 
 function editLot(lot) {
-  editingLot.value = { ...lot };
+  editingLot.value = {...lot};
   showEditModal.value = true;
   showLotDetails.value = false;
 }
@@ -426,27 +436,29 @@ function closeEditModal() {
 async function registerLot() {
   error.value = null;
   const userId = AuthService.getCurrentUserId();
+  console.log('Usuario actual:', userId);
 
   if (!userId) {
-    error.value = 'Usuario no autenticado';
+    error.value = t('LOTS.messages.user_not_authenticated');
     return;
   }
 
-  const userSuppliers = suppliers.value.filter(s => s.user_id === userId);
-  if (userSuppliers.length === 0) {
-    error.value = 'Debe tener al menos un proveedor registrado';
+  if (suppliers.value.length === 0) {
+    error.value = t('LOTS.messages.must_have_supplier');
     return;
   }
 
   const lot = newLot.value;
-  if (!lot.lot_name || !lot.coffee_type || !lot.processing_method || !lot.altitude || !lot.weight || !lot.origin || !lot.supplier_id) {
-    error.value = 'Complete todos los campos obligatorios';
+  if (!lot.lotName || !lot.coffeeType || !lot.processingMethod || !lot.altitude || !lot.weight || !lot.origin || !lot.supplierId) {
+    error.value = t('LOTS.messages.complete_required_fields');
     return;
   }
 
-  lot.user_id = userId;
+  lot.userId = Number(userId);
   lot.altitude = Number(lot.altitude);
   lot.weight = Number(lot.weight);
+
+  console.log('Datos del lote a enviar:', lot);
 
   try {
     await CoffeeLotService.addLot(lot);
@@ -466,8 +478,8 @@ function cancelRegister() {
 
 async function saveLotChanges() {
   const lot = editingLot.value;
-  if (!lot.lot_name || !lot.coffee_type || !lot.processing_method || !lot.altitude || !lot.weight || !lot.origin || !lot.supplier_id) {
-    error.value = 'Complete todos los campos obligatorios';
+  if (!lot.lotName || !lot.coffeeType || !lot.processingMethod || !lot.altitude || !lot.weight || !lot.origin || !lot.supplierId) {
+    error.value = t('LOTS.messages.complete_required_fields');
     return;
   }
 
@@ -477,7 +489,7 @@ async function saveLotChanges() {
     showEditModal.value = false;
     await loadLots();
   } catch (err) {
-    error.value = 'Error al actualizar el lote';
+    error.value = t('LOTS.messages.error_updating');
   } finally {
     loading.value = false;
   }
@@ -508,7 +520,22 @@ function removeCertificationFromEdit(index) {
 function getSupplierName(id) {
   if (!id) return '';
   const supplier = suppliers.value.find(s => s.id === id);
-  return supplier ? supplier.name : '';
+  return supplier ? supplier.name : t('LOTS.messages.lot_not_found');
+}
+
+function goToDashboard() {
+  if (!AuthService.isLoggedIn()) {
+    return router.push({ name: 'login' })
+  }
+  const user = AuthService.getCurrentUser()
+  const dashboardRoutes = {
+    barista: 'baristaDashboard',
+    owner: 'ownerDashboard',
+    complete: 'completeDashboard'
+  }
+  const plan = user.plan?.toLowerCase()
+  const targetRoute = dashboardRoutes[plan] || 'baristaDashboard'
+  router.push({ name: targetRoute })
 }
 
 onMounted(() => {
@@ -558,7 +585,7 @@ onMounted(() => {
   overflow: hidden;
   width: 300px;
   background-color: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .search-box input {
@@ -608,8 +635,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Error message styles */
@@ -632,7 +663,7 @@ onMounted(() => {
   border: 1px solid #ddd;
   border-radius: 4px;
   background-color: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .lot-table {
@@ -701,7 +732,7 @@ onMounted(() => {
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .register-button:hover {
@@ -786,7 +817,7 @@ onMounted(() => {
 .form-group input:focus, .form-group select:focus {
   border-color: #4A5A54;
   outline: none;
-  box-shadow: 0 0 3px rgba(74,90,84,0.3);
+  box-shadow: 0 0 3px rgba(74, 90, 84, 0.3);
 }
 
 .edit-field-icon {
@@ -817,6 +848,7 @@ onMounted(() => {
 .submit-button:hover {
   background-color: #3D4B44;
 }
+
 .cancel-button {
   background-color: #990033;
   color: white;
@@ -838,7 +870,7 @@ onMounted(() => {
   background-color: white;
   padding: 25px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 }
 
@@ -951,7 +983,7 @@ onMounted(() => {
   color: white;
 }
 
-.btn-addC{
+.btn-addC {
   background-color: #4A5A54;
   color: white;
   border: none;
@@ -960,10 +992,10 @@ onMounted(() => {
   font-size: 12px;
   cursor: pointer;
   transition: background-color 0.3s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.btn-deleteC{
+.btn-deleteC {
   background-color: #4A5A54;
   color: white;
   border: none;
@@ -972,7 +1004,7 @@ onMounted(() => {
   font-size: 12px;
   cursor: pointer;
   transition: background-color 0.3s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .certifications-tags {
@@ -1004,7 +1036,7 @@ onMounted(() => {
   justify-content: center;
 }
 
-.add-certification{
+.add-certification {
   background-color: #4A5A54;
   color: white;
   border: none;
@@ -1013,10 +1045,10 @@ onMounted(() => {
   font-size: 12px;
   cursor: pointer;
   transition: background-color 0.3s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.delete-certification{
+.delete-certification {
   background-color: #4A5A54;
   color: white;
   border: none;
@@ -1025,10 +1057,10 @@ onMounted(() => {
   font-size: 12px;
   cursor: pointer;
   transition: background-color 0.3s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.save-edit{
+.save-edit {
   background-color: #4A5A54;
   color: white;
   border: none;
@@ -1037,11 +1069,11 @@ onMounted(() => {
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 
-.cancel-edit{
+.cancel-edit {
   background-color: #163e2f;
   color: white;
   border: none;
@@ -1050,11 +1082,11 @@ onMounted(() => {
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 
-.btn-edit{
+.btn-edit {
   display: flex;
   justify-content: center;
   margin-top: 25px;

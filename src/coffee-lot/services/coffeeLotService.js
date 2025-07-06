@@ -16,13 +16,13 @@ export class CoffeeLotService {
         if (!currentUser?.id) {
             throw new Error('Usuario no autenticado o sin ID');
         }
-        return currentUser.id;
+        return Number(currentUser.id);
     }
 
     async getLots() {
         try {
             const userId = this.getCurrentUserIdOrThrow();
-            const { data } = await httpInstance.get(`${this.resourceEndpoint}?user_id=${userId}`);
+            const { data } = await httpInstance.get(`${this.resourceEndpoint}?userId=${userId}`);
             return data;
         } catch (error) {
             this.handleError(error);
@@ -40,24 +40,33 @@ export class CoffeeLotService {
 
     async addLot(lot) {
         try {
-            const userId = this.getCurrentUserIdOrThrow();
+            const userId = Number(this.getCurrentUserIdOrThrow());
 
-            if (!lot.supplier_id) {
+            if (!lot.supplierId) {
                 throw new Error('Debe seleccionar un proveedor');
             }
 
             const suppliers = await supplierService.getAllSuppliers();
-            const validSupplier = suppliers.find(s => s.id === lot.supplier_id);
+            const supplierId = Number(lot.supplierId);
+            const validSupplier = suppliers.find(s => Number(s.id) === supplierId);
             if (!validSupplier) {
                 throw new Error('Proveedor inválido o no pertenece al usuario');
             }
 
-            const lotWithUser = {
-                ...lot,
-                user_id: userId
+            const lotToSend = {
+                lotName: lot.lotName,
+                coffeeType: lot.coffeeType,
+                processingMethod: lot.processingMethod,
+                altitude: Number(lot.altitude),
+                weight: Number(lot.weight),
+                certifications: lot.certifications || [],
+                origin: lot.origin,
+                supplierId: supplierId,
+                userId: userId,
+                status: lot.status || ''
             };
 
-            const { data } = await httpInstance.post(this.resourceEndpoint, lotWithUser);
+            const { data } = await httpInstance.post(this.resourceEndpoint, lotToSend);
             return data;
         } catch (error) {
             this.handleError(error);
@@ -71,10 +80,21 @@ export class CoffeeLotService {
      */
     async update(lot) {
         try {
-            const sanitizedLot = { ...lot };
-            delete sanitizedLot.user_id;
+            const lotToSend = {
+                id: Number(lot.id),
+                lotName: lot.lotName,
+                coffeeType: lot.coffeeType,
+                processingMethod: lot.processingMethod,
+                altitude: Number(lot.altitude),
+                weight: Number(lot.weight),
+                certifications: lot.certifications || [],
+                origin: lot.origin,
+                supplierId: Number(lot.supplierId),
+                userId: Number(lot.userId),
+                status: lot.status || ''
+            };
 
-            const { data } = await httpInstance.put(`${this.resourceEndpoint}/${lot.id}`, sanitizedLot);
+            const { data } = await httpInstance.put(`${this.resourceEndpoint}/${lotToSend.id}`, lotToSend);
             return data;
         } catch (error) {
             this.handleError(error);
@@ -101,7 +121,7 @@ export class CoffeeLotService {
     async searchLots(query) {
         try {
             const userId = this.getCurrentUserIdOrThrow();
-            const { data } = await httpInstance.get(`${this.resourceEndpoint}?lot_name=${encodeURIComponent(query)}&user_id=${userId}`);
+            const { data } = await httpInstance.get(`${this.resourceEndpoint}?lot_name=${encodeURIComponent(query)}&userId=${userId}`);
             return data;
         } catch (error) {
             this.handleError(error);

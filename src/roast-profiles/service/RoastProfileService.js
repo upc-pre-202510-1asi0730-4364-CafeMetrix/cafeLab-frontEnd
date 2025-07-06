@@ -24,7 +24,7 @@ export class RoastProfileService {
     async getRoastProfiles() {
         try {
             const userId = this.getCurrentUserIdOrThrow();
-            const { data } = await httpInstance.get(`${this.resourceEndpoint}?user_id=${userId}`);
+            const { data } = await httpInstance.get(`${this.resourceEndpoint}?userId=${userId}`);
             return data;
         } catch (error) {
             this.handleError(error);
@@ -65,26 +65,28 @@ export class RoastProfileService {
      */
     async createRoastProfile(roastProfile) {
         try {
-            const userId = this.getCurrentUserIdOrThrow();
+            const userId = Number(this.getCurrentUserIdOrThrow());
 
-            // Validate that coffee_lot_id is provided
-            if (!roastProfile.coffee_lot_id) {
+            if (!roastProfile.coffeeLotId) {
                 throw new Error('Debe seleccionar un lote de café');
             }
 
-            // Validate that the coffee lot exists and belongs to the user
             const lots = await this.getAvailableLots();
-            const validLot = lots.find(lot => lot.id === roastProfile.coffee_lot_id);
+            const validLot = lots.find(lot => Number(lot.id) === Number(roastProfile.coffeeLotId));
             if (!validLot) {
                 throw new Error('Lote de café inválido o no pertenece al usuario');
             }
 
             const roastProfileWithUser = {
-                ...roastProfile,
-                user_id: userId
+                profileName: roastProfile.profileName,
+                roastType: roastProfile.roastType,
+                duration: Number(roastProfile.duration) || 0,
+                coffeeLotId: Number(roastProfile.coffeeLotId),
+                tempStart: Number(roastProfile.tempStart) || 0,
+                tempEnd: Number(roastProfile.tempEnd) || 0,
+                isFavorite: !!roastProfile.isFavorite,
+                userId: userId
             };
-
-            console.log('[DEBUG] Payload FINAL enviado al backend:', roastProfileWithUser);
 
             const { data } = await httpInstance.post(this.resourceEndpoint, roastProfileWithUser);
             return data;
@@ -100,22 +102,29 @@ export class RoastProfileService {
      */
     async updateRoastProfile(roastProfile) {
         try {
-            // Validate that coffee_lot_id is provided
-            if (!roastProfile.coffee_lot_id) {
+            if (!roastProfile.coffeeLotId) {
                 throw new Error('Debe seleccionar un lote de café');
             }
 
-            // Validate that the coffee lot exists and belongs to the user
             const lots = await this.getAvailableLots();
-            const validLot = lots.find(lot => lot.id === roastProfile.coffee_lot_id);
+            const validLot = lots.find(lot => Number(lot.id) === Number(roastProfile.coffeeLotId));
             if (!validLot) {
                 throw new Error('Lote de café inválido o no pertenece al usuario');
             }
 
-            const sanitizedRoastProfile = { ...roastProfile };
-            delete sanitizedRoastProfile.user_id;
+            const sanitizedRoastProfile = {
+                id: Number(roastProfile.id),
+                profileName: roastProfile.profileName,
+                roastType: roastProfile.roastType,
+                duration: Number(roastProfile.duration) || 0,
+                coffeeLotId: Number(roastProfile.coffeeLotId),
+                tempStart: Number(roastProfile.tempStart) || 0,
+                tempEnd: Number(roastProfile.tempEnd) || 0,
+                isFavorite: !!roastProfile.isFavorite,
+                userId: Number(roastProfile.userId)
+            };
 
-            const { data } = await httpInstance.put(`${this.resourceEndpoint}/${roastProfile.id}`, sanitizedRoastProfile);
+            const { data } = await httpInstance.put(`${this.resourceEndpoint}/${sanitizedRoastProfile.id}`, sanitizedRoastProfile);
             return data;
         } catch (error) {
             this.handleError(error);
@@ -142,7 +151,7 @@ export class RoastProfileService {
     async searchRoastProfiles(query) {
         try {
             const userId = this.getCurrentUserIdOrThrow();
-            const { data } = await httpInstance.get(`${this.resourceEndpoint}?profile_name=${encodeURIComponent(query)}&user_id=${userId}`);
+            const { data } = await httpInstance.get(`${this.resourceEndpoint}/search?profileName=${encodeURIComponent(query)}&userId=${userId}`);
             return data;
         } catch (error) {
             this.handleError(error);
@@ -157,7 +166,7 @@ export class RoastProfileService {
     async filterByLot(lotId) {
         try {
             const userId = this.getCurrentUserIdOrThrow();
-            const { data } = await httpInstance.get(`${this.resourceEndpoint}?coffee_lot_id=${lotId}&user_id=${userId}`);
+            const { data } = await httpInstance.get(`${this.resourceEndpoint}?coffeeLotId=${lotId}&userId=${userId}`);
             return data;
         } catch (error) {
             this.handleError(error);
@@ -172,7 +181,12 @@ export class RoastProfileService {
      */
     async toggleFavorite(id, isFavorite) {
         try {
-            const { data } = await httpInstance.put(`${this.resourceEndpoint}/${id}`, { is_favorite: !isFavorite });
+            // 1. Obtén el perfil completo
+            const profile = await this.getRoastProfileById(id);
+            // 2. Cambia el campo favorito
+            profile.isFavorite = !isFavorite;
+            // 3. Haz el PUT con el objeto completo
+            const { data } = await httpInstance.put(`${this.resourceEndpoint}/${id}`, profile);
             return data;
         } catch (error) {
             this.handleError(error);

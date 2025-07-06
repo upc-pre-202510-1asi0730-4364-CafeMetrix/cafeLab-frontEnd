@@ -101,5 +101,35 @@
       "hasPlan": true,
       "id": 7
     }
-  ]
+  ],
+  "suppliers": [
+    {
+      "id": 1,
+      "name": "Café Colombia Premium",
+      "email": "contacto@cafecolombia.com",
+      "phone": "3001234567",
+      "location": "Bogotá, Colombia",
+      "specialties": ["Arábica", "Orgánico"],
+      "userId": 1
+    },
+    {
+      "id": 2,
+      "name": "Café Guatemala Selecto",
+      "email": "info@cafeguatemala.com",
+      "phone": "50212345678",
+      "location": "Antigua, Guatemala",
+      "specialties": ["Arábica", "Comercio Justo"],
+      "userId": 1
+    },
+    {
+      "id": 3,
+      "name": "Café Costa Rica Orgánico",
+      "email": "ventas@cafecostarica.com",
+      "phone": "50687654321",
+      "location": "San José, Costa Rica",
+      "specialties": ["Arábica", "Orgánico", "Bird Friendly"],
+      "userId": 7
+    }
+  ],
+  "coffee-lots": []
 }

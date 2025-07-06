@@ -68,13 +68,13 @@
           <thead>
             <tr>
               <th>{{ t('roastProfiles.comparison.characteristic') }}</th>
-              <th v-for="profile in selectedProfiles" :key="profile.id">{{ profile.name }}</th>
+              <th v-for="profile in selectedProfiles" :key="profile.id">{{ profile.profileName }}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><strong>{{ t('roastProfiles.comparison.type') }}</strong></td>
-              <td v-for="profile in selectedProfiles">{{ profile.type }}</td>
+              <td v-for="profile in selectedProfiles">{{ profile.roastType }}</td>
             </tr>
             <tr>
               <td><strong>{{ t('roastProfiles.comparison.duration') }}</strong></td>
@@ -82,23 +82,23 @@
             </tr>
             <tr>
               <td><strong>{{ t('roastProfiles.comparison.lot') }}</strong></td>
-              <td v-for="profile in selectedProfiles">{{ profile.lot }}</td>
+              <td v-for="profile in selectedProfiles">{{ profile.coffeeLotName }}</td>
             </tr>
             <tr>
               <td><strong>{{ t('roastProfiles.comparison.temp_start') }}</strong></td>
-              <td v-for="profile in selectedProfiles">{{ profile.temp_start }}°C</td>
+              <td v-for="profile in selectedProfiles">{{ profile.tempStart }}°C</td>
             </tr>
             <tr>
               <td><strong>{{ t('roastProfiles.comparison.temp_end') }}</strong></td>
-              <td v-for="profile in selectedProfiles">{{ profile.temp_end }}°C</td>
+              <td v-for="profile in selectedProfiles">{{ profile.tempEnd }}°C</td>
             </tr>
             <tr>
               <td><strong>{{ t('roastProfiles.comparison.temp_range') }}</strong></td>
-              <td v-for="profile in selectedProfiles">{{ profile.temp_end - profile.temp_start }}°C</td>
+              <td v-for="profile in selectedProfiles">{{ profile.tempEnd - profile.tempStart }}°C</td>
             </tr>
             <tr>
               <td><strong>{{ t('roastProfiles.comparison.heating_rate') }}</strong></td>
-              <td v-for="profile in selectedProfiles">{{ ((profile.temp_end - profile.temp_start) / profile.duration).toFixed(2) }}°C/min</td>
+              <td v-for="profile in selectedProfiles">{{ ((profile.tempEnd - profile.tempStart) / profile.duration).toFixed(2) }}°C/min</td>
             </tr>
             <tr>
               <td><strong>{{ t('roastProfiles.comparison.created_at') }}</strong></td>
@@ -205,15 +205,15 @@ export default {
 
     const tempRangeDifference = computed(() => {
       if (selectedProfiles.value.length < 2) return 0;
-      const range1 = selectedProfiles.value[0].temp_end - selectedProfiles.value[0].temp_start;
-      const range2 = selectedProfiles.value[1].temp_end - selectedProfiles.value[1].temp_start;
+      const range1 = selectedProfiles.value[0].tempEnd - selectedProfiles.value[0].tempStart;
+      const range2 = selectedProfiles.value[1].tempEnd - selectedProfiles.value[1].tempStart;
       return range2 - range1;
     });
 
     const heatingRateDifference = computed(() => {
       if (selectedProfiles.value.length < 2) return 0;
-      const rate1 = (selectedProfiles.value[0].temp_end - selectedProfiles.value[0].temp_start) / selectedProfiles.value[0].duration;
-      const rate2 = (selectedProfiles.value[1].temp_end - selectedProfiles.value[1].temp_start) / selectedProfiles.value[1].duration;
+      const rate1 = (selectedProfiles.value[0].tempEnd - selectedProfiles.value[0].tempStart) / selectedProfiles.value[0].duration;
+      const rate2 = (selectedProfiles.value[1].tempEnd - selectedProfiles.value[1].tempStart) / selectedProfiles.value[1].duration;
       return rate2 - rate1;
     });
 
@@ -256,8 +256,9 @@ export default {
       try {
         const ids = route.query.ids ? String(route.query.ids).split(',') : [];
         selectedIds.value = ids;
-        // Solo cargar los perfiles del usuario
-        selectedProfiles.value = profiles.value.filter(p => ids.includes(String(p.id)));
+        // Fetch cada perfil por ID usando el servicio
+        const profilePromises = ids.map(id => roastProfileService.getRoastProfileById(Number(id)));
+        selectedProfiles.value = await Promise.all(profilePromises);
         nextTick(() => drawComparisonChart());
       } catch (err) {
         error.value = t('roastProfiles.messages.error_loading');
@@ -273,10 +274,29 @@ export default {
       if (!ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (!selectedProfiles.value.length) return;
+      // Validar datos
+      const validProfiles = selectedProfiles.value.filter(p =>
+        typeof p.tempStart === 'number' && typeof p.tempEnd === 'number' && typeof p.duration === 'number' && p.duration > 0
+      );
+      if (!validProfiles.length) {
+        ctx.font = '20px Arial';
+        ctx.fillStyle = '#888';
+        ctx.textAlign = 'center';
+        ctx.fillText(t('roastProfiles.curve.noData'), canvas.width / 2, canvas.height / 2);
+        return;
+      }
       // Rango global
-      const maxDuration = Math.max(...selectedProfiles.value.map(p => p.duration));
-      const minTemp = Math.min(...selectedProfiles.value.map(p => p.temp_start));
-      const maxTemp = Math.max(...selectedProfiles.value.map(p => p.temp_end));
+      let maxDuration = Math.max(...validProfiles.map(p => p.duration));
+      let minTemp = Math.min(...validProfiles.map(p => p.tempStart));
+      let maxTemp = Math.max(...validProfiles.map(p => p.tempEnd));
+      // Evitar rango cero
+      if (maxTemp === minTemp) {
+        minTemp -= 5;
+        maxTemp += 5;
+      }
+      if (maxDuration === 0) {
+        maxDuration = 1;
+      }
       const padding = 80;
       const graphWidth = canvas.width - padding * 2;
       const graphHeight = canvas.height - padding * 2;
@@ -313,17 +333,17 @@ export default {
       }
       // Título
       ctx.textAlign = 'center'; ctx.font = '18px Arial';
-      ctx.fillText(t('roastProfiles.comparison.chart_title'), canvas.width / 2, padding / 2);
+      ctx.fillText(t('roastProfiles.curve.title'), canvas.width / 2, padding / 2);
       // Curvas
       const colors = ['#8e44ad', '#e74c3c', '#f39c12', '#27ae60'];
-      selectedProfiles.value.forEach((profile, index) => {
+      validProfiles.forEach((profile, index) => {
         const color = colors[index % colors.length];
         ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.setLineDash([]);
         ctx.beginPath();
         const steps = 100;
         for (let i = 0; i <= steps; i++) {
           const t = (i / steps) * profile.duration;
-          const temp = profile.temp_start + (profile.temp_end - profile.temp_start) * Math.log1p(t) / Math.log1p(profile.duration);
+          const temp = profile.tempStart + (profile.tempEnd - profile.tempStart) * Math.log1p(t) / Math.log1p(profile.duration);
           const x = timeToX(t);
           const y = tempToY(temp);
           if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
@@ -335,12 +355,12 @@ export default {
       const legendX = canvas.width - padding - 250;
       const legendY = padding + 20;
       const lineHeight = 25;
-      selectedProfiles.value.forEach((profile, index) => {
+      validProfiles.forEach((profile, index) => {
         const color = colors[index % colors.length];
         ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.setLineDash([]);
         ctx.beginPath(); ctx.moveTo(legendX, legendY + index * lineHeight); ctx.lineTo(legendX + 40, legendY + index * lineHeight); ctx.stroke();
         ctx.fillStyle = '#000';
-        ctx.fillText(`${profile.profile_name}`, legendX + 50, legendY + index * lineHeight + 5);
+        ctx.fillText(`${profile.profileName}`, legendX + 50, legendY + index * lineHeight + 5);
       });
     };
 

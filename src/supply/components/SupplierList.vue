@@ -2,7 +2,7 @@
   <div class="supplier-container">
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-      <router-link to="/dashboard-owner">{{ t('navbar.home') }}</router-link> &gt;
+      <a @click="goToDashboard" style="cursor:pointer">{{ t('navbar.home') }}</a> &gt;
       <span
           v-if="showSupplierDetails"
           class="breadcrumb-link"
@@ -143,13 +143,14 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {supplierService} from "../service/SupplierService.js";
-import { useAuthService} from "../../auth/services/authService.js";
+import { useAuthService } from "../../auth/services/authService.js";
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'SupplierList',
   setup() {
     const { t } = useI18n();
-    const { getCurrentUserId } = useAuthService();
+    const authService = useAuthService();
     const suppliers = ref([]);
     const searchQuery = ref('');
     const loading = ref(false);
@@ -165,13 +166,17 @@ export default {
       phone: '',
       location: '',
       specialties: []
-    });    const newSupplier = reactive({ name: '', email: '', phone: '', location: '', specialties: [], user_id: 'mock-user-id' });
+    });    const newSupplier = reactive({ name: '', email: '', phone: '', location: '', specialties: [], userId: 'mock-user-id' });
     const editingSupplier = reactive({ name: '', email: '', phone: '', location: '', specialties: [] });
 
     const newSpecialties = ref([]);
     const editingSpecialties = ref([]);
     const newSpecialtyInput = ref('');
     const editSpecialtyInput = ref('');
+
+    const router = useRouter();
+
+    const getCurrentUserId = authService.getCurrentUserId;
 
     const loadSuppliers = async () => {
       loading.value = true;
@@ -181,7 +186,7 @@ export default {
 
         suppliers.value = await supplierService.getAllSuppliers(userId);
       } catch (err) {
-        error.value = err?.message || 'No se encontraron proveedores';
+        error.value = err?.message || t('supply.suppliers.messages.no_suppliers_found');
       } finally {
         loading.value = false;
       }
@@ -193,7 +198,7 @@ export default {
       try {
         suppliers.value = await supplierService.searchSuppliers(searchQuery.value);
       } catch {
-        error.value = 'Error buscando proveedores';
+        error.value = t('supply.suppliers.messages.error_searching');
       } finally {
         loading.value = false;
       }
@@ -203,10 +208,10 @@ export default {
       try {
         error.value = null;
         const userId = getCurrentUserId();
-        if (!userId) throw new Error('Usuario no autenticado');
+        if (!userId) throw new Error(t('supply.suppliers.messages.user_not_authenticated'));
 
         newSupplier.specialties = newSpecialties.value;
-        newSupplier.user_id = userId; // <-- Añadir el userId aquí
+        newSupplier.userId = userId; // <-- Añadir el userId aquí
 
         await supplierService.addSupplier(newSupplier);
 
@@ -218,12 +223,12 @@ export default {
           phone: '',
           location: '',
           specialties: [],
-          user_id: ''
+          userId: ''
         });
 
         await loadSuppliers();
       } catch (err) {
-        error.value = err?.message || 'Error registrando proveedor';
+        error.value = err?.message || t('supply.suppliers.messages.error_registering');
       }
     };
 
@@ -247,7 +252,7 @@ export default {
         await supplierService.delete(id);
         loadSuppliers();
       } catch (err) {
-        error.value = err.message || 'Error eliminando proveedor';
+        error.value = err.message || t('supply.suppliers.messages.error_deleting');
       }
 
     };
@@ -277,6 +282,21 @@ export default {
 
     const removeEditSpecialty = (i) => editingSpecialties.value.splice(i, 1);
 
+    function goToDashboard() {
+      if (!authService.isLoggedIn()) {
+        return router.push({ name: 'login' })
+      }
+      const user = authService.getCurrentUser()
+      const dashboardRoutes = {
+        barista: 'baristaDashboard',
+        owner: 'ownerDashboard',
+        complete: 'completeDashboard'
+      }
+      const plan = user.plan?.toLowerCase()
+      const targetRoute = dashboardRoutes[plan] || 'baristaDashboard'
+      router.push({ name: targetRoute })
+    }
+
     onMounted(loadSuppliers);
 
     return {
@@ -290,7 +310,8 @@ export default {
       editSupplier, saveSupplierChanges, deleteSupplier,
       viewSupplierDetails, closeEditModal,
       addNewSpecialty, removeNewSpecialty,
-      addEditSpecialty, removeEditSpecialty
+      addEditSpecialty, removeEditSpecialty,
+      goToDashboard
     };
   }
 };

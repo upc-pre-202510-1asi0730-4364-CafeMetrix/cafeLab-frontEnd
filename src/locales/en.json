@@ -161,7 +161,15 @@
         "specialties": "Specialties",
         "user_id": "User ID"
       },
-      "add_specialty_placeholder": "Add Especialty"
+      "add_specialty_placeholder": "Add Specialty",
+      "messages": {
+        "user_not_authenticated": "User not authenticated",
+        "no_suppliers_found": "No suppliers found",
+        "error_searching": "Error searching suppliers",
+        "error_registering": "Error registering supplier",
+        "error_updating": "Error updating supplier",
+        "error_deleting": "Error deleting supplier"
+      }
     }
   },
   "inventory": {
@@ -219,7 +227,33 @@
     "ALTITUDE": "Altitude",
     "ORIGIN": "Origin",
     "CERTIFICATIONS": "Certifications",
-    "ACTIONS": "Actions"
+    "ACTIONS": "Actions",
+    "messages": {
+      "user_not_authenticated": "User not authenticated",
+      "must_have_supplier": "You must have at least one supplier registered",
+      "complete_required_fields": "Complete all required fields",
+      "server_response_error": "Server response is not a list",
+      "error_loading": "Error loading lots",
+      "error_searching": "Error searching lots",
+      "error_updating": "Error updating lot",
+      "lot_not_found": "Lot not found"
+    },
+    "types": {
+      "arabica": "Arabica",
+      "robusta": "Robusta",
+      "blend": "Blend"
+    },
+    "processing": {
+      "greenBean": "Green Bean",
+      "roasted": "Roasted"
+    },
+    "certifications": {
+      "fairTrade": "Fair Trade",
+      "birdFriendly": "Bird Friendly",
+      "utzCertified": "UTZ Certified",
+      "organic": "Organic",
+      "rainforestAlliance": "Rainforest Alliance"
+    }
   },
   "ROAST_FLAVOR_CORRELATION": {
     "BREADCRUMB_BASE": "Roast - Flavor Correlation Patterns",
@@ -249,19 +283,19 @@
     "LINE_CHART_AXIS_INTENSITY": "Intensity (0 - 100)",
     "LINE_CHART_AXIS_TIME": "Roast Time (min)"
   },
-  "common": {
-    "loading": "Loading...",
-    "actions": "Actions",
-    "save": "Save",
-    "cancel": "Cancel",
-    "select": "Select an option",
-    "edit": "Edit",
-    "close": "Close",
-    "back": "Back",
-    "delete": "Delete",
-    "retry": "Retry",
-    "confirmDelete": "Confirm deletion",
-    "confirmRemove": "Confirm Remove",
+  "COMMON": {
+    "LOADING": "Loading...",
+    "ACTIONS": "Actions",
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "SELECT": "Select an option",
+    "EDIT": "Edit",
+    "CLOSE": "Close",
+    "BACK": "Back",
+    "DELETE": "Delete",
+    "RETRY": "Retry",
+    "CONFIRMDELETE": "Confirm deletion",
+    "CONFIRMREMOVE": "Confirm Remove",
     "thisCannotBeUndone": "This action cannot be undone",
     "confirm": "Confirm",
     "yes": "Yes",
@@ -550,7 +584,8 @@
       "temperature": "Temperature",
       "favorite": "Favorite",
       "temperatureStart": "Start Temperature",
-      "temperatureEnd": "End Temperature"
+      "temperatureEnd": "End Temperature",
+      "creationDate": "Creation Date"
     },
     "filters": {
       "favorites": "Only favorites",
@@ -579,7 +614,19 @@
       "error_saving": "Error saving profile. Please try again.",
       "error_deleting": "Error deleting profile. Please try again.",
       "error_favorite": "Error updating favorite. Please try again.",
-      "error_comparing": "You must select between 2 and 4 profiles to compare."
+      "error_comparing": "You must select between 2 and 4 profiles to compare.",
+      "error_duplicating": "Error duplicating profile. Please try again.",
+      "error_creating": "Error creating profile. Please try again.",
+      "error_updating": "Error updating profile. Please try again.",
+      "error_loading_lots": "Error loading coffee lots. Please try again.",
+      "user_not_authenticated": "User not authenticated",
+      "complete_required_fields": "Complete all required fields",
+      "must_have_supplier": "You must have at least one supplier registered",
+      "invalid_supplier": "Invalid supplier or does not belong to user",
+      "server_response_error": "Server response is not a list",
+      "error_searching": "Error searching profiles. Please try again.",
+      "error_searching_lots": "Error searching lots. Please try again.",
+      "error_updating_lot": "Error updating lot"
     },
     "comparison": {
       "title": "Roast Profile Comparison",
@@ -623,9 +670,33 @@
       "loading": "Loading comparison..."
     },
     "registerModalTitle": "Register roast profile",
-    "selectType": "Coffee Type",
+    "editModalTitle": "Edit roast profile",
+    "saveButton": "Save Changes",
+    "profileDetailsTitle": "Roast Profile Details",
+    "roastCurveTitle": "Roast Curve",
+    "selectType": "Select type",
+    "selectLot": "Select lot",
     "minutes": "min",
-    "selectLot": "Select lot"
+    "types": {
+      "light": "Light",
+      "medium": "Medium",
+      "mediumDark": "Medium-Dark",
+      "dark": "Dark"
+    },
+    "curve": {
+      "title": "Roast Curve",
+      "legend": {
+        "grain": "Grain Temperature",
+        "drum": "Drum Temperature",
+        "firstCrack": "First Crack",
+        "secondCrack": "Second Crack"
+      },
+      "noData": "No valid data to graph",
+      "axis": {
+        "time": "Time (min)",
+        "temperature": "Temperature (°C)"
+      }
+    }
   },
   "contact": {
     "title": "Do you have questions, suggestions, or need help? At Cafelab, we are here to support you and your coffee shop. Write to us!",

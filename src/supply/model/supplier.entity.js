@@ -7,6 +7,6 @@ export function createSupplier(data = {}) {
         phone: data.phone || null,            // number
         location: data.location || '',        // string
         specialties: Array.isArray(data.specialties) ? data.specialties : [],
-        user_id: data.user_id || ''           // string
+        userId: data.userId || null           // string
     };
 }

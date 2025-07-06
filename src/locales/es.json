@@ -162,8 +162,15 @@
         "specialties": "Especialidades",
         "user_id": "ID de Usuario"
       },
-      "add_specialty_placeholder": "Agregar Especialidad"
-
+      "add_specialty_placeholder": "Agregar Especialidad",
+      "messages": {
+        "user_not_authenticated": "Usuario no autenticado",
+        "no_suppliers_found": "No se encontraron proveedores",
+        "error_searching": "Error buscando proveedores",
+        "error_registering": "Error registrando proveedor",
+        "error_updating": "Error actualizando proveedor",
+        "error_deleting": "Error eliminando proveedor"
+      }
     }
   },
   "inventory": {
@@ -220,19 +227,46 @@
     "PROCESSING_METHOD": "Método de procesamiento",
     "ALTITUDE": "Altitud",
     "ORIGIN": "Origen",
-    "CERTIFICATIONS": "Certificaciones"
+    "CERTIFICATIONS": "Certificaciones",
+    "ACTIONS": "Acciones",
+    "messages": {
+      "user_not_authenticated": "Usuario no autenticado",
+      "must_have_supplier": "Debe tener al menos un proveedor registrado",
+      "complete_required_fields": "Complete todos los campos obligatorios",
+      "server_response_error": "La respuesta del servidor no es una lista",
+      "error_loading": "Error al cargar lotes",
+      "error_searching": "Error al buscar lotes",
+      "error_updating": "Error al actualizar el lote",
+      "lot_not_found": "Lote no encontrado"
+    },
+    "types": {
+      "arabica": "Arábica",
+      "robusta": "Robusta",
+      "blend": "Mezcla"
+    },
+    "processing": {
+      "greenBean": "Grano Verde",
+      "roasted": "Tostado"
+    },
+    "certifications": {
+      "fairTrade": "Comercio Justo",
+      "birdFriendly": "Bird Friendly",
+      "utzCertified": "UTZ Certified",
+      "organic": "Orgánico",
+      "rainforestAlliance": "Rainforest Alliance"
+    }
   },
-  "common": {
-    "loading": "Cargando...",
-    "actions": "Acciones",
-    "save": "Guardar",
-    "cancel": "Cancelar",
-    "select": "Selecciona una opción",
-    "edit": "Editar",
-    "close": "Cerrar",
-    "back": "Atrás",
-    "delete": "Eliminar",
-    "retry": "Reintentar",
+  "COMMON": {
+    "LOADING": "Cargando...",
+    "ACTIONS": "Acciones",
+    "SAVE": "Guardar",
+    "CANCEL": "Cancelar",
+    "SELECT": "Selecciona una opción",
+    "EDIT": "Editar",
+    "CLOSE": "Cerrar",
+    "BACK": "Atrás",
+    "DELETE": "Eliminar",
+    "RETRY": "Reintentar",
     "confirmDelete": "Confirmar eliminación",
     "confirmRemove": "Confirmar eliminación",
     "thisCannotBeUndone": "Esta acción no se puede deshacer",
@@ -555,7 +589,8 @@
       "temperature": "Temperatura",
       "favorite": "Favorito",
       "temperatureStart": "Temperatura inicial",
-      "temperatureEnd": "Temperatura final"
+      "temperatureEnd": "Temperatura final",
+      "creationDate": "Fecha de creación"
     },
     "filters": {
       "favorites": "Solo favoritos",
@@ -584,7 +619,19 @@
       "error_saving": "Error al guardar el perfil. Por favor intente nuevamente.",
       "error_deleting": "Error al eliminar el perfil. Por favor intente nuevamente.",
       "error_favorite": "Error al actualizar favorito. Por favor intente nuevamente.",
-      "error_comparing": "Debe seleccionar entre 2 y 4 perfiles para comparar."
+      "error_comparing": "Debe seleccionar entre 2 y 4 perfiles para comparar.",
+      "error_duplicating": "Error al duplicar el perfil. Por favor intente nuevamente.",
+      "error_creating": "Error al crear el perfil. Por favor intente nuevamente.",
+      "error_updating": "Error al actualizar el perfil. Por favor intente nuevamente.",
+      "error_loading_lots": "Error al cargar los lotes de café. Por favor intente nuevamente.",
+      "user_not_authenticated": "Usuario no autenticado",
+      "complete_required_fields": "Complete todos los campos obligatorios",
+      "must_have_supplier": "Debe tener al menos un proveedor registrado",
+      "invalid_supplier": "Proveedor inválido o no pertenece al usuario",
+      "server_response_error": "La respuesta del servidor no es una lista",
+      "error_searching": "Error al buscar perfiles. Por favor intente nuevamente.",
+      "error_searching_lots": "Error al buscar lotes. Por favor intente nuevamente.",
+      "error_updating_lot": "Error al actualizar el lote"
     },
     "comparison": {
       "title": "Comparación de Perfiles de Tueste",
@@ -628,9 +675,33 @@
       "loading": "Cargando comparación..."
     },
     "registerModalTitle": "Registrar perfil de tueste",
-    "selectType": "Tipo de Café",
+    "editModalTitle": "Editar perfil de tueste",
+    "saveButton": "Guardar Cambios",
+    "profileDetailsTitle": "Detalles del Perfil de Tueste",
+    "roastCurveTitle": "Curva de Tueste",
+    "selectType": "Seleccionar tipo",
+    "selectLot": "Seleccionar lote",
     "minutes": "min",
-    "selectLot": "Seleccionar lote"
+    "types": {
+      "light": "Ligero",
+      "medium": "Medio",
+      "mediumDark": "Medio-Oscuro",
+      "dark": "Oscuro"
+    },
+    "curve": {
+      "title": "Curva de Tueste",
+      "legend": {
+        "grain": "Temperatura del Grano",
+        "drum": "Temperatura del Tambor",
+        "firstCrack": "Primer Crack",
+        "secondCrack": "Segundo Crack"
+      },
+      "noData": "No hay datos válidos para graficar",
+      "axis": {
+        "time": "Tiempo (min)",
+        "temperature": "Temperatura (°C)"
+      }
+    }
   },
   "contact": {
     "title": "¿Tienes preguntas, sugerencias o necesitas ayuda? En Cafelab estamos para apoyarte a ti y tu cafetería. ¡Escríbenos!",
