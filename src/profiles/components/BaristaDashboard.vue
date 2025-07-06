@@ -13,7 +13,7 @@
           <p>{{$t('dashboard.defectLibrary')}}</p>
         </div>
         <div class="feature" @click="goToRoasting">
-          <img src="https://img.icons8.com/ios/100/smell.png" alt="Correlación Tueste-Sabor" />
+          <!-- <img src="/src/assets/roast-flavor-correlation.svg" alt="Roast-Flavor Correlation" /> -->
           <p>{{$t('dashboard.roastCorrelation')}}<br /></p>
         </div>
         <div class="feature" @click="goToCalibration">

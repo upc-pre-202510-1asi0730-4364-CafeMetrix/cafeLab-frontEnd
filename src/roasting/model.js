@@ -1,3 +1,5 @@
+// Las entidades Defect y Calibration han sido movidas a src/roasting/domain/ según DDD.
+
 export class Defect {
   constructor({ id, peso, cafe, defecto, porcentaje, causas, soluciones }) {
     this.id = id;

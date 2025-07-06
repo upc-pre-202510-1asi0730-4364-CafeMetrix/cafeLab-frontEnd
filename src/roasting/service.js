@@ -9,13 +9,14 @@ const API_URL_CALIBRATIONS = `${API_BASE_URL}/calibrations`;
 console.log('DEBUG: Conectando a la API de Defectos en:', API_URL_DEFECTS);
 
 // Calibrations
-export const getAllCalibrations = () => axios.get(API_URL_CALIBRATIONS);
-export const saveCalibration = (calibration) => axios.post(`${API_URL_CALIBRATIONS}`, new Calibration(calibration));
+export const getAllCalibrations = (user_id) => axios.get(`${API_URL_CALIBRATIONS}?user_id=${user_id}`);
+export const saveCalibration = (calibration, user_id) => axios.post(`${API_URL_CALIBRATIONS}`, { ...calibration, user_id });
+export const deleteCalibration = (id) => axios.delete(`${API_URL_CALIBRATIONS}/${id}`);
 
 // Defects
-export const getAllDefects = () => axios.get(API_URL_DEFECTS);
+export const getAllDefects = (user_id) => axios.get(`${API_URL_DEFECTS}?user_id=${user_id}`);
 export const getDefectById = (id) => axios.get(`${API_URL_DEFECTS}/${id}`);
-export const createDefect = (defectData) => axios.post(API_URL_DEFECTS, defectData);
+export const createDefect = (defectData, user_id) => axios.post(API_URL_DEFECTS, { ...defectData, user_id });
 export const updateDefect = (id, defect) => axios.put(`${API_URL_DEFECTS}/${id}`, defect);
 export const deleteDefect = (id) => axios.delete(`${API_URL_DEFECTS}/${id}`);
 

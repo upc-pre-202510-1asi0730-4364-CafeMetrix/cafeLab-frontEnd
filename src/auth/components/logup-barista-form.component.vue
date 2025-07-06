@@ -69,7 +69,6 @@ export default {
     const onSubmit = () => {
       // Validación simple
       if (isInvalidControl('name') || isInvalidControl('email') || isInvalidControl('password') || isInvalidControl('experience')) {
-        // Opcional: mostrar errores aquí
         return;
       }
 
@@ -84,13 +83,12 @@ export default {
         profilePicture: '',
         paymentMethod: '',
         isFirstLogin: true,
-        plan: '',
-        hasPlan: false
+        plan: 'barista',
+        hasPlan: true
       };
 
       userService.register(newUser)
           .then(response => {
-            // Aquí sí es .data (respuesta Axios)
             const user = response.data;
             localStorage.setItem('currentUser', JSON.stringify(user));
             router.push({ name: 'logupBaristaSuccess' });

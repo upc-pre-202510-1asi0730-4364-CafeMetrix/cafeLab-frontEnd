@@ -43,13 +43,6 @@
           <h3>{{ $t('dashboard.modules.defectLibrary') }}</h3>
         </div>
 
-        <div class="module-card" @click="navigateTo('roasting')">
-          <div class="icon-container">
-            <img src="https://static.thenounproject.com/png/3512839-200.png" alt="Correlación Tueste-Sabor">
-          </div>
-          <h3>{{ $t('dashboard.modules.roastCorrelation') }}</h3>
-        </div>
-
         <div class="module-card" @click="navigateTo('recetas')">
           <div class="icon-container">
             <img src="https://cdn2.iconfinder.com/data/icons/coffee-shop-154/60/coffee__recipe__menu__card__clipboard-512.png" alt="Recetas">
