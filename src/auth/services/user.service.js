@@ -18,19 +18,28 @@ export class UserService {
         return httpInstance.get(this.resourceEndpoint)
             .then(response => {
                 const users = response.data;
-                const user = users.find(u => u.email === email && u.password === password);
+                console.log('[UserService] Usuarios obtenidos:', users);
+                // Filtra usuarios por email y password (texto plano)
+                const user = users.find(u =>
+                    u.email === email &&
+                    // Si tu backend NO retorna el campo password, omite este filtro
+                    (!u.password || u.password === password)
+                );
 
                 if (!user) {
                     throw new Error('Email o contraseña incorrectos');
                 }
 
-                return user;
+                // ¡Nunca guardes el password en el frontend!
+                const { password: _pw, ...userWithoutPassword } = user;
+                return userWithoutPassword;
             })
             .catch(error => {
                 console.error('[UserService] Error en login:', error.message);
                 throw error;
             });
     }
+
 
 
 
