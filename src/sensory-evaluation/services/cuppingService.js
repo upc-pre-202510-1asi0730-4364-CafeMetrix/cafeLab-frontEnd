@@ -1,23 +1,31 @@
-import api from '../../shared/config/api.js';
+import axios from 'axios';
+
+const localApi = axios.create({
+    baseURL: 'http://localhost:5129/api/v1',
+    headers: { 
+        'Content-Type': 'application/json', 
+        'Access-Control-Allow-Origin': '*' 
+    },
+});
 
 export async function getCuppingSessions() {
-    const response = await api.get('/cuppingSessions');
+    const response = await localApi.get('/cuppingsessions');
     return response.data;
 }
 
 export async function saveCuppingSession(session) {
     if (session.id) {
-        const response = await api.put(`/cuppingSessions/${session.id}`, session);
+        const response = await localApi.put(`/cuppingsessions/${session.id}`, session);
         return response.data;
     } else {
-        const response = await api.post('/cuppingSessions', session);
+        const response = await localApi.post('/cuppingsessions', session);
         return response.data;
     }
 }
 
 export async function updateSessionRatings(sessionId, newRatings) {
-    const response = await api.get(`/cuppingSessions/${sessionId}`);
+    const response = await localApi.get(`/cuppingsessions/${sessionId}`);
     const session = response.data;
     session.ratings = { ...newRatings };
-    return await api.put(`/cuppingSessions/${sessionId}`, session);
+    return await localApi.put(`/cuppingsessions/${sessionId}`, session);
 } 

@@ -1,16 +1,24 @@
-import api from '../../shared/config/api.js';
+import axios from 'axios';
 
-export async function getBaristaCuppingSessions() {
-    const response = await api.get('/baristaCuppingSessions');
+const localApi = axios.create({
+    baseURL: 'http://localhost:5129/api/v1',
+    headers: { 
+        'Content-Type': 'application/json', 
+        'Access-Control-Allow-Origin': '*' 
+    },
+});
+
+export async function getBaristaCuppingSessions(userId) {
+    const response = await localApi.get(`/barista-cupping-sessions/user/${userId}`);
     return response.data;
 }
 
 export async function saveBaristaCuppingSession(session) {
-    const response = await api.post('/baristaCuppingSessions', session);
+    const response = await localApi.post('/barista-cupping-sessions', session);
     return response.data;
 }
 
 export async function deleteBaristaCuppingSession(id) {
-    const response = await api.delete(`/baristaCuppingSessions/${id}`);
+    const response = await localApi.delete(`/barista-cupping-sessions/${id}`);
     return response.data;
 } 
